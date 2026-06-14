@@ -1,0 +1,6 @@
+packages:
+  - "packages/*"
+  - "tooling/*"
+allowBuilds:
+  esbuild: true
+  "@gorules/zen-engine": true

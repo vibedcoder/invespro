@@ -1,0 +1,12 @@
+{
+  "extends": "@invespro/tsconfig/lib.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "paths": {
+      "@vibedcoder/invespro-types": ["../types/src/index.ts"],
+      "@vibedcoder/invespro-core": ["../core/src/index.ts"]
+    }
+  },
+  "include": ["src"]
+}

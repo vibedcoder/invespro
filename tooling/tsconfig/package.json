@@ -1,0 +1,19 @@
+{
+  "name": "@invespro/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "exports": {
+    "./base": "./base.json",
+    "./lib": "./lib.json",
+    "./cli": "./cli.json",
+    "./base.json": "./base.json",
+    "./lib.json": "./lib.json",
+    "./cli.json": "./cli.json"
+  },
+  "files": [
+    "base.json",
+    "lib.json",
+    "cli.json"
+  ]
+}

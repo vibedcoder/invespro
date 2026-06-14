@@ -1,0 +1,45 @@
+{
+  "name": "@vibedcoder/invespro-hono",
+  "version": "0.1.0",
+  "description": "Hono REST adapter for invespro",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown && tsc --emitDeclarationOnly",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@vibedcoder/invespro-core": "workspace:*",
+    "@vibedcoder/invespro-types": "workspace:*",
+    "hono": "^4.12.25"
+  },
+  "devDependencies": {
+    "@hono/node-server": "^2.0.4",
+    "@invespro/eslint-config": "workspace:*",
+    "@invespro/tsconfig": "workspace:*"
+  },
+  "peerDependencies": {
+    "hono": "^4.7.11"
+  }
+}
