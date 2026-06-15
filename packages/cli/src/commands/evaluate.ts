@@ -3,8 +3,9 @@ import { resolve } from 'node:path';
 import { intro, log, note, outro, spinner } from '@clack/prompts';
 import { defineCommand } from 'citty';
 import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
-import { ApplicantInputSchema } from '@vibedcoder/invespro-types';
+import type { RiskProfileDefinition } from '@vibedcoder/invespro-types';
 import { formatResult } from '../utils/format.js';
+import { loadDefinition } from '../utils/definition.js';
 import { createFileSystemLoader } from '../utils/loader.js';
 
 export default defineCommand({
@@ -21,6 +22,10 @@ export default defineCommand({
     'jdm-path': {
       type: 'string',
       description: 'Path to a custom JDM graph file',
+    },
+    definition: {
+      type: 'string',
+      description: 'Path to a custom risk-profile definition',
     },
     output: {
       type: 'string',
@@ -53,24 +58,26 @@ export default defineCommand({
         return;
       }
 
-      const result = ApplicantInputSchema.safeParse(parsed);
-      if (!result.success) {
-        if (!jsonOutput) s.stop('Failed.');
-        log.error('Input file failed validation:');
-        log.error(result.error.message);
-        process.exit(1);
-        return;
-      }
-
       if (!jsonOutput) {
         s.message('Evaluating...');
       }
 
+      const definition: RiskProfileDefinition | undefined =
+        args.definition !== undefined
+          ? await loadDefinition(args.definition)
+          : undefined;
       engine =
         args['jdm-path'] !== undefined
-          ? new RiskProfilerEngine({ loader: createFileSystemLoader(args['jdm-path']) })
-          : new RiskProfilerEngine();
-      const evaluation = await engine.evaluate(result.data);
+          ? new RiskProfilerEngine({
+              ...(definition !== undefined && { definition }),
+              loader: createFileSystemLoader(args['jdm-path']),
+            })
+          : new RiskProfilerEngine({
+              ...(definition !== undefined && { definition }),
+            });
+      const evaluation = await engine.evaluate(
+        parsed as Record<string, unknown>,
+      );
 
       if (!jsonOutput) {
         s.stop('Done.');

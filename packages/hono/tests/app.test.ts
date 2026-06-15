@@ -1,6 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
-import { createRiskProfilerApp } from '../src/index.js';
+import {
+  createRiskProfilerApp,
+  createRiskProfilerService,
+} from '../src/index.js';
 
 describe('createRiskProfilerApp', () => {
   let engine: RiskProfilerEngine;
@@ -50,6 +53,10 @@ describe('createRiskProfilerApp', () => {
     expect(result).toMatchObject({
       totalScore: 34,
       riskProfile: 'Moderate',
+      normalizedScore: 60.71,
+      profile: {
+        id: 'moderate',
+      },
       overrideApplied: false,
     });
   });
@@ -73,6 +80,9 @@ describe('createRiskProfilerApp', () => {
     expect(response.status).toBe(200);
     expect(result).toMatchObject({
       riskProfile: 'Conservative',
+      profile: {
+        id: 'conservative',
+      },
       overrideApplied: true,
     });
   });
@@ -91,5 +101,22 @@ describe('createRiskProfilerApp', () => {
         code: 'validation_error',
       },
     });
+  });
+
+  it('exposes explicit lifecycle ownership through the service API', async () => {
+    const service = createRiskProfilerService();
+    service.dispose();
+
+    await expect(
+      service.engine.evaluate({
+        investmentHorizonYears: 10,
+        riskAttitude: 'hold',
+        investmentObjective: 'balanced_growth',
+        annualIncome: 55_000,
+        dtiRatio: 20,
+        liquidityMonths: 2,
+        investmentExperience: 'beginner',
+      }),
+    ).rejects.toThrow('disposed');
   });
 });

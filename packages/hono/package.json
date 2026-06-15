@@ -40,7 +40,8 @@
   },
   "dependencies": {
     "@vibedcoder/invespro-core": "workspace:*",
-    "@vibedcoder/invespro-types": "workspace:*"
+    "@vibedcoder/invespro-types": "workspace:*",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@invespro/eslint-config": "workspace:*",

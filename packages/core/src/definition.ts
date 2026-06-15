@@ -2,17 +2,26 @@ import { RiskProfileDefinitionSchema } from '@vibedcoder/invespro-types';
 import { ALLOCATION_MAP } from './allocations.js';
 import { QUESTIONS } from './questions.js';
 
+/**
+ * Opinionated Australian-dollar model matching the original Invespro rules.
+ *
+ * Original point maxima are used as relative weights so normalized scoring
+ * preserves the existing profile decisions.
+ */
 export const DEFAULT_RISK_PROFILE_DEFINITION = RiskProfileDefinitionSchema.parse({
   schemaVersion: '1.0',
-  id: 'invespro-default-risk-profiler',
+  id: 'invesproDefaultRiskProfiler',
   name: 'Invespro Default Investment Risk Profiler',
   version: '0.1.0',
   currency: 'AUD',
-  questions: [...QUESTIONS],
+  questions: QUESTIONS.map((question) => ({
+    ...question,
+    purpose: 'scored' as const,
+  })),
   scoring: [
     {
       questionId: 'investmentHorizonYears',
-      weight: 1,
+      weight: 10,
       rules: [
         { type: 'range', min: 15, includeMin: false, score: 10 },
         { type: 'range', min: 8, max: 15, includeMax: true, score: 7 },
@@ -22,7 +31,7 @@ export const DEFAULT_RISK_PROFILE_DEFINITION = RiskProfileDefinitionSchema.parse
     },
     {
       questionId: 'riskAttitude',
-      weight: 1,
+      weight: 10,
       rules: [
         { type: 'option', value: 'buy_more', score: 10 },
         { type: 'option', value: 'hold', score: 7 },
@@ -32,7 +41,7 @@ export const DEFAULT_RISK_PROFILE_DEFINITION = RiskProfileDefinitionSchema.parse
     },
     {
       questionId: 'investmentObjective',
-      weight: 1,
+      weight: 8,
       rules: [
         { type: 'option', value: 'maximum_growth', score: 8 },
         { type: 'option', value: 'balanced_growth', score: 6 },
@@ -42,7 +51,7 @@ export const DEFAULT_RISK_PROFILE_DEFINITION = RiskProfileDefinitionSchema.parse
     },
     {
       questionId: 'annualIncome',
-      weight: 1,
+      weight: 8,
       rules: [
         { type: 'range', min: 150_000, score: 8 },
         { type: 'range', min: 90_000, max: 150_000, score: 6 },
@@ -52,7 +61,7 @@ export const DEFAULT_RISK_PROFILE_DEFINITION = RiskProfileDefinitionSchema.parse
     },
     {
       questionId: 'dtiRatio',
-      weight: 1,
+      weight: 8,
       rules: [
         { type: 'range', max: 15, score: 8 },
         { type: 'range', min: 15, max: 30, score: 6 },
@@ -62,7 +71,7 @@ export const DEFAULT_RISK_PROFILE_DEFINITION = RiskProfileDefinitionSchema.parse
     },
     {
       questionId: 'liquidityMonths',
-      weight: 1,
+      weight: 6,
       rules: [
         { type: 'range', min: 6, includeMin: false, score: 6 },
         { type: 'range', min: 3, max: 6, includeMax: true, score: 4 },
@@ -72,7 +81,7 @@ export const DEFAULT_RISK_PROFILE_DEFINITION = RiskProfileDefinitionSchema.parse
     },
     {
       questionId: 'investmentExperience',
-      weight: 1,
+      weight: 6,
       rules: [
         { type: 'option', value: 'experienced', score: 6 },
         { type: 'option', value: 'intermediate', score: 4 },
@@ -81,22 +90,49 @@ export const DEFAULT_RISK_PROFILE_DEFINITION = RiskProfileDefinitionSchema.parse
       ],
     },
   ],
-  scoreBands: [
-    { riskProfile: 'Aggressive', minScore: 47, maxScore: 56 },
-    { riskProfile: 'Moderately Aggressive', minScore: 38, maxScore: 46 },
-    { riskProfile: 'Moderate', minScore: 29, maxScore: 37 },
-    { riskProfile: 'Moderately Conservative', minScore: 20, maxScore: 28 },
-    { riskProfile: 'Conservative', minScore: 11, maxScore: 19 },
+  profiles: [
+    { id: 'conservative', label: 'Conservative', order: 0 },
+    {
+      id: 'moderatelyConservative',
+      label: 'Moderately Conservative',
+      order: 1,
+    },
+    { id: 'moderate', label: 'Moderate', order: 2 },
+    {
+      id: 'moderatelyAggressive',
+      label: 'Moderately Aggressive',
+      order: 3,
+    },
+    { id: 'aggressive', label: 'Aggressive', order: 4 },
   ],
-  allocations: ALLOCATION_MAP,
+  scoreBands: [
+    { profileId: 'aggressive', minScore: (47 / 56) * 100 },
+    { profileId: 'moderatelyAggressive', minScore: (38 / 56) * 100 },
+    { profileId: 'moderate', minScore: (29 / 56) * 100 },
+    { profileId: 'moderatelyConservative', minScore: (20 / 56) * 100 },
+    { profileId: 'conservative', minScore: 0 },
+  ],
+  assetClasses: [
+    { id: 'equities', label: 'Equities' },
+    { id: 'fixedIncome', label: 'Fixed Income' },
+    { id: 'cash', label: 'Cash' },
+    { id: 'alternatives', label: 'Alternatives' },
+  ],
+  allocations: {
+    conservative: ALLOCATION_MAP.Conservative,
+    moderatelyConservative: ALLOCATION_MAP['Moderately Conservative'],
+    moderate: ALLOCATION_MAP.Moderate,
+    moderatelyAggressive: ALLOCATION_MAP['Moderately Aggressive'],
+    aggressive: ALLOCATION_MAP.Aggressive,
+  },
   overrides: [
     {
-      id: 'dti-conservative-override',
+      id: 'dtiConservativeOverride',
       description: 'DTI ratio of 50% or more is assigned a Conservative profile.',
       questionId: 'dtiRatio',
       operator: '>=',
       value: 50,
-      riskProfile: 'Conservative',
+      profileId: 'conservative',
     },
   ],
 });

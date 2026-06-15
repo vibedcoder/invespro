@@ -1,17 +1,23 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import {
-  DEFAULT_RISK_PROFILE_DEFINITION,
-  RiskProfilerEngine,
-} from '@vibedcoder/invespro-core';
-import {
-  ApplicantInputSchema,
-  RiskProfileDefinitionSchema,
-} from '@vibedcoder/invespro-types';
-import type { EvaluationResult } from '@vibedcoder/invespro-types';
+import * as z from 'zod';
+import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import { RiskProfileDefinitionSchema } from '@vibedcoder/invespro-types';
+import type { RiskProfileDefinitionInput } from '@vibedcoder/invespro-types';
+
+export interface RiskProfilerServiceOptions {
+  readonly engine?: RiskProfilerEngine;
+  readonly definition?: RiskProfileDefinitionInput;
+}
+
+export interface RiskProfilerService {
+  readonly app: Hono;
+  readonly engine: RiskProfilerEngine;
+  dispose(): void;
+}
 
 export interface CreateRiskProfilerAppOptions {
-  readonly engine?: RiskProfilerEngine;
+  readonly engine: RiskProfilerEngine;
 }
 
 export interface ApiError {
@@ -22,15 +28,46 @@ export interface ApiError {
   };
 }
 
-export function createRiskProfilerApp(options: CreateRiskProfilerAppOptions = {}): Hono {
+/**
+ * Creates a Hono adapter and owns its engine unless one is supplied.
+ *
+ * Call `dispose()` from the host application's shutdown hook.
+ */
+export function createRiskProfilerService(
+  options: RiskProfilerServiceOptions = {},
+): RiskProfilerService {
+  const ownsEngine = options.engine === undefined;
+  const engine =
+    options.engine ??
+    new RiskProfilerEngine({
+      ...(options.definition !== undefined && {
+        definition: options.definition,
+      }),
+    });
+  return {
+    app: createRoutes(engine),
+    engine,
+    dispose(): void {
+      if (ownsEngine) engine.dispose();
+    },
+  };
+}
+
+/**
+ * Creates routes around an engine whose lifecycle is owned by the caller.
+ */
+export function createRiskProfilerApp(
+  options: CreateRiskProfilerAppOptions,
+): Hono {
+  return createRoutes(options.engine);
+}
+
+function createRoutes(engine: RiskProfilerEngine): Hono {
   const app = new Hono();
-  const engine = options.engine ?? new RiskProfilerEngine();
 
   app.get('/health', (c) => c.json({ status: 'ok' }));
-
-  app.get('/definition', (c) => c.json(DEFAULT_RISK_PROFILE_DEFINITION));
-
-  app.get('/questions', (c) => c.json(DEFAULT_RISK_PROFILE_DEFINITION.questions));
+  app.get('/definition', (c) => c.json(engine.definition));
+  app.get('/questions', (c) => c.json(engine.definition.questions));
 
   app.post('/definitions/validate', async (c) => {
     const body = await readJson(c);
@@ -43,25 +80,31 @@ export function createRiskProfilerApp(options: CreateRiskProfilerAppOptions = {}
         422,
       );
     }
-
     return c.json({ valid: true, definition: result.data });
   });
 
   app.post('/evaluate', async (c) => {
     const body = await readJson(c);
     if (!body.ok) return c.json(body.error, 400);
-
-    const input = ApplicantInputSchema.safeParse(body.value);
-    if (!input.success) {
-      return c.json(validationError('Invalid applicant input.', input.error.flatten()), 422);
+    if (typeof body.value !== 'object' || body.value === null) {
+      return c.json(validationError('Evaluation input must be a JSON object.'), 422);
     }
 
     try {
-      const result: EvaluationResult = await engine.evaluate(input.data);
-      return c.json(result);
-    } catch (err) {
       return c.json(
-        serverError(err instanceof Error ? err.message : 'Evaluation failed.'),
+        await engine.evaluate(body.value as Record<string, unknown>),
+      );
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return c.json(
+          validationError('Invalid evaluation input.', error.flatten()),
+          422,
+        );
+      }
+      return c.json(
+        serverError(
+          error instanceof Error ? error.message : 'Evaluation failed.',
+        ),
         500,
       );
     }
@@ -88,12 +131,12 @@ async function readJson(
   }
 }
 
-function validationError(message: string, details: unknown): ApiError {
+function validationError(message: string, details?: unknown): ApiError {
   return {
     error: {
       code: 'validation_error',
       message,
-      details,
+      ...(details !== undefined && { details }),
     },
   };
 }

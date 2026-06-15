@@ -1,25 +1,40 @@
-import riskProfilerGraph from './graphs/risk-profiler.json' with { type: 'json' };
+import { compileRiskProfileDefinition } from './compiler.js';
+import { DEFAULT_GRAPH_KEY } from './constants.js';
+import { DEFAULT_RISK_PROFILE_DEFINITION } from './definition.js';
 
-export const DEFAULT_GRAPH_KEY = 'risk-profiler' as const;
+export { DEFAULT_GRAPH_KEY } from './constants.js';
 
 export type JdmGraphLoader = (key: string) => Promise<Buffer>;
 
-export function createDefaultLoader(
-  overrides: Record<string, unknown> = {},
+/**
+ * Creates a ZenEngine loader backed by in-memory JDM graph objects.
+ */
+export function createGraphLoader(
+  graphs: Readonly<Record<string, unknown>>,
 ): JdmGraphLoader {
-  const graphs = new Map<string, unknown>([
-    [DEFAULT_GRAPH_KEY, riskProfilerGraph],
-    ...Object.entries(overrides),
-  ]);
-
   return async (key: string): Promise<Buffer> => {
-    const graph = graphs.get(key);
+    const graph = graphs[key];
     if (graph === undefined) {
       throw new Error(
         `[invespro-core] Graph not found: "${key}". ` +
-          `Available: ${[...graphs.keys()].join(', ')}`,
+          `Available: ${Object.keys(graphs).join(', ')}`,
       );
     }
     return Buffer.from(JSON.stringify(graph));
   };
+}
+
+/**
+ * Creates a loader containing the compiled default definition.
+ */
+export function createDefaultLoader(
+  overrides: Record<string, unknown> = {},
+): JdmGraphLoader {
+  const compiled = compileRiskProfileDefinition(
+    DEFAULT_RISK_PROFILE_DEFINITION,
+  );
+  return createGraphLoader({
+    [DEFAULT_GRAPH_KEY]: compiled.graph,
+    ...overrides,
+  });
 }

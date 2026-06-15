@@ -43,7 +43,9 @@ try {
 ```bash
 invespro profile
 invespro evaluate applicant.json --output json
-invespro validate custom-model.json
+invespro evaluate applicant.json --definition model.json
+invespro compile --definition model.json --output model.jdm.json
+invespro validate model.jdm.json --definition model.json --input applicant.json
 ```
 
 JSON mode writes the evaluation result to standard output for use in scripts
@@ -53,10 +55,14 @@ and pipelines.
 
 ```ts
 import { Hono } from 'hono';
-import { createRiskProfilerApp } from '@vibedcoder/invespro-hono';
+import { createRiskProfilerService } from '@vibedcoder/invespro-hono';
 
 const app = new Hono();
-app.route('/risk-profiler', createRiskProfilerApp());
+const profiler = createRiskProfilerService();
+app.route('/risk-profiler', profiler.app);
+
+// Call this from the host application's shutdown hook.
+profiler.dispose();
 ```
 
 The adapter exposes:
@@ -69,14 +75,48 @@ The adapter exposes:
 
 ## Customization
 
-`RiskProfileDefinitionSchema` describes questions, scored options and ranges,
-weights, score bands, allocations, and override rules. The bundled default
-definition is exported as `DEFAULT_RISK_PROFILE_DEFINITION`.
+`RiskProfileDefinitionSchema` describes questions, question purposes, scored
+options and ranges, relative weights, normalized score bands, profiles, asset
+classes, allocations, and override rules. The bundled default definition is
+exported as `DEFAULT_RISK_PROFILE_DEFINITION`.
 
-Definition validation is available now. Compilation of arbitrary definitions
-into executable JDM graphs is planned as the next implementation phase. Raw
-custom JDM graphs remain supported through a custom core loader or the CLI
-`--jdm-path` option.
+Supplying a definition without a graph compiles it into deterministic JDM:
+
+```ts
+const engine = new RiskProfilerEngine({ definition });
+const result = await engine.evaluate({
+  answers: {
+    riskCapacity: 8,
+    needsEmergencyAccess: false,
+  },
+});
+```
+
+The compiler normalizes each factor by its maximum score, applies relative
+weights, and produces a final score from 0 to 100. Definition ID, version,
+schema version, and generated graph checksum are included in every result.
+
+Raw custom JDM remains available through a custom loader. Its internal nodes
+may be arbitrary, but its input and output must conform to the supplied
+definition contract. Question IDs are converted from lower camel case to snake
+case at the JDM boundary (`riskCapacity` becomes `risk_capacity`). The graph
+must return:
+
+```json
+{
+  "profile_id": "moderate",
+  "raw_score": 34,
+  "normalized_score": 60.71,
+  "override_applied": false
+}
+```
+
+An override may additionally return `override_id`. Per-factor score fields use
+the generated `<question_id>_score` snake-case convention and are included in
+the public score breakdown when all factors are present.
+
+Core rejects undeclared profile IDs and malformed results before adapters return
+them to consumers.
 
 ## Development
 

@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { intro, log, outro, spinner } from '@clack/prompts';
 import { defineCommand } from 'citty';
 import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import { loadDefinition } from '../utils/definition.js';
 import { createFileSystemLoader } from '../utils/loader.js';
 
 export default defineCommand({
@@ -15,6 +16,14 @@ export default defineCommand({
       type: 'string',
       description: 'Path to the JDM JSON file to validate',
       required: true,
+    },
+    definition: {
+      type: 'string',
+      description: 'Definition that declares the custom JDM contract',
+    },
+    input: {
+      type: 'string',
+      description: 'Sample evaluation input used to verify the graph contract',
     },
   },
   run: async ({ args }) => {
@@ -54,19 +63,38 @@ export default defineCommand({
         return;
       }
 
-      // Step 3 — ZenEngine can load and execute the graph
+      // ZenEngine validates graph structure independently of the business contract.
       const loader = createFileSystemLoader(args.jdm);
-      engine = new RiskProfilerEngine({ loader });
-
-      await engine.evaluate({
-        investmentHorizonYears: 10,
-        riskAttitude: 'hold',
-        investmentObjective: 'balanced_growth',
-        annualIncome: 75_000,
-        dtiRatio: 20,
-        liquidityMonths: 4,
-        investmentExperience: 'intermediate',
+      const definition =
+        args.definition !== undefined
+          ? await loadDefinition(args.definition)
+          : undefined;
+      engine = new RiskProfilerEngine({
+        loader,
+        ...(definition !== undefined && { definition }),
       });
+      await engine.validate();
+
+      if (args.input !== undefined) {
+        const sample = JSON.parse(
+          await readFile(resolve(process.cwd(), args.input), 'utf8'),
+        ) as Record<string, unknown>;
+        await engine.evaluate(sample);
+      } else if (definition === undefined) {
+        await engine.evaluate({
+          investmentHorizonYears: 10,
+          riskAttitude: 'hold',
+          investmentObjective: 'balanced_growth',
+          annualIncome: 75_000,
+          dtiRatio: 20,
+          liquidityMonths: 4,
+          investmentExperience: 'intermediate',
+        });
+      } else {
+        log.warn(
+          'Graph structure is valid. Pass --input to verify the custom output contract.',
+        );
+      }
 
       s.stop('Valid.');
       log.success(`${args.jdm} is a valid JDM graph.`);

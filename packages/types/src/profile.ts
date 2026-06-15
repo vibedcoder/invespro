@@ -17,25 +17,44 @@ export const AssetAllocationSchema = z.object({
 });
 export type AssetAllocation = z.infer<typeof AssetAllocationSchema>;
 
-export const ScoreBreakdownSchema = z.object({
-  horizon: z.number().int().nonnegative(),
-  riskAttitude: z.number().int().nonnegative(),
-  objective: z.number().int().nonnegative(),
-  income: z.number().int().nonnegative(),
-  dti: z.number().int().nonnegative(),
-  liquidity: z.number().int().nonnegative(),
-  experience: z.number().int().nonnegative(),
-});
+export const ScoreBreakdownSchema = z.record(z.string(), z.number().nonnegative());
 export type ScoreBreakdown = z.infer<typeof ScoreBreakdownSchema>;
 
+export const EvaluatedProfileSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  description: z.string().optional(),
+});
+export type EvaluatedProfile = z.infer<typeof EvaluatedProfileSchema>;
+
+export const DefinitionReferenceSchema = z.object({
+  id: z.string(),
+  version: z.string(),
+  schemaVersion: z.string(),
+  graphChecksum: z.string(),
+});
+export type DefinitionReference = z.infer<typeof DefinitionReferenceSchema>;
+
+/**
+ * Public result returned by core and every adapter.
+ *
+ * Definition metadata and graph checksum identify the exact rules used for the
+ * decision. Legacy fields remain during the migration to normalized scoring.
+ */
 export const EvaluationResultSchema = z.object({
   applicantId: z.string().optional(),
   scores: ScoreBreakdownSchema.optional(),
-  totalScore: z.number().int().min(11).max(56).optional(),
-  riskProfile: RiskBandSchema,
+  rawScore: z.number().nonnegative().optional(),
+  normalizedScore: z.number().min(0).max(100).optional(),
+  profile: EvaluatedProfileSchema,
   overrideApplied: z.boolean(),
-  allocation: AssetAllocationSchema,
+  overrideId: z.string().optional(),
+  allocation: z.record(z.string(), z.number().min(0).max(100)),
   evaluatedAt: z.iso.datetime(),
+  definition: DefinitionReferenceSchema,
+  // Compatibility fields for the original default model.
+  totalScore: z.number().nonnegative().optional(),
+  riskProfile: z.string(),
   jdmVersion: z.string(),
 });
 export type EvaluationResult = z.infer<typeof EvaluationResultSchema>;

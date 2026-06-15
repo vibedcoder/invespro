@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { defineCommand, runMain } from 'citty';
+import compileCommand from './commands/compile.js';
 import evaluateCommand from './commands/evaluate.js';
 import profileCommand from './commands/profile.js';
 import validateCommand from './commands/validate.js';
@@ -12,6 +13,7 @@ const main = defineCommand({
     description: 'Investment risk profiling engine',
   },
   subCommands: {
+    compile: compileCommand,
     profile: profileCommand,
     evaluate: evaluateCommand,
     validate: validateCommand,
