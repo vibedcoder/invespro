@@ -97,12 +97,36 @@ describe('RiskProfilerEngine', () => {
 
   // ─── DTI override boundary (override not yet implemented) ──────────────────
 
-  it.skip('TC03 — DTI override triggered at 55% → Conservative regardless of score', () => {
-    // Implement when DTI override switch node is added to JDM
+  it('TC03 — DTI override triggered at 55% → Conservative regardless of score', async () => {
+    const result = await engine.evaluate({
+      investmentHorizonYears: 20,
+      riskAttitude: 'buy_more',
+      investmentObjective: 'maximum_growth',
+      annualIncome: 180_000,
+      dtiRatio: 55,
+      liquidityMonths: 12,
+      investmentExperience: 'experienced',
+    });
+
+    expect(result.riskProfile).toBe('Conservative');
+    expect(result.overrideApplied).toBe(true);
+    expectAllocation(result, { equities: 10, fixedIncome: 60, cash: 25, alternatives: 5 });
   });
 
-  it.skip('TC14 — DTI override exact boundary at 50% → Conservative regardless of score', () => {
-    // Implement when DTI override switch node is added to JDM
+  it('TC14 — DTI override exact boundary at 50% → Conservative regardless of score', async () => {
+    const result = await engine.evaluate({
+      investmentHorizonYears: 20,
+      riskAttitude: 'buy_more',
+      investmentObjective: 'maximum_growth',
+      annualIncome: 180_000,
+      dtiRatio: 50,
+      liquidityMonths: 8,
+      investmentExperience: 'experienced',
+    });
+
+    expect(result.riskProfile).toBe('Conservative');
+    expect(result.overrideApplied).toBe(true);
+    expectAllocation(result, { equities: 10, fixedIncome: 60, cash: 25, alternatives: 5 });
   });
 
   // ─── DTI override NOT triggered ────────────────────────────────────────────
@@ -248,6 +272,21 @@ describe('RiskProfilerEngine', () => {
         investmentExperience: 'intermediate',
       }),
     ).rejects.toThrow();
+  });
+
+  it('accepts a zero-year investment horizon', async () => {
+    const result = await engine.evaluate({
+      investmentHorizonYears: 0,
+      riskAttitude: 'sell_all',
+      investmentObjective: 'capital_preservation',
+      annualIncome: 45_000,
+      dtiRatio: 49,
+      liquidityMonths: 0,
+      investmentExperience: 'none',
+    });
+
+    expect(result.totalScore).toBe(11);
+    expect(result.riskProfile).toBe('Conservative');
   });
 });
 

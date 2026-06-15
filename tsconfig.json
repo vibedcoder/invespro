@@ -1,3 +1,9 @@
 {
-  "exclude": ["**/node_modules/**", "**/dist/**"]
+  "files": [],
+  "references": [
+    { "path": "./packages/types" },
+    { "path": "./packages/core" },
+    { "path": "./packages/cli" },
+    { "path": "./packages/hono" }
+  ]
 }

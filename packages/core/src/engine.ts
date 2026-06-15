@@ -43,7 +43,7 @@ export class RiskProfilerEngine {
     const { result: rawResult } = await this.zen.evaluate(this.graphKey, jdmInput);
 
     // Step 4 — validate and map the raw JDM output
-    const { totalScore, riskProfile } = fromJdmResult(rawResult);
+    const { totalScore, riskProfile, overrideApplied, scores } = fromJdmResult(rawResult);
 
     // Step 5 — look up asset allocation by risk band
     const allocation = ALLOCATION_MAP[riskProfile];
@@ -51,9 +51,10 @@ export class RiskProfilerEngine {
     // Step 6 — assemble the typed result
     return {
       applicantId: validated.applicantId,
-      totalScore,
+      ...(scores !== undefined && { scores }),
+      ...(totalScore !== undefined && { totalScore }),
       riskProfile,
-      overrideApplied: false,
+      overrideApplied,
       allocation,
       evaluatedAt: new Date().toISOString(),
       jdmVersion: this.jdmVersion,

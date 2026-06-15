@@ -4,15 +4,16 @@
   "version": "0.0.0",
   "description": "Investment risk profiling — open source fintech primitives",
   "license": "MIT",
+  "packageManager": "pnpm@11.6.0",
   "engines": {
     "node": ">=24.0.0",
-    "pnpm": ">=10.0.0"
+    "pnpm": ">=11.0.0"
   },
   "scripts": {
     "build": "pnpm -r build",
     "dev": "pnpm -r dev",
     "test": "pnpm -r test",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "tsc -b --emitDeclarationOnly",
     "lint": "pnpm -r lint",
     "clean": "pnpm -r clean",
     "changeset": "changeset",
@@ -24,6 +25,7 @@
   "type": "module",
   "devDependencies": {
     "@changesets/cli": "^2.31.0",
+    "@changesets/config": "^3.1.4",
     "@types/node": "^25.9.3",
     "eslint": "^10.4.1",
     "tsdown": "^0.22.2",

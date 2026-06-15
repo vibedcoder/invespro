@@ -7,9 +7,6 @@ export default [
     files: ["**/*.ts"],
     languageOptions: {
       parser: tsparser,
-      parserOptions: {
-        projectService: true,
-      },
     },
     plugins: {
       "@typescript-eslint": tseslint,

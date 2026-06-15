@@ -3,10 +3,11 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "paths": {
-      "@vibedcoder/invespro-types": ["../types/src/index.ts"],
-      "@vibedcoder/invespro-core": ["../core/src/index.ts"]
-    }
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
-  "include": ["src"]
+  "include": ["src/**/*"],
+  "references": [
+    { "path": "../types" },
+    { "path": "../core" }
+  ]
 }

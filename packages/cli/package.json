@@ -4,17 +4,23 @@
   "description": "CLI for investment risk profiling",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "bin": {
     "invespro": "./dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsdown && tsc --emitDeclarationOnly",
-    "dev": "tsx src/index.ts",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint src",
+    "build": "tsdown",
+    "dev": "tsx --tsconfig tsconfig.dev.json src/index.ts",
+    "typecheck": "tsc -b --emitDeclarationOnly",
+    "lint": "eslint .",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -27,6 +33,8 @@
     "@invespro/eslint-config": "workspace:*",
     "@invespro/tsconfig": "workspace:*",
     "@types/node": "^25.9.3",
-    "tsx": "^4.22.4"
+    "tsdown": "^0.22.2",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
   }
 }

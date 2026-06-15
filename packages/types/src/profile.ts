@@ -31,7 +31,7 @@ export type ScoreBreakdown = z.infer<typeof ScoreBreakdownSchema>;
 export const EvaluationResultSchema = z.object({
   applicantId: z.string().optional(),
   scores: ScoreBreakdownSchema.optional(),
-  totalScore: z.number().int().min(11).max(56),
+  totalScore: z.number().int().min(11).max(56).optional(),
   riskProfile: RiskBandSchema,
   overrideApplied: z.boolean(),
   allocation: AssetAllocationSchema,

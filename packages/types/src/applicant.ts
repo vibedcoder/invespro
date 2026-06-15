@@ -26,7 +26,7 @@ export type InvestmentExperience = z.infer<typeof InvestmentExperienceSchema>;
 
 export const ApplicantInputSchema = z.object({
   applicantId: z.string().optional(),
-  investmentHorizonYears: z.number().positive(),
+  investmentHorizonYears: z.number().nonnegative(),
   riskAttitude: RiskAttitudeSchema,
   investmentObjective: InvestmentObjectiveSchema,
   annualIncome: z.number().nonnegative(),

@@ -4,35 +4,51 @@
   "description": "Hono REST adapter for invespro",
   "license": "MIT",
   "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsdown && tsc --emitDeclarationOnly",
+    "build": "tsdown",
     "dev": "tsdown --watch",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint src",
+    "test": "vitest run",
+    "typecheck": "tsc -b --emitDeclarationOnly",
+    "lint": "eslint .",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@vibedcoder/invespro-core": "workspace:*",
-    "@vibedcoder/invespro-types": "workspace:*",
-    "hono": "^4.12.25"
+    "@vibedcoder/invespro-types": "workspace:*"
   },
   "devDependencies": {
-    "@hono/node-server": "^2.0.4",
     "@invespro/eslint-config": "workspace:*",
-    "@invespro/tsconfig": "workspace:*"
+    "@invespro/tsconfig": "workspace:*",
+    "hono": "^4.12.25",
+    "tsdown": "^0.22.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   },
   "peerDependencies": {
     "hono": "^4.7.11"

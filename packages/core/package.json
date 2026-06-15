@@ -4,27 +4,39 @@
   "description": "Investment risk profiling engine — core library",
   "license": "MIT",
   "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "development": "./src/index.ts",
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsdown && tsc --emitDeclarationOnly",
+    "build": "tsdown",
     "dev": "tsdown --watch",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint src",
+    "typecheck": "tsc -b --emitDeclarationOnly",
+    "lint": "eslint .",
     "clean": "rm -rf dist"
   },
   "dependencies": {

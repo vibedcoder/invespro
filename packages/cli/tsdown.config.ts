@@ -5,5 +5,6 @@ export default defineConfig({
   format: ['esm'],
   dts: false,
   clean: true,
+  fixedExtension: false,
   platform: 'node',
 });
