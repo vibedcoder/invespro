@@ -1,6 +1,10 @@
 packages:
+  - "apps/*"
   - "packages/*"
   - "tooling/*"
+
 allowBuilds:
   esbuild: true
   "@gorules/zen-engine": true
+  sharp: true
+  unrs-resolver: true
