@@ -1,7 +1,7 @@
 {
   "name": "@vibedcoder/invespro-cli",
   "version": "0.1.0",
-  "description": "CLI for investment risk profiling",
+  "description": "CLI for investment profiling and portfolio allocation",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -27,7 +27,9 @@
     "@clack/prompts": "^1.5.1",
     "@vibedcoder/invespro-core": "workspace:*",
     "@vibedcoder/invespro-types": "workspace:*",
-    "citty": "^0.2.2"
+    "citty": "^0.2.2",
+    "csv-parse": "^7.0.0",
+    "csv-stringify": "^6.8.0"
   },
   "devDependencies": {
     "@invespro/eslint-config": "workspace:*",

@@ -103,6 +103,89 @@ describe('createRiskProfilerApp', () => {
     });
   });
 
+  it('evaluates a batch and preserves per-item errors', async () => {
+    const response = await app.request('/evaluate/batch', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        items: [
+          {
+            applicantId: 'APP-001',
+            investmentHorizonYears: 10,
+            riskAttitude: 'hold',
+            investmentObjective: 'balanced_growth',
+            annualIncome: 55_000,
+            dtiRatio: 20,
+            liquidityMonths: 2,
+            investmentExperience: 'beginner',
+          },
+          {
+            applicantId: 'APP-002',
+            dtiRatio: 150,
+          },
+        ],
+      }),
+    });
+    const result = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(result).toMatchObject({
+      summary: {
+        total: 2,
+        fulfilled: 1,
+        rejected: 1,
+      },
+      items: [
+        {
+          index: 0,
+          applicantId: 'APP-001',
+          status: 'fulfilled',
+          result: {
+            riskProfile: 'Moderate',
+          },
+        },
+        {
+          index: 1,
+          applicantId: 'APP-002',
+          status: 'rejected',
+          error: {
+            code: 'validation_error',
+          },
+        },
+      ],
+    });
+  });
+
+  it('rejects batch requests above the configured limit', async () => {
+    const limitedApp = createRiskProfilerApp({
+      engine,
+      maxBatchSize: 1,
+    });
+    const response = await limitedApp.request('/evaluate/batch', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        items: [
+          {
+            dtiRatio: 20,
+          },
+          {
+            dtiRatio: 30,
+          },
+        ],
+      }),
+    });
+    const result = await response.json();
+
+    expect(response.status).toBe(422);
+    expect(result).toMatchObject({
+      error: {
+        code: 'validation_error',
+        message: 'Batch size 2 exceeds the maximum of 1.',
+      },
+    });
+  });
+
   it('exposes explicit lifecycle ownership through the service API', async () => {
     const service = createRiskProfilerService();
     service.dispose();

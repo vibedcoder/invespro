@@ -2,7 +2,7 @@
   "name": "invespro",
   "private": true,
   "version": "0.0.0",
-  "description": "Investment risk profiling — open source fintech primitives",
+  "description": "Rules-based investment profiling and portfolio allocation engine",
   "license": "MIT",
   "packageManager": "pnpm@11.6.0",
   "engines": {

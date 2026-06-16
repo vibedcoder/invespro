@@ -2,12 +2,16 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import * as z from 'zod';
 import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
-import { RiskProfileDefinitionSchema } from '@vibedcoder/invespro-types';
+import {
+  RiskProfileBatchEvaluationInputSchema,
+  RiskProfileDefinitionSchema,
+} from '@vibedcoder/invespro-types';
 import type { RiskProfileDefinitionInput } from '@vibedcoder/invespro-types';
 
 export interface RiskProfilerServiceOptions {
   readonly engine?: RiskProfilerEngine;
   readonly definition?: RiskProfileDefinitionInput;
+  readonly maxBatchSize?: number;
 }
 
 export interface RiskProfilerService {
@@ -18,6 +22,7 @@ export interface RiskProfilerService {
 
 export interface CreateRiskProfilerAppOptions {
   readonly engine: RiskProfilerEngine;
+  readonly maxBatchSize?: number;
 }
 
 export interface ApiError {
@@ -45,7 +50,11 @@ export function createRiskProfilerService(
       }),
     });
   return {
-    app: createRoutes(engine),
+    app: createRoutes(engine, {
+      ...(options.maxBatchSize !== undefined && {
+        maxBatchSize: options.maxBatchSize,
+      }),
+    }),
     engine,
     dispose(): void {
       if (ownsEngine) engine.dispose();
@@ -59,11 +68,19 @@ export function createRiskProfilerService(
 export function createRiskProfilerApp(
   options: CreateRiskProfilerAppOptions,
 ): Hono {
-  return createRoutes(options.engine);
+  return createRoutes(options.engine, {
+    ...(options.maxBatchSize !== undefined && {
+      maxBatchSize: options.maxBatchSize,
+    }),
+  });
 }
 
-function createRoutes(engine: RiskProfilerEngine): Hono {
+function createRoutes(
+  engine: RiskProfilerEngine,
+  options: { maxBatchSize?: number } = {},
+): Hono {
   const app = new Hono();
+  const maxBatchSize = options.maxBatchSize ?? 100;
 
   app.get('/health', (c) => c.json({ status: 'ok' }));
   app.get('/definition', (c) => c.json(engine.definition));
@@ -104,6 +121,48 @@ function createRoutes(engine: RiskProfilerEngine): Hono {
       return c.json(
         serverError(
           error instanceof Error ? error.message : 'Evaluation failed.',
+        ),
+        500,
+      );
+    }
+  });
+
+  app.post('/evaluate/batch', async (c) => {
+    const body = await readJson(c);
+    if (!body.ok) return c.json(body.error, 400);
+
+    const batch = RiskProfileBatchEvaluationInputSchema.safeParse(body.value);
+    if (!batch.success) {
+      return c.json(
+        validationError('Invalid batch evaluation input.', batch.error.flatten()),
+        422,
+      );
+    }
+    if (batch.data.items.length > maxBatchSize) {
+      return c.json(
+        validationError(
+          `Batch size ${batch.data.items.length} exceeds the maximum of ${maxBatchSize}.`,
+        ),
+        422,
+      );
+    }
+
+    try {
+      return c.json(
+        await engine.evaluateMany(batch.data, {
+          maxBatchSize,
+        }),
+      );
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return c.json(
+          validationError('Invalid evaluation input.', error.flatten()),
+          422,
+        );
+      }
+      return c.json(
+        serverError(
+          error instanceof Error ? error.message : 'Batch evaluation failed.',
         ),
         500,
       );

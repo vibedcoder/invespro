@@ -1,6 +1,9 @@
 // Engine
 export { RiskProfilerEngine } from './engine.js';
-export type { RiskProfilerEngineOptions } from './engine.js';
+export type {
+  EvaluateManyOptions,
+  RiskProfilerEngineOptions,
+} from './engine.js';
 
 // Definition compiler
 export {

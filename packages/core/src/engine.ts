@@ -1,8 +1,11 @@
 import { ZenEngine } from '@gorules/zen-engine';
+import * as z from 'zod';
 import type {
   ApplicantInput,
+  BatchEvaluationResult,
   EvaluationResult,
   RiskProfileDefinition,
+  RiskProfileBatchEvaluationInput,
   RiskProfileDefinitionInput,
   RiskProfileEvaluationInput,
 } from '@vibedcoder/invespro-types';
@@ -30,6 +33,15 @@ export interface RiskProfilerEngineOptions {
   /** Known graph checksum, when the graph is managed outside this process. */
   readonly graphChecksum?: string;
 }
+
+export interface EvaluateManyOptions {
+  /** Maximum number of applicants accepted in one synchronous batch. */
+  readonly maxBatchSize?: number;
+  /** Continue evaluating later items after an item fails. Defaults to true. */
+  readonly continueOnError?: boolean;
+}
+
+type EvaluationInput = RiskProfileEvaluationInput | ApplicantInput | Record<string, unknown>;
 
 /**
  * Evaluates versioned investment-risk definitions through ZenEngine.
@@ -71,7 +83,7 @@ export class RiskProfilerEngine {
    * allocation-enriched result with definition and graph audit metadata.
    */
   async evaluate(
-    input: RiskProfileEvaluationInput | ApplicantInput | Record<string, unknown>,
+    input: EvaluationInput,
   ): Promise<EvaluationResult> {
     this.assertActive();
     const parsed = parseEvaluationInput(this.definition, input);
@@ -89,6 +101,61 @@ export class RiskProfilerEngine {
       checksum,
       parsed.applicantId,
     );
+  }
+
+  /**
+   * Evaluates applicants in order and returns per-item success or error details.
+   */
+  async evaluateMany(
+    input: RiskProfileBatchEvaluationInput | readonly EvaluationInput[],
+    options: EvaluateManyOptions = {},
+  ): Promise<BatchEvaluationResult> {
+    this.assertActive();
+    const items = normalizeBatchInput(input);
+    const maxBatchSize = options.maxBatchSize ?? 100;
+    if (items.length === 0) {
+      throw new Error('[invespro-core] Batch evaluation requires at least one item.');
+    }
+    if (items.length > maxBatchSize) {
+      throw new Error(
+        `[invespro-core] Batch size ${items.length} exceeds the maximum of ${maxBatchSize}.`,
+      );
+    }
+
+    const continueOnError = options.continueOnError ?? true;
+    const results: BatchEvaluationResult['items'] = [];
+
+    for (const [index, item] of items.entries()) {
+      try {
+        const result = await this.evaluate(item);
+        results.push({
+          index,
+          ...(result.applicantId !== undefined && {
+            applicantId: result.applicantId,
+          }),
+          status: 'fulfilled',
+          result,
+        });
+      } catch (error) {
+        if (!continueOnError) throw error;
+        results.push({
+          index,
+          ...extractApplicantId(item),
+          status: 'rejected',
+          error: toEvaluationError(error),
+        });
+      }
+    }
+
+    const fulfilled = results.filter((item) => item.status === 'fulfilled').length;
+    return {
+      items: results,
+      summary: {
+        total: results.length,
+        fulfilled,
+        rejected: results.length - fulfilled,
+      },
+    };
   }
 
   /**
@@ -113,6 +180,43 @@ export class RiskProfilerEngine {
       throw new Error('[invespro-core] Engine has been disposed. Create a new instance.');
     }
   }
+}
+
+function normalizeBatchInput(
+  input: RiskProfileBatchEvaluationInput | readonly EvaluationInput[],
+): EvaluationInput[] {
+  if (Array.isArray(input)) {
+    return [...input];
+  }
+  const envelope = input as RiskProfileBatchEvaluationInput;
+  if (!Array.isArray(envelope.items)) {
+    throw new Error('[invespro-core] Batch input must be an array or an object with items.');
+  }
+  return envelope.items as EvaluationInput[];
+}
+
+function extractApplicantId(
+  item: EvaluationInput,
+): { applicantId?: string } {
+  return typeof item.applicantId === 'string' ? { applicantId: item.applicantId } : {};
+}
+
+function toEvaluationError(error: unknown): {
+  code: string;
+  message: string;
+  details?: unknown;
+} {
+  if (error instanceof z.ZodError) {
+    return {
+      code: 'validation_error',
+      message: 'Invalid evaluation input.',
+      details: error.flatten(),
+    };
+  }
+  return {
+    code: 'evaluation_error',
+    message: error instanceof Error ? error.message : String(error),
+  };
 }
 
 function captureChecksum(

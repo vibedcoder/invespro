@@ -1,7 +1,7 @@
 {
   "name": "@vibedcoder/invespro-types",
   "version": "0.1.0",
-  "description": "Domain types and Zod schemas for invespro",
+  "description": "Types and Zod schemas for investment profiling and allocation",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,

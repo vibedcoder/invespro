@@ -241,6 +241,121 @@ describe('RiskProfilerEngine', () => {
     expect(result.riskProfile).toBe('Moderate');
   });
 
+  // ─── Batch evaluation ─────────────────────────────────────────────────────
+
+  it('evaluates applicants in order and summarizes batch outcomes', async () => {
+    const result = await engine.evaluateMany([
+      {
+        applicantId: 'APP-001',
+        investmentHorizonYears: 10,
+        riskAttitude: 'hold',
+        investmentObjective: 'balanced_growth',
+        annualIncome: 55_000,
+        dtiRatio: 20,
+        liquidityMonths: 2,
+        investmentExperience: 'beginner',
+      },
+      {
+        applicantId: 'APP-002',
+        answers: {
+          investmentHorizonYears: 20,
+          riskAttitude: 'buy_more',
+          investmentObjective: 'maximum_growth',
+          annualIncome: 180_000,
+          dtiRatio: 50,
+          liquidityMonths: 8,
+          investmentExperience: 'experienced',
+        },
+      },
+    ]);
+
+    expect(result.summary).toEqual({
+      total: 2,
+      fulfilled: 2,
+      rejected: 0,
+    });
+    expect(result.items[0]).toMatchObject({
+      index: 0,
+      applicantId: 'APP-001',
+      status: 'fulfilled',
+      result: {
+        riskProfile: 'Moderate',
+      },
+    });
+    expect(result.items[1]).toMatchObject({
+      index: 1,
+      applicantId: 'APP-002',
+      status: 'fulfilled',
+      result: {
+        riskProfile: 'Conservative',
+        overrideApplied: true,
+      },
+    });
+  });
+
+  it('keeps valid batch items when another item fails validation', async () => {
+    const result = await engine.evaluateMany({
+      items: [
+        {
+          applicantId: 'APP-001',
+          investmentHorizonYears: 10,
+          riskAttitude: 'hold',
+          investmentObjective: 'balanced_growth',
+          annualIncome: 55_000,
+          dtiRatio: 20,
+          liquidityMonths: 2,
+          investmentExperience: 'beginner',
+        },
+        {
+          applicantId: 'APP-002',
+          dtiRatio: 150,
+        },
+      ],
+    });
+
+    expect(result.summary).toEqual({
+      total: 2,
+      fulfilled: 1,
+      rejected: 1,
+    });
+    expect(result.items[1]).toMatchObject({
+      index: 1,
+      applicantId: 'APP-002',
+      status: 'rejected',
+      error: {
+        code: 'validation_error',
+      },
+    });
+  });
+
+  it('rejects batches above the configured synchronous limit', async () => {
+    await expect(
+      engine.evaluateMany(
+        [
+          {
+            investmentHorizonYears: 10,
+            riskAttitude: 'hold',
+            investmentObjective: 'balanced_growth',
+            annualIncome: 55_000,
+            dtiRatio: 20,
+            liquidityMonths: 2,
+            investmentExperience: 'beginner',
+          },
+          {
+            investmentHorizonYears: 20,
+            riskAttitude: 'buy_more',
+            investmentObjective: 'maximum_growth',
+            annualIncome: 180_000,
+            dtiRatio: 20,
+            liquidityMonths: 8,
+            investmentExperience: 'experienced',
+          },
+        ],
+        { maxBatchSize: 1 },
+      ),
+    ).rejects.toThrow('exceeds the maximum');
+  });
+
   // ─── Engine lifecycle ──────────────────────────────────────────────────────
 
   it('throws when evaluate is called after dispose', async () => {

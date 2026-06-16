@@ -1,7 +1,7 @@
 {
   "name": "@vibedcoder/invespro-core",
   "version": "0.1.0",
-  "description": "Investment risk profiling engine — core library",
+  "description": "Core engine for investment profiling and portfolio allocation",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
