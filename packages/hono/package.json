@@ -1,8 +1,24 @@
 {
   "name": "@vibedcoder/invespro-hono",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Hono REST adapter for investment profiling and portfolio allocation",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vibedcoder/invespro.git",
+    "directory": "packages/hono"
+  },
+  "homepage": "https://github.com/vibedcoder/invespro/tree/main/packages/hono#readme",
+  "bugs": {
+    "url": "https://github.com/vibedcoder/invespro/issues"
+  },
+  "keywords": [
+    "investment",
+    "risk-profile",
+    "asset-allocation",
+    "hono",
+    "rest-api"
+  ],
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -28,7 +44,8 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsdown",

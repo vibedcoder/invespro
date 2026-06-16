@@ -4,6 +4,14 @@
   "version": "0.0.0",
   "description": "Rules-based investment profiling and portfolio allocation engine",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vibedcoder/invespro.git"
+  },
+  "homepage": "https://github.com/vibedcoder/invespro#readme",
+  "bugs": {
+    "url": "https://github.com/vibedcoder/invespro/issues"
+  },
   "packageManager": "pnpm@11.6.0",
   "engines": {
     "node": ">=24.0.0",
@@ -20,7 +28,16 @@
     "version-packages": "changeset version",
     "release": "pnpm build && changeset publish"
   },
-  "keywords": [],
+  "keywords": [
+    "investment",
+    "risk-profile",
+    "asset-allocation",
+    "portfolio",
+    "zen-engine",
+    "gorules",
+    "hono",
+    "cli"
+  ],
   "author": "zayau",
   "type": "module",
   "devDependencies": {

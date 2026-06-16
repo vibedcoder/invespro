@@ -1,8 +1,25 @@
 {
   "name": "@vibedcoder/invespro-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Core engine for investment profiling and portfolio allocation",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vibedcoder/invespro.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/vibedcoder/invespro/tree/main/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/vibedcoder/invespro/issues"
+  },
+  "keywords": [
+    "investment",
+    "risk-profile",
+    "asset-allocation",
+    "zen-engine",
+    "gorules",
+    "decision-engine"
+  ],
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -28,7 +45,8 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsdown",

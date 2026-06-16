@@ -1,8 +1,25 @@
 {
   "name": "@vibedcoder/invespro-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI for investment profiling and portfolio allocation",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vibedcoder/invespro.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/vibedcoder/invespro/tree/main/packages/cli#readme",
+  "bugs": {
+    "url": "https://github.com/vibedcoder/invespro/issues"
+  },
+  "keywords": [
+    "investment",
+    "risk-profile",
+    "asset-allocation",
+    "cli",
+    "csv",
+    "json"
+  ],
   "type": "module",
   "engines": {
     "node": ">=24.0.0"
@@ -14,7 +31,8 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsdown",

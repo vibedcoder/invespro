@@ -1,8 +1,24 @@
 {
   "name": "@vibedcoder/invespro-types",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Types and Zod schemas for investment profiling and allocation",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vibedcoder/invespro.git",
+    "directory": "packages/types"
+  },
+  "homepage": "https://github.com/vibedcoder/invespro/tree/main/packages/types#readme",
+  "bugs": {
+    "url": "https://github.com/vibedcoder/invespro/issues"
+  },
+  "keywords": [
+    "investment",
+    "risk-profile",
+    "asset-allocation",
+    "zod",
+    "typescript"
+  ],
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -28,7 +44,8 @@
     "access": "public"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsdown",
