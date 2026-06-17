@@ -19,17 +19,18 @@ npm install @vibedcoder/invespro-core
 ```ts
 import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
 
-const engine = await RiskProfilerEngine.create();
+const engine = new RiskProfilerEngine();
 
 const result = await engine.evaluate({
   applicantId: 'APP-001',
   answers: {
-    age: 34,
-    investmentHorizon: 'fiveToTenYears',
-    riskTolerance: 'moderate',
-    objective: 'balancedGrowth',
-    experience: 'some',
-    liquidityNeeds: 'medium',
+    investmentHorizonYears: 10,
+    riskAttitude: 'hold',
+    investmentObjective: 'balanced_growth',
+    annualIncome: 75000,
+    dtiRatio: 20,
+    liquidityMonths: 4,
+    investmentExperience: 'intermediate',
   },
 });
 
@@ -42,18 +43,38 @@ console.log(result.allocation);
 You can compile and run a custom, versioned profiler definition while keeping the standard Invespro result contract.
 
 ```ts
-import { RiskProfilerEngine, createDefaultRiskProfilerDefinition } from '@vibedcoder/invespro-core';
+import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
 
-const definition = createDefaultRiskProfilerDefinition();
-
-definition.id = 'myRiskModel';
-definition.version = '2026.1.0';
-definition.questions.riskTolerance.weight = 2;
-
-const engine = await RiskProfilerEngine.create({ definition });
+const engine = new RiskProfilerEngine({ definition: customDefinition });
 ```
 
 Custom definitions can change question labels, options, scores, weights, bands, profile IDs, and allocations. Expert custom JDM graphs are supported when they follow the Invespro graph contract.
+
+## CSV Batch Input
+
+`parseCsvBatch` converts CSV rows into the same batch item shape accepted by
+`RiskProfilerEngine.evaluateMany`.
+
+```ts
+import {
+  DEFAULT_RISK_PROFILE_DEFINITION,
+  parseCsvBatch,
+  RiskProfilerEngine,
+} from '@vibedcoder/invespro-core';
+
+const csv = [
+  'applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience',
+  'APP-001,10,hold,balanced_growth,75000,20,4,intermediate',
+].join('\n');
+
+const items = parseCsvBatch(csv, DEFAULT_RISK_PROFILE_DEFINITION);
+const engine = new RiskProfilerEngine();
+const result = await engine.evaluateMany({ items });
+```
+
+CSV columns should use the active definition's question IDs. The parser handles
+numbers, booleans, select option values, optional `applicantId`, and omitted
+empty cells.
 
 ## Result Shape
 

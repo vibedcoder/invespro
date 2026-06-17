@@ -1,7 +1,10 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import * as z from 'zod';
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import {
+  parseCsvBatch,
+  RiskProfilerEngine,
+} from '@vibedcoder/invespro-core';
 import {
   RiskProfileBatchEvaluationInputSchema,
   RiskProfileDefinitionSchema,
@@ -169,6 +172,61 @@ function createRoutes(
     }
   });
 
+  app.post('/evaluate/batch/csv', async (c) => {
+    const body = await readText(c);
+    if (!body.ok) return c.json(body.error, 400);
+
+    let items: Record<string, unknown>[];
+    try {
+      items = parseCsvBatch(body.value, engine.definition);
+    } catch (error) {
+      return c.json(
+        validationError(
+          error instanceof Error ? error.message : 'Invalid CSV batch input.',
+        ),
+        400,
+      );
+    }
+
+    if (items.length === 0) {
+      return c.json(validationError('CSV batch input must contain at least one row.'), 422);
+    }
+    if (items.length > maxBatchSize) {
+      return c.json(
+        validationError(
+          `Batch size ${items.length} exceeds the maximum of ${maxBatchSize}.`,
+        ),
+        422,
+      );
+    }
+
+    try {
+      return c.json(
+        await engine.evaluateMany(
+          {
+            items,
+          },
+          {
+            maxBatchSize,
+          },
+        ),
+      );
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return c.json(
+          validationError('Invalid evaluation input.', error.flatten()),
+          422,
+        );
+      }
+      return c.json(
+        serverError(
+          error instanceof Error ? error.message : 'CSV batch evaluation failed.',
+        ),
+        500,
+      );
+    }
+  });
+
   return app;
 }
 
@@ -184,6 +242,24 @@ async function readJson(
         error: {
           code: 'invalid_json',
           message: 'Request body must be valid JSON.',
+        },
+      },
+    };
+  }
+}
+
+async function readText(
+  c: Context,
+): Promise<{ ok: true; value: string } | { ok: false; error: ApiError }> {
+  try {
+    return { ok: true, value: await c.req.text() };
+  } catch {
+    return {
+      ok: false,
+      error: {
+        error: {
+          code: 'invalid_text',
+          message: 'Request body must be valid text.',
         },
       },
     };

@@ -95,6 +95,13 @@ export const batchSample = {
 
 export const batchSampleJson = JSON.stringify(batchSample, null, 2);
 
+export const batchSampleCsv = [
+  "applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience",
+  "APP-001,10,hold,balanced_growth,95000,22,4,intermediate",
+  "APP-002,18,buy_more,maximum_growth,180000,12,8,experienced",
+  "APP-003,2,sell_all,capital_preservation,48000,52,1,none",
+].join("\n");
+
 export const customDefinitionExample = {
   schemaVersion: "1.0",
   id: "demoCustomProfiler",

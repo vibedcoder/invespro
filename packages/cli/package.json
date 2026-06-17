@@ -46,7 +46,6 @@
     "@vibedcoder/invespro-core": "workspace:*",
     "@vibedcoder/invespro-types": "workspace:*",
     "citty": "^0.2.2",
-    "csv-parse": "^7.0.0",
     "csv-stringify": "^6.8.0"
   },
   "devDependencies": {

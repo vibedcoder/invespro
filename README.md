@@ -80,6 +80,7 @@ It demonstrates:
 
 - Single-applicant evaluation against the default model.
 - Batch evaluation with ordered per-item results.
+- CSV batch upload against the default model.
 - The active default definition, profiles, score bands, and allocations.
 - Definition validation against the public schema.
 - A custom model example where questions, answer options, weights, score bands,
@@ -516,6 +517,7 @@ const app = createRiskProfilerApp({
 | `GET` | `/questions` | Active questionnaire. |
 | `POST` | `/evaluate` | Evaluate one applicant. |
 | `POST` | `/evaluate/batch` | Evaluate multiple applicants. |
+| `POST` | `/evaluate/batch/csv` | Evaluate multiple applicants from CSV and return JSON. |
 | `POST` | `/definitions/validate` | Validate a definition payload. |
 
 ### POST /evaluate
@@ -562,6 +564,26 @@ Request:
 
 The adapter returns `400` for invalid JSON, `422` for invalid input, and `500`
 for unexpected evaluation failures.
+
+### POST /evaluate/batch/csv
+
+Request body uses `text/csv`. The response is the same JSON batch result shape
+returned by `POST /evaluate/batch`.
+
+```csv
+applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience
+APP-001,10,hold,balanced_growth,75000,20,4,intermediate
+APP-002,20,buy_more,maximum_growth,180000,50,8,experienced
+```
+
+CSV rules:
+
+- Use one column per active definition question ID.
+- Include `applicantId` when you want it echoed in results.
+- Number questions are parsed as numbers.
+- Boolean questions accept `true`, `false`, `yes`, `no`, `1`, and `0`.
+- Select questions should use the option value, not the display label.
+- Empty cells are omitted from the answers object.
 
 ## Customization
 

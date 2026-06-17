@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   compileRiskProfileDefinition,
   createGraphLoader,
+  parseCsvBatch,
   RiskProfilerEngine,
 } from '../src/index.js';
 import type { RiskProfileDefinitionInput } from '@vibedcoder/invespro-types';
@@ -118,6 +119,27 @@ describe('definition-driven evaluation', () => {
       },
     });
     expect(result.definition.graphChecksum).toMatch(/^sha256:[a-f0-9]{64}$/);
+  });
+
+  it('parses CSV rows using custom definition question IDs', () => {
+    const items = parseCsvBatch(
+      [
+        'applicantId,riskCapacity,needsEmergencyAccess,adviserNote',
+        'APP-CSV,8,yes,review',
+      ].join('\n'),
+      compileRiskProfileDefinition(customDefinition).definition,
+    );
+
+    expect(items).toEqual([
+      {
+        applicantId: 'APP-CSV',
+        answers: {
+          riskCapacity: 8,
+          needsEmergencyAccess: true,
+          adviserNote: 'review',
+        },
+      },
+    ]);
   });
 
   it('applies a custom override', async () => {

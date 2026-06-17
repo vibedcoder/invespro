@@ -2,11 +2,13 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { log } from '@clack/prompts';
 import { defineCommand } from 'citty';
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import {
+  parseCsvBatch,
+  RiskProfilerEngine,
+} from '@vibedcoder/invespro-core';
 import {
   formatBatchCsv,
   inferBatchInputFormat,
-  parseCsvBatch,
   parseJsonBatch,
 } from '../utils/batch.js';
 import type { BatchInputFormat } from '../utils/batch.js';

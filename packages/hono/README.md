@@ -18,9 +18,11 @@ npm install @vibedcoder/invespro-hono hono
 
 ```ts
 import { serve } from '@hono/node-server';
+import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
 import { createRiskProfilerApp } from '@vibedcoder/invespro-hono';
 
-const app = await createRiskProfilerApp();
+const engine = new RiskProfilerEngine();
+const app = createRiskProfilerApp({ engine });
 
 serve({
   fetch: app.fetch,
@@ -46,12 +48,13 @@ Evaluates one applicant.
 {
   "applicantId": "APP-001",
   "answers": {
-    "age": 34,
-    "investmentHorizon": "fiveToTenYears",
-    "riskTolerance": "moderate",
-    "objective": "balancedGrowth",
-    "experience": "some",
-    "liquidityNeeds": "medium"
+    "investmentHorizonYears": 10,
+    "riskAttitude": "hold",
+    "investmentObjective": "balanced_growth",
+    "annualIncome": 75000,
+    "dtiRatio": 20,
+    "liquidityMonths": 4,
+    "investmentExperience": "intermediate"
   }
 }
 ```
@@ -66,17 +69,31 @@ Evaluates multiple applicants in one request.
     {
       "applicantId": "APP-001",
       "answers": {
-        "age": 34,
-        "investmentHorizon": "fiveToTenYears",
-        "riskTolerance": "moderate",
-        "objective": "balancedGrowth",
-        "experience": "some",
-        "liquidityNeeds": "medium"
+        "investmentHorizonYears": 10,
+        "riskAttitude": "hold",
+        "investmentObjective": "balanced_growth",
+        "annualIncome": 75000,
+        "dtiRatio": 20,
+        "liquidityMonths": 4,
+        "investmentExperience": "intermediate"
       }
     }
   ]
 }
 ```
+
+### `POST /evaluate/batch/csv`
+
+Evaluates multiple applicants from a raw CSV request body and returns the same
+JSON batch result shape as `POST /evaluate/batch`.
+
+```csv
+applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience
+APP-001,10,hold,balanced_growth,75000,20,4,intermediate
+```
+
+CSV columns should use the active definition's question IDs. `applicantId` is
+optional.
 
 ## Custom Engine
 
@@ -84,8 +101,8 @@ Evaluates multiple applicants in one request.
 import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
 import { createRiskProfilerApp } from '@vibedcoder/invespro-hono';
 
-const engine = await RiskProfilerEngine.create({ definition: customDefinition });
-const app = await createRiskProfilerApp({ engine });
+const engine = new RiskProfilerEngine({ definition: customDefinition });
+const app = createRiskProfilerApp({ engine });
 ```
 
 ## Related Packages

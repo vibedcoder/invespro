@@ -12,6 +12,9 @@ export {
 } from './compiler.js';
 export type { CompiledRiskProfileDefinition } from './compiler.js';
 
+// CSV import helpers
+export { parseCsvBatch } from './csv.js';
+
 // Loader - exported so consumers can build custom loaders
 export {
   createDefaultLoader,

@@ -170,6 +170,53 @@ describe('createRiskProfilerApp', () => {
     });
   });
 
+  it('evaluates CSV batch input and returns JSON results', async () => {
+    const csv = [
+      'applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience',
+      'APP-CSV-001,10,hold,balanced_growth,55000,20,2,beginner',
+      'APP-CSV-002,20,buy_more,maximum_growth,180000,50,8,experienced',
+    ].join('\n');
+
+    const response = await app.request('/evaluate/batch/csv', {
+      method: 'POST',
+      headers: { 'content-type': 'text/csv' },
+      body: csv,
+    });
+    const result = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(result).toMatchObject({
+      summary: {
+        total: 2,
+        fulfilled: 2,
+        rejected: 0,
+      },
+      items: [
+        {
+          index: 0,
+          applicantId: 'APP-CSV-001',
+          status: 'fulfilled',
+          result: {
+            profile: {
+              label: 'Moderate',
+            },
+          },
+        },
+        {
+          index: 1,
+          applicantId: 'APP-CSV-002',
+          status: 'fulfilled',
+          result: {
+            profile: {
+              label: 'Conservative',
+            },
+            overrideApplied: true,
+          },
+        },
+      ],
+    });
+  });
+
   it('rejects batch requests above the configured limit', async () => {
     const limitedApp = createRiskProfilerApp({
       engine,

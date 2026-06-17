@@ -181,6 +181,38 @@ describe("evaluation demo panels", () => {
     expect(await screen.findByText("fulfilled")).toBeInTheDocument();
   });
 
+  it("uploads and submits CSV batch input", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse(batchResult));
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<BatchEvaluationPanel />);
+
+    const csv = [
+      "applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience",
+      "APP-UPLOAD,10,hold,balanced_growth,95000,22,4,intermediate",
+    ].join("\n");
+    const file = new File([csv], "applicants.csv", { type: "text/csv" });
+
+    await userEvent.upload(screen.getByLabelText("CSV file"), file);
+    expect(screen.getByDisplayValue(/APP-UPLOAD/)).toBeInTheDocument();
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /evaluate csv batch/i }),
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/evaluate/batch/csv",
+      expect.objectContaining({
+        body: csv,
+        headers: {
+          "Content-Type": "text/csv",
+        },
+        method: "POST",
+      }),
+    );
+    expect(await screen.findByText("fulfilled")).toBeInTheDocument();
+  });
+
   it("submits a custom definition and applicant answers", async () => {
     const fetchMock = vi
       .fn()
