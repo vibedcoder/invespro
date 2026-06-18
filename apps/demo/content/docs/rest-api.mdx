@@ -1,0 +1,72 @@
+---
+title: REST API
+description: Expose Invespro evaluation through the Hono adapter.
+---
+
+The Hono adapter wraps an engine instance and exposes JSON endpoints.
+
+```ts
+import { serve } from "@hono/node-server";
+import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
+import { createRiskProfilerApp } from "@vibedcoder/invespro-hono";
+
+const engine = new RiskProfilerEngine();
+const app = createRiskProfilerApp({ engine });
+
+serve({ fetch: app.fetch, port: 3000 });
+```
+
+## Endpoints
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/health` | Health check. |
+| `GET` | `/definition` | Active model definition. |
+| `POST` | `/evaluate` | Evaluate one applicant. |
+| `POST` | `/evaluate/batch` | Evaluate a JSON batch. |
+| `POST` | `/evaluate/batch/csv` | Evaluate a raw CSV batch and return JSON. |
+
+## Single evaluation
+
+```http
+POST /evaluate
+Content-Type: application/json
+```
+
+```json
+{
+  "applicantId": "APP-001",
+  "answers": {
+    "investmentHorizonYears": 10,
+    "riskAttitude": "hold",
+    "investmentObjective": "balanced_growth",
+    "annualIncome": 95000,
+    "dtiRatio": 22,
+    "liquidityMonths": 4,
+    "investmentExperience": "intermediate"
+  }
+}
+```
+
+## Batch evaluation
+
+```json
+{
+  "items": [
+    {
+      "applicantId": "APP-001",
+      "answers": {
+        "investmentHorizonYears": 10,
+        "riskAttitude": "hold",
+        "investmentObjective": "balanced_growth",
+        "annualIncome": 95000,
+        "dtiRatio": 22,
+        "liquidityMonths": 4,
+        "investmentExperience": "intermediate"
+      }
+    }
+  ]
+}
+```
+
+The response includes a summary and one result item per applicant.

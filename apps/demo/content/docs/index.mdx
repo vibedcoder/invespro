@@ -1,0 +1,43 @@
+---
+title: Overview
+description: What Invespro provides and how the packages fit together.
+---
+
+Invespro is a rules-based investment profiling and portfolio allocation engine.
+It evaluates applicant answers against a versioned model definition and returns
+a risk profile, score metadata, allocation map, and definition checksum.
+
+The project is useful when you want a standard profiling flow that can still be
+customized at the question, scoring, band, override, and allocation level.
+
+## What it includes
+
+- A default investment profiling model.
+- A core TypeScript engine for embedded Node.js services.
+- A Hono REST adapter for service integration.
+- A CLI for JSON and CSV evaluation.
+- Shared Zod schemas and TypeScript types.
+- Batch evaluation for JSON and CSV inputs.
+- Custom definition support for controlled model customization.
+
+## Package map
+
+| Package | Purpose |
+| --- | --- |
+| `@vibedcoder/invespro-core` | Main engine, default definition, compiler, CSV parser, batch evaluation. |
+| `@vibedcoder/invespro-hono` | REST API adapter for Hono services. |
+| `@vibedcoder/invespro-cli` | Command-line evaluation and validation. |
+| `@vibedcoder/invespro-types` | Shared Zod schemas and TypeScript types. |
+
+## Default path
+
+Most users should start with the default model and only customize once their
+policy requirements are clear.
+
+1. Install the core package.
+2. Evaluate one applicant.
+3. Add batch evaluation if needed.
+4. Add the REST adapter if another service needs access.
+5. Introduce custom definitions when the default questions or scoring are not enough.
+
+[Try the demo](/demo) to inspect the default and custom flows without writing code.

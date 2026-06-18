@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RootProvider } from "fumadocs-ui/provider/next";
 import "./globals.css";
 
 const siteUrl = "https://invespro.vercel.app";
@@ -74,7 +75,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <RootProvider search={{ enabled: false }} theme={{ enabled: false }}>
+          {children}
+        </RootProvider>
+      </body>
     </html>
   );
 }

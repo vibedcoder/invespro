@@ -1,0 +1,33 @@
+---
+title: Limitations
+description: Current boundaries to understand before production use.
+---
+
+Invespro is useful today as a profiling and allocation engine, but it is not yet
+a complete enterprise suitability platform.
+
+Current boundaries:
+
+- No built-in audit log persistence.
+- No jurisdiction-specific compliance packs.
+- No eligibility or ineligible outcome model yet.
+- No hosted admin UI for editing definitions.
+- No signed model registry.
+- No hosted API authentication or rate limiting.
+- The default questionnaire should be reviewed before regulated production use.
+
+## Recommended production pattern
+
+Use the engine as a deterministic evaluation component inside your own service.
+Store:
+
+- applicant input,
+- evaluation result,
+- definition ID,
+- definition version,
+- graph checksum,
+- timestamp,
+- calling service/user metadata.
+
+That gives you the traceability needed to explain why a profile and allocation
+were produced.

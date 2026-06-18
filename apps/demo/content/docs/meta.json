@@ -1,0 +1,13 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    "installation",
+    "quickstart",
+    "core-concepts",
+    "rest-api",
+    "csv-batch-evaluation",
+    "custom-definitions",
+    "limitations"
+  ]
+}

@@ -1,0 +1,41 @@
+---
+title: Core Concepts
+description: The definition pieces that drive profiling and allocation.
+---
+
+Invespro is definition-driven. A definition describes the questions, scoring,
+profiles, score bands, overrides, and allocation map used by the engine.
+
+## Questions
+
+Questions define the allowed answer shape. They can be numeric, boolean, or
+select-style values. Informational questions can exist without contributing to
+score.
+
+## Scoring
+
+Scoring maps answers to points. Weighted scoring is normalized so final scores
+are easier to compare across definitions.
+
+## Profiles
+
+Profiles are the risk categories returned to the caller, such as conservative,
+moderate, or aggressive. The default model includes five risk bands, but custom
+definitions may use custom profile IDs and labels.
+
+## Allocations
+
+Each profile maps to a percentage allocation. The default model uses a simple
+percentage map across asset classes such as equities, fixed income, cash, and
+alternatives.
+
+## Overrides
+
+Overrides handle rule-based exceptions. For example, an applicant with a high
+debt-to-income ratio may be forced into a more conservative profile even if the
+raw score is higher.
+
+## Versioning
+
+Definitions are versioned. Every evaluation result includes model metadata so a
+stored result can be traced back to the definition used at evaluation time.
