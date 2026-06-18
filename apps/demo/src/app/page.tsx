@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Code2, FileText, GitBranch } from "lucide-react";
+import { MarkGithubIcon } from "@primer/octicons-react";
+import { ArrowRight, BookOpen, Code2, FileText } from "lucide-react";
 import { SiteHeader } from "./_components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -67,7 +68,7 @@ export default function Home() {
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <GitBranch aria-hidden="true" className="size-4" />
+                  <MarkGithubIcon aria-hidden="true" className="size-4" />
                   GitHub
                 </a>
               </Button>

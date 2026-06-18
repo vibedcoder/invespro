@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { GitBranch } from "lucide-react";
+import { MarkGithubIcon } from "@primer/octicons-react";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
@@ -36,7 +36,7 @@ export function SiteHeader() {
               rel="noreferrer"
               target="_blank"
             >
-              <GitBranch aria-hidden="true" className="size-4" />
+              <MarkGithubIcon aria-hidden="true" className="size-4" />
               GitHub
             </a>
           </Button>
