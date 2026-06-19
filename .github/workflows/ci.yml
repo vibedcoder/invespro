@@ -36,8 +36,8 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Typecheck demo
-        run: pnpm --filter @invespro/demo typecheck
+      - name: Typecheck docs
+        run: pnpm --filter @invespro/docs typecheck
 
       - name: Test
         run: pnpm test

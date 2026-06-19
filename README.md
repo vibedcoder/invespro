@@ -25,7 +25,7 @@ Try the live demo at [invespro.vercel.app](https://invespro.vercel.app/).
 
 - [Features](#features)
 - [Packages](#packages)
-- [Demo App](#demo-app)
+- [Docs App](#docs-app)
 - [Installation](#installation)
 - [Default Model](#default-model)
 - [Core Usage](#core-usage)
@@ -53,7 +53,7 @@ Try the live demo at [invespro.vercel.app](https://invespro.vercel.app/).
 - CLI for interactive profiling, JSON evaluation, CSV batch input, and JDM validation.
 - Graph checksum and definition metadata included in every result.
 - Expert mode for externally authored JDM graphs that follow the Invespro contract.
-- Hosted Next.js demo for single, batch, default-definition, validation, and custom-definition flows.
+- Hosted Next.js docs app with single, batch, default-definition, validation, and custom-definition demo flows.
 
 ## Packages
 
@@ -71,12 +71,12 @@ The package split is intentional:
 - Use `hono` when exposing profiling over HTTP.
 - Use `cli` for local workflows, batch files, demos, and operational tooling.
 
-## Demo App
+## Docs App
 
-The hosted demo is available at
+The hosted docs app is available at
 [https://invespro.vercel.app/](https://invespro.vercel.app/).
 
-It demonstrates:
+Its interactive demo demonstrates:
 
 - Single-applicant evaluation against the default model.
 - Batch evaluation with ordered per-item results.
@@ -86,23 +86,23 @@ It demonstrates:
 - A custom model example where questions, answer options, weights, score bands,
   and allocations are changed without writing a custom JDM graph.
 
-The demo lives in `apps/demo` and uses the workspace packages via
-`workspace:*`. In local development and on Vercel, the demo build must compile
+The docs app lives in `apps/docs` and uses the workspace packages via
+`workspace:*`. In local development and on Vercel, the docs build must compile
 its workspace dependencies first so `@vibedcoder/invespro-types` and
 `@vibedcoder/invespro-core` have fresh `dist` outputs.
 
-Local demo commands:
+Local docs commands:
 
 ```bash
-pnpm demo:dev
-pnpm demo:build
+pnpm docs:dev
+pnpm docs:build
 ```
 
-The Vercel project uses `apps/demo` as the root directory with these commands:
+The Vercel project uses `apps/docs` as the root directory with these commands:
 
 ```bash
 corepack enable && corepack pnpm --version && corepack pnpm install --frozen-lockfile
-corepack pnpm --filter @invespro/demo... build
+corepack pnpm --filter @invespro/docs... build
 ```
 
 ## Installation
@@ -891,8 +891,8 @@ pnpm build
 Useful package commands:
 
 ```bash
-pnpm demo:dev
-pnpm demo:build
+pnpm docs:dev
+pnpm docs:build
 pnpm --filter @vibedcoder/invespro-core test
 pnpm --filter @vibedcoder/invespro-hono test
 pnpm --filter @vibedcoder/invespro-cli exec tsx --tsconfig tsconfig.dev.json src/index.ts --help
@@ -906,7 +906,7 @@ The workspace uses:
 - Vitest for tests.
 - ESLint for linting.
 - Changesets for release management.
-- Next.js for the hosted demo app.
+- Next.js for the hosted docs app.
 
 ## Release Notes
 

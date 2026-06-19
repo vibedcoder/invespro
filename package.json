@@ -20,8 +20,8 @@
   "scripts": {
     "build": "pnpm -r build",
     "dev": "pnpm -r dev",
-    "demo:dev": "pnpm --filter @invespro/demo dev",
-    "demo:build": "pnpm --filter @invespro/demo... build",
+    "docs:dev": "pnpm --filter @invespro/docs dev",
+    "docs:build": "pnpm --filter @invespro/docs... build",
     "test": "pnpm -r test",
     "typecheck": "tsc -b --emitDeclarationOnly",
     "lint": "pnpm -r lint",
