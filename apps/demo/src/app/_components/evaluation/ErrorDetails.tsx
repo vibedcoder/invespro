@@ -56,7 +56,7 @@ export function ErrorDetails({ error }: { readonly error: ApiError }) {
 
 function parseFlattenedValidationDetails(details: unknown): {
   readonly formErrors: readonly string[];
-  readonly fieldErrors: readonly [string, readonly string[]][];
+  readonly fieldErrors: readonly (readonly [string, readonly string[]])[];
 } {
   if (!isRecord(details)) {
     return { formErrors: [], fieldErrors: [] };
