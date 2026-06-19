@@ -1,9 +1,15 @@
 import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
 import { RiskProfileDefinitionSchema } from "@vibedcoder/invespro-types";
+import type { RiskProfileDefinition } from "@vibedcoder/invespro-types";
 import { NextResponse } from "next/server";
 
 type FlattenableValidationError = {
   readonly flatten: () => unknown;
+};
+
+type CustomEvaluationPayload = {
+  readonly definition: RiskProfileDefinition;
+  readonly input: Record<string, unknown>;
 };
 
 export async function POST(request: Request) {
@@ -47,7 +53,9 @@ export async function POST(request: Request) {
   }
 }
 
-function parseCustomEvaluationPayload(payload: unknown) {
+function parseCustomEvaluationPayload(
+  payload: unknown,
+): CustomEvaluationPayload {
   if (!isRecord(payload)) {
     throw createValidationError({
       formErrors: ["Custom evaluation payload must be a JSON object."],
@@ -77,7 +85,7 @@ function parseCustomEvaluationPayload(payload: unknown) {
 
   return {
     definition: definition.data,
-    input: payload.input,
+    input: payload.input as Record<string, unknown>,
   };
 }
 
