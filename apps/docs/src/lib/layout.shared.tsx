@@ -6,27 +6,11 @@ export function baseOptions(): BaseLayoutProps {
     nav: {
       title: "Invespro",
     },
-    links: [
-      {
-        text: "Docs",
-        url: "/docs",
-        active: "nested-url",
-      },
-      {
-        text: "Demo",
-        url: "/demo",
-      },
-      {
-        text: "npm",
-        url: "https://www.npmjs.com/package/@vibedcoder/invespro-core",
-        external: true,
-      },
-    ],
     searchToggle: {
-      enabled: false,
+      enabled: true,
     },
     themeSwitch: {
-      enabled: false,
+      enabled: true,
     },
   };
 }

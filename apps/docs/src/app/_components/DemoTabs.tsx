@@ -43,7 +43,7 @@ export function DemoTabs({
 
   return (
     <section className="space-y-6">
-      <div className="rounded-lg border border-slate-200 bg-white p-2 shadow-sm">
+      <div className="rounded-lg border border-border bg-card p-2 shadow-sm">
         <div
           className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5"
           role="tablist"
@@ -58,8 +58,8 @@ export function DemoTabs({
                 aria-selected={isActive}
                 className={
                   isActive
-                    ? "h-11 rounded-md bg-slate-950 px-4 text-sm font-medium text-white"
-                    : "h-11 rounded-md px-4 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+                    ? "h-11 rounded-md bg-accent px-4 text-sm font-medium text-accent-foreground"
+                    : "h-11 rounded-md px-4 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
                 }
                 id={`${idPrefix}-${tab.id}-tab`}
                 key={tab.id}

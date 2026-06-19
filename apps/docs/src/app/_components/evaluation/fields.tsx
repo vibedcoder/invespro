@@ -13,7 +13,7 @@ export function Button({
 }) {
   return (
     <button
-      className="inline-flex h-11 items-center justify-center rounded-md bg-slate-950 px-5 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+      className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:bg-muted"
       type={type}
       disabled={disabled}
     >
@@ -32,10 +32,10 @@ export function TextField({
   readonly name: string;
 }) {
   return (
-    <label className="block text-sm font-medium text-slate-700">
+    <label className="block text-sm font-medium text-foreground">
       {label}
       <input
-        className="mt-2 h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-950 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+        className="mt-2 h-11 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
         defaultValue={defaultValue}
         name={name}
         required
@@ -63,16 +63,16 @@ export function NumberField({
   readonly suffix?: string;
 }) {
   return (
-    <label className="block text-sm font-medium text-slate-700">
+    <label className="block text-sm font-medium text-foreground">
       {label}
-      <span className="mt-2 flex h-11 items-center rounded-md border border-slate-300 bg-white focus-within:border-slate-500 focus-within:ring-2 focus-within:ring-slate-200">
+      <span className="mt-2 flex h-11 items-center rounded-md border border-input bg-card focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/25">
         {prefix && (
-          <span className="pl-3 text-sm font-normal text-slate-500">
+          <span className="pl-3 text-sm font-normal text-muted-foreground">
             {prefix}
           </span>
         )}
         <input
-          className="h-full min-w-0 flex-1 bg-transparent px-3 text-sm text-slate-950 outline-none"
+          className="h-full min-w-0 flex-1 bg-transparent px-3 text-sm text-foreground outline-none"
           defaultValue={defaultValue}
           max={max}
           min={min}
@@ -81,7 +81,7 @@ export function NumberField({
           type="number"
         />
         {suffix && (
-          <span className="pr-3 text-sm font-normal text-slate-500">
+          <span className="pr-3 text-sm font-normal text-muted-foreground">
             {suffix}
           </span>
         )}
@@ -102,10 +102,10 @@ export function SelectField({
   readonly options: readonly SelectOption[];
 }) {
   return (
-    <label className="block text-sm font-medium text-slate-700">
+    <label className="block text-sm font-medium text-foreground">
       {label}
       <select
-        className="mt-2 h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-950 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+        className="mt-2 h-11 w-full rounded-md border border-input bg-card px-3 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
         defaultValue={defaultValue}
         name={name}
         required

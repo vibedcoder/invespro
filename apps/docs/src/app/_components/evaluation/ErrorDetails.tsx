@@ -14,10 +14,10 @@ export function ErrorDetails({ error }: { readonly error: ApiError }) {
     flattened.formErrors.length > 0 || flattened.fieldErrors.length > 0;
 
   return (
-    <div className="space-y-3 text-sm text-red-700" role="alert">
+    <div className="space-y-3 text-sm text-destructive" role="alert">
       <p className="font-medium">{error.message}</p>
       {hasFlattenedDetails ? (
-        <div className="rounded-md border border-red-200 bg-red-50 p-3">
+        <div className="rounded-md border border-destructive/25 bg-destructive/10 p-3">
           {flattened.formErrors.length > 0 && (
             <ul className="list-disc space-y-1 pl-5">
               {flattened.formErrors.map((message, index) => (
@@ -46,7 +46,7 @@ export function ErrorDetails({ error }: { readonly error: ApiError }) {
         </div>
       ) : null}
       {!hasFlattenedDetails && error.details !== undefined ? (
-        <pre className="max-h-56 overflow-auto rounded-md border border-red-200 bg-red-50 p-3 font-mono text-xs leading-5 text-red-950">
+        <pre className="max-h-56 overflow-auto rounded-md border border-destructive/25 bg-destructive/10 p-3 font-mono text-xs leading-5 text-destructive">
           {JSON.stringify(error.details, null, 2)}
         </pre>
       ) : null}

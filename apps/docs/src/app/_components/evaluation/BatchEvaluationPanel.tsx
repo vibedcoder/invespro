@@ -108,29 +108,29 @@ export function BatchEvaluationPanel() {
       <div className="space-y-6">
         <form
           onSubmit={handleBatchSubmit}
-          className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
+          className="rounded-lg border border-border bg-card p-6 shadow-sm"
         >
-          <div className="border-b border-slate-200 pb-5">
-            <h2 className="text-lg font-semibold text-slate-950">
+          <div className="border-b border-border pb-5">
+            <h2 className="text-lg font-semibold text-foreground">
               Batch Evaluation
             </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Send the same contract used by the REST adapter: an object with
               an items array. Each item can succeed or fail independently.
             </p>
           </div>
 
-          <label className="mt-6 block text-sm font-medium text-slate-700">
+          <label className="mt-6 block text-sm font-medium text-foreground">
             Batch request JSON
             <textarea
-              className="mt-2 min-h-96 w-full rounded-md border border-slate-300 bg-slate-950 p-4 font-mono text-xs leading-5 text-slate-100 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+              className="mt-2 min-h-96 w-full rounded-md border border-input bg-code p-4 font-mono text-xs leading-5 text-code-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
               value={batchInput}
               onChange={(event) => setBatchInput(event.target.value)}
               spellCheck={false}
             />
           </label>
 
-          <div className="mt-6 flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="mt-6 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:flex-wrap sm:items-center">
             <Button
               disabled={isBatchSubmitting}
               label="Evaluate batch"
@@ -138,26 +138,26 @@ export function BatchEvaluationPanel() {
               type="submit"
             />
             <button
-              className="inline-flex h-11 items-center justify-center rounded-md border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
               type="button"
               onClick={() => setBatchInput(batchSampleJson)}
             >
               Reset sample
             </button>
             <button
-              className="inline-flex h-11 items-center justify-center rounded-md border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
               type="button"
               onClick={handleCopyRequest}
             >
               Copy request
             </button>
             {batchError && (
-              <p className="text-sm font-medium text-red-700" role="alert">
+              <p className="text-sm font-medium text-destructive" role="alert">
                 {batchError}
               </p>
             )}
             {jsonCopyStatus && (
-              <p className="text-sm font-medium text-emerald-700">
+              <p className="text-sm font-medium text-success">
                 {jsonCopyStatus}
               </p>
             )}
@@ -166,44 +166,44 @@ export function BatchEvaluationPanel() {
 
         <form
           onSubmit={handleCsvSubmit}
-          className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
+          className="rounded-lg border border-border bg-card p-6 shadow-sm"
         >
-          <div className="border-b border-slate-200 pb-5">
-            <h2 className="text-lg font-semibold text-slate-950">
+          <div className="border-b border-border pb-5">
+            <h2 className="text-lg font-semibold text-foreground">
               CSV Upload
             </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Upload or paste CSV with one column per question ID. The server
               parses the file against the active definition and returns JSON.
             </p>
           </div>
 
-          <label className="mt-6 block text-sm font-medium text-slate-700">
+          <label className="mt-6 block text-sm font-medium text-foreground">
             CSV file
             <input
               accept=".csv,text/csv"
-              className="mt-2 block w-full rounded-md border border-slate-300 bg-white text-sm text-slate-700 file:mr-4 file:h-11 file:border-0 file:bg-slate-950 file:px-5 file:text-sm file:font-medium file:text-white hover:file:bg-slate-800"
+              className="mt-2 block w-full rounded-md border border-input bg-card text-sm text-foreground file:mr-4 file:h-11 file:border-0 file:bg-primary file:px-5 file:text-sm file:font-medium file:text-primary-foreground hover:file:opacity-90"
               onChange={handleCsvFileChange}
               type="file"
             />
           </label>
           {csvFileName && (
-            <p className="mt-2 text-xs font-medium text-slate-500">
+            <p className="mt-2 text-xs font-medium text-muted-foreground">
               Loaded {csvFileName}
             </p>
           )}
 
-          <label className="mt-5 block text-sm font-medium text-slate-700">
+          <label className="mt-5 block text-sm font-medium text-foreground">
             CSV preview
             <textarea
-              className="mt-2 min-h-56 w-full rounded-md border border-slate-300 bg-slate-950 p-4 font-mono text-xs leading-5 text-slate-100 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+              className="mt-2 min-h-56 w-full rounded-md border border-input bg-code p-4 font-mono text-xs leading-5 text-code-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
               value={csvInput}
               onChange={(event) => setCsvInput(event.target.value)}
               spellCheck={false}
             />
           </label>
 
-          <div className="mt-6 flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="mt-6 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:flex-wrap sm:items-center">
             <Button
               disabled={isCsvSubmitting}
               label="Evaluate CSV batch"
@@ -211,7 +211,7 @@ export function BatchEvaluationPanel() {
               type="submit"
             />
             <button
-              className="inline-flex h-11 items-center justify-center rounded-md border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
               type="button"
               onClick={() => {
                 setCsvInput(batchSampleCsv);
@@ -221,19 +221,19 @@ export function BatchEvaluationPanel() {
               Reset sample
             </button>
             <button
-              className="inline-flex h-11 items-center justify-center rounded-md border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
               type="button"
               onClick={handleCopyCsv}
             >
               Copy CSV
             </button>
             {csvError && (
-              <p className="text-sm font-medium text-red-700" role="alert">
+              <p className="text-sm font-medium text-destructive" role="alert">
                 {csvError}
               </p>
             )}
             {csvCopyStatus && (
-              <p className="text-sm font-medium text-emerald-700">
+              <p className="text-sm font-medium text-success">
                 {csvCopyStatus}
               </p>
             )}
