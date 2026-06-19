@@ -1,4 +1,4 @@
-# @invespro/demo
+# @invespro/docs
 
 ## 0.1.2
 
