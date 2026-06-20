@@ -1,0 +1,90 @@
+---
+title: CSV Batch Evaluation
+description: Submit spreadsheet-friendly applicant data and receive JSON results.
+---
+
+CSV input is useful when applicant data is exported from another system.
+
+The CSV parser is definition-aware. Column names should match question IDs in
+the active definition. `applicantId` is optional but recommended.
+
+## Default model CSV
+
+```csv
+applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience
+APP-001,10,hold,balanced_growth,95000,22,4,intermediate
+APP-002,18,buy_more,maximum_growth,180000,12,8,experienced
+```
+
+## REST endpoint
+
+```http
+POST /evaluate/batch/csv
+Content-Type: text/csv
+```
+
+The endpoint returns the same JSON shape as regular batch evaluation.
+
+## Core helper
+
+```ts
+import { parseCsvBatch, RiskProfilerEngine } from "@vibedcoder/invespro-core";
+
+const engine = new RiskProfilerEngine();
+const items = parseCsvBatch(csvContent, engine.definition);
+const result = await engine.evaluateMany({ items });
+```
+
+Parsed CSV rows become normal batch items:
+
+```json
+{
+  "items": [
+    {
+      "applicantId": "APP-001",
+      "answers": {
+        "investmentHorizonYears": 10,
+        "riskAttitude": "hold",
+        "investmentObjective": "balanced_growth",
+        "annualIncome": 95000,
+        "dtiRatio": 22,
+        "liquidityMonths": 4,
+        "investmentExperience": "intermediate"
+      }
+    },
+    {
+      "applicantId": "APP-002",
+      "answers": {
+        "investmentHorizonYears": 18,
+        "riskAttitude": "buy_more",
+        "investmentObjective": "maximum_growth",
+        "annualIncome": 180000,
+        "dtiRatio": 12,
+        "liquidityMonths": 8,
+        "investmentExperience": "experienced"
+      }
+    }
+  ]
+}
+```
+
+The result uses the same batch response shape as JSON input, including a
+`summary` and per-applicant `fulfilled` or `rejected` items.
+
+## Rules
+
+- Empty cells are skipped.
+- Number questions are converted to numbers when possible.
+- Boolean questions accept values such as `true`, `false`, `yes`, `no`, `t`, `f`, `y`, `n`, `1`, and `0`.
+- Select questions use the option value from the definition.
+- Unknown columns are ignored.
+
+Unknown columns are ignored so exports can include extra operational fields, but
+unknown answers inside JSON evaluation input are rejected. CSV should still use
+definition question IDs for every field that should affect scoring.
+
+Values that cannot be coerced are kept as strings and passed into normal
+evaluation validation. For example, `maybe` in a boolean column will become a
+rejected batch item rather than being silently changed.
+
+[Try CSV evaluation in the demo](/demo).

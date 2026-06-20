@@ -1,0 +1,130 @@
+---
+title: CLI Reference
+description: Commands and options exposed by the Invespro CLI.
+---
+
+The CLI binary name is `invespro`. Global package installs expose that command
+on your shell `PATH`; local installs can run it through your package manager.
+
+```bash
+pnpm exec invespro --help
+```
+
+## Commands
+
+| Command                   | Purpose                                                        |
+| ------------------------- | -------------------------------------------------------------- |
+| `invespro evaluate`       | Evaluate one applicant from a JSON file.                       |
+| `invespro evaluate-batch` | Evaluate multiple applicants from JSON or CSV.                 |
+| `invespro compile`        | Compile a risk-profile definition into a JDM graph.            |
+| `invespro validate`       | Validate a JDM graph and optionally test it with sample input. |
+| `invespro profile`        | Run an interactive terminal questionnaire.                     |
+
+### `evaluate`
+
+Evaluate one applicant from a JSON file.
+
+```bash
+invespro evaluate applicant.json --output json
+```
+
+| Argument or option | Required | Notes                                            |
+| ------------------ | -------- | ------------------------------------------------ |
+| `input`            | Yes      | Path to a JSON file containing evaluation input. |
+| `--definition`     | No       | Path to a custom risk-profile definition.        |
+| `--jdm-path`       | No       | Path to a custom JDM graph file.                 |
+| `--output`         | No       | `table` or `json`. Defaults to `table`.          |
+
+When `--definition` is supplied without `--jdm-path`, the CLI compiles the
+definition into a graph before evaluation. When both are supplied, the
+definition declares the contract and the JDM file supplies the executable graph.
+
+### `evaluate-batch`
+
+Evaluate multiple applicants from a JSON or CSV file.
+
+```bash
+invespro evaluate-batch applicants.csv --input-format csv --output json
+```
+
+| Argument or option | Required | Notes                                                                            |
+| ------------------ | -------- | -------------------------------------------------------------------------------- |
+| `input`            | Yes      | Path to JSON or CSV batch input.                                                 |
+| `--input-format`   | No       | `json` or `csv`. Defaults from file extension; `.csv` means CSV, otherwise JSON. |
+| `--definition`     | No       | Path to a custom risk-profile definition.                                        |
+| `--jdm-path`       | No       | Path to a custom JDM graph file.                                                 |
+| `--output`         | No       | `json` or `csv`. Defaults to `json`.                                             |
+| `--max-batch-size` | No       | Positive integer. Defaults to `100`.                                             |
+
+JSON batch input can be a raw array or an object with an `items` array:
+
+```json
+{
+  "items": [
+    {
+      "applicantId": "APP-001",
+      "answers": {}
+    }
+  ]
+}
+```
+
+CSV output is a flat report with status, profile, score, allocation, and error
+columns.
+
+### `compile`
+
+Compile a risk-profile definition into a JDM graph.
+
+```bash
+invespro compile definition.json --output risk-profiler.json
+```
+
+| Argument or option | Required | Notes                                                             |
+| ------------------ | -------- | ----------------------------------------------------------------- |
+| `definition`       | Yes      | Path to the risk-profile definition.                              |
+| `--output`         | No       | Output path. If omitted, the graph is printed to standard output. |
+
+When an output file is written, the CLI prints the definition ID, version, and
+graph checksum to standard error.
+
+### `validate`
+
+Validate a JDM graph file.
+
+```bash
+invespro validate risk-profiler.json --definition definition.json --input sample.json
+```
+
+| Argument or option | Required | Notes                                                      |
+| ------------------ | -------- | ---------------------------------------------------------- |
+| `jdm`              | Yes      | Path to the JDM JSON file.                                 |
+| `--definition`     | No       | Definition that declares the custom JDM contract.          |
+| `--input`          | No       | Sample evaluation input used to verify the graph contract. |
+
+Validation checks that the file is JSON, has JDM `nodes` and `edges`, passes
+ZenEngine graph validation, and can produce a contract-compatible result when
+sample input is available.
+
+### `profile`
+
+Run the default questionnaire interactively in the terminal.
+
+```bash
+invespro profile
+```
+
+| Option         | Required | Notes                                     |
+| -------------- | -------- | ----------------------------------------- |
+| `--definition` | No       | Path to a custom risk-profile definition. |
+| `--jdm-path`   | No       | Path to a custom JDM graph file.          |
+| `--output`     | No       | `table` or `json`. Defaults to `table`.   |
+
+The command prompts for answers from the active definition and prints a
+formatted risk-profile result.
+
+## Exit Behavior
+
+Commands write errors to the terminal and exit with status code `1` when input
+files, JSON parsing, validation, or evaluation fail. JSON output modes write the
+machine-readable result to standard output.

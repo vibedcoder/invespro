@@ -1,0 +1,10 @@
+{
+  "title": "API Reference",
+  "pages": [
+    "result-shape",
+    "rest-endpoints",
+    "definition-schema",
+    "expert-jdm-contract",
+    "cli-reference"
+  ]
+}

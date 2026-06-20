@@ -2,11 +2,12 @@ import { useState } from "react";
 import type { RiskProfileDefinition } from "@vibedcoder/invespro-types";
 import { ErrorDetails } from "./ErrorDetails";
 import { Button } from "./fields";
-
-type ApiError = {
-  readonly message: string;
-  readonly details?: unknown;
-};
+import {
+  errorFromResponse,
+  parseJsonInput,
+  toApiError,
+} from "./requests";
+import type { ApiError } from "./requests";
 
 type ValidationState =
   | { readonly status: "idle" }
@@ -33,7 +34,7 @@ export function DefinitionValidatorPanel({
     setValidation({ status: "idle" });
 
     try {
-      const input = JSON.parse(definitionJson) as unknown;
+      const input = parseJsonInput(definitionJson, "Definition JSON");
       const response = await fetch("/api/definitions/validate", {
         method: "POST",
         headers: {
@@ -46,11 +47,7 @@ export function DefinitionValidatorPanel({
       if (!response.ok || data.valid !== true) {
         setValidation({
           status: "invalid",
-          error: {
-            message:
-              data?.error?.message ?? "Definition validation failed.",
-            details: data?.error?.details,
-          },
+          error: errorFromResponse(data, "Definition validation failed."),
         });
         return;
       }
@@ -62,10 +59,7 @@ export function DefinitionValidatorPanel({
     } catch (err) {
       setValidation({
         status: "invalid",
-        error: {
-          message:
-          err instanceof Error ? err.message : "Definition validation failed.",
-        },
+        error: toApiError(err, "Definition validation failed."),
       });
     } finally {
       setIsSubmitting(false);
@@ -90,6 +84,10 @@ export function DefinitionValidatorPanel({
 
         <label className="mt-6 block text-sm font-medium text-foreground">
           Definition JSON
+          <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">
+            Use this to check a definition before storing it or evaluating
+            applicants with it.
+          </span>
           <textarea
             className="mt-2 min-h-96 w-full rounded-md border border-input bg-code p-4 font-mono text-xs leading-5 text-code-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
             value={definitionJson}

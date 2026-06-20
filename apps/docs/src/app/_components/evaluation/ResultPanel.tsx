@@ -32,6 +32,12 @@ export function ResultPanel({
             <p className="mt-1 text-sm text-muted-foreground">
               Normalized score: {result.normalizedScore.toFixed(2)}
             </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Override:{" "}
+              {result.overrideApplied
+                ? result.overrideId ?? "applied"
+                : "not applied"}
+            </p>
           </div>
 
           <dl className="grid grid-cols-2 gap-3">
@@ -72,6 +78,12 @@ export function ResultPanel({
               </dl>
             </div>
           )}
+
+          <div className="break-all rounded-md border border-border bg-muted p-3 text-xs leading-5 text-muted-foreground">
+            Definition {result.definition.id}@{result.definition.version}
+            <br />
+            {result.definition.graphChecksum}
+          </div>
 
           <pre className="max-h-96 overflow-auto rounded-md bg-code p-4 text-xs leading-5 text-code-foreground">
             {resultJson}

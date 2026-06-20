@@ -71,8 +71,10 @@ export function ProductMotionPreview() {
               5 applicants, 8 matched questionnaire columns. File selected and
               ready for batch evaluation.
             </p>
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-background">
-              <div className={`${styles.meter} h-full rounded-full bg-accent`} />
+            <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-background">
+              <div
+                className={`${styles.meter} h-full rounded-full bg-accent`}
+              />
             </div>
           </div>
           <div className="mt-4 grid gap-1.5 font-mono text-[0.62rem] text-muted-foreground">
@@ -118,7 +120,10 @@ export function ProductMotionPreview() {
               ["4", "fulfilled"],
               ["1", "rejected"],
             ].map(([value, label]) => (
-              <div className="rounded-md border border-border bg-muted p-2" key={label}>
+              <div
+                className="rounded-md border border-border bg-muted p-2"
+                key={label}
+              >
                 <p className="text-lg font-semibold text-foreground">{value}</p>
                 <p className="text-[0.62rem] text-muted-foreground">{label}</p>
               </div>
@@ -173,7 +178,7 @@ export function ProductMotionPreview() {
                 ["Horizon", "20"],
                 ["Experience", "18"],
                 ["Liquidity", "12"],
-              ].map(([label, score], index) => (
+              ].map(([label, score]) => (
                 <div key={label}>
                   <div className="flex justify-between text-[0.68rem]">
                     <span className="text-muted-foreground">{label}</span>
@@ -239,9 +244,7 @@ export function ProductMotionPreview() {
           />
           <div className="mt-4 grid gap-3">
             <div className="rounded-md border border-border bg-muted p-3">
-              <p className="text-xs font-semibold text-success">
-                Schema valid
-              </p>
+              <p className="text-xs font-semibold text-success">Schema valid</p>
               <p className="mt-1 text-[0.68rem] text-muted-foreground">
                 Questions, score bands, overrides, and allocations passed graph
                 validation.
@@ -251,8 +254,10 @@ export function ProductMotionPreview() {
               <p className="text-xs font-semibold text-foreground">
                 Active definition updated
               </p>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
-                <div className={`${styles.meter} h-full rounded-full bg-accent`} />
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
+                <div
+                  className={`${styles.meter} h-full rounded-full bg-accent`}
+                />
               </div>
             </div>
           </div>
@@ -291,7 +296,10 @@ export function ProductMotionPreview() {
               ["4", "fulfilled"],
               ["1", "rejected"],
             ].map(([value, label]) => (
-              <div className="rounded-md border border-border bg-muted p-2" key={label}>
+              <div
+                className="rounded-md border border-border bg-muted p-2"
+                key={label}
+              >
                 <p className="text-lg font-semibold text-foreground">{value}</p>
                 <p className="text-[0.62rem] text-muted-foreground">{label}</p>
               </div>
@@ -353,9 +361,7 @@ function FeatureIntro({
 
 function EvaluationState() {
   return (
-    <span className="text-[0.65rem] font-semibold text-success">
-      done
-    </span>
+    <span className="text-[0.65rem] font-semibold text-success">done</span>
   );
 }
 

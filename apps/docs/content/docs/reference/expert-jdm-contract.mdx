@@ -1,0 +1,167 @@
+---
+title: Expert JDM Contract
+description: Contract required by expert-managed JDM graphs.
+---
+
+Expert JDM mode lets you run a custom Gorules/ZenEngine decision graph while
+still using Invespro's public input, output, validation, allocation, and audit
+contracts.
+
+Use it when the generated graph from a custom definition is not enough and a
+team needs to manage the decision graph directly.
+
+Expert JDM mode replaces the generated decision graph, not the public Invespro
+contract. If your workflow needs different inputs, outputs, or result semantics,
+extend Invespro at the package level instead.
+
+## How It Is Wired
+
+The definition remains the source of truth for:
+
+- accepted question IDs and answer types,
+- profile IDs and labels,
+- allocation maps,
+- optional questions,
+- result validation,
+- audit metadata.
+
+The JDM graph supplies the executable decision logic.
+
+In code, pass both a definition and a loader:
+
+```ts
+import {
+  createGraphLoader,
+  RiskProfilerEngine,
+} from "@vibedcoder/invespro-core";
+
+const engine = new RiskProfilerEngine({
+  definition,
+  loader: createGraphLoader({
+    "risk-profiler": graph,
+  }),
+});
+```
+
+In the CLI, pass both files:
+
+```bash
+invespro evaluate applicant.json \
+  --definition definition.json \
+  --jdm-path risk-profiler.json \
+  --output json
+```
+
+## Graph Key
+
+The default graph key is:
+
+```txt
+risk-profiler
+```
+
+Custom loaders must return the graph for that key unless the engine is
+configured with a different `graphKey`.
+
+## Input Fields
+
+Public evaluation input uses camel-case definition question IDs:
+
+```json
+{
+  "answers": {
+    "riskCapacity": 8,
+    "needsEmergencyAccess": true
+  }
+}
+```
+
+Before execution, Invespro validates those answers against the definition and
+maps question IDs to snake case for the JDM graph:
+
+| Definition question ID | JDM input field |
+| --- | --- |
+| `riskCapacity` | `risk_capacity` |
+| `needsEmergencyAccess` | `needs_emergency_access` |
+| `investmentHorizonYears` | `investment_horizon_years` |
+
+Unknown answer keys are rejected before the graph runs.
+
+## Required Output Fields
+
+The graph must return these fields:
+
+| Output field | Type | Notes |
+| --- | --- | --- |
+| `profile_id` | `string` | Must match a profile ID declared in the definition. |
+| `raw_score` | `number` | Non-negative score before normalization. |
+| `normalized_score` | `number` | Number from `0` to `100`. |
+
+The graph may also return:
+
+| Output field | Type | Notes |
+| --- | --- | --- |
+| `override_applied` | `boolean` | Defaults to `false` when omitted. |
+| `override_id` | `string` | Included in the public result when present. |
+
+If `profile_id` does not match a declared profile, evaluation fails. Allocation
+is not supplied by the graph; Invespro looks it up from the definition after the
+profile is resolved.
+
+## Score Fields
+
+Generated graphs emit one score field per scored question:
+
+| Definition question ID | JDM score field |
+| --- | --- |
+| `riskCapacity` | `risk_capacity_score` |
+| `investmentHorizonYears` | `investment_horizon_years_score` |
+
+Expert graphs can emit these same fields. Invespro populates the public
+`scores` object only when all expected score fields are present.
+
+## Checksum Behavior
+
+Generated graphs receive a deterministic checksum at compile time. Custom JDM
+graphs are checksummed when the loader returns the graph.
+
+You can pass an expected checksum:
+
+```ts
+const engine = new RiskProfilerEngine({
+  definition,
+  loader,
+  graphChecksum: "sha256:...",
+});
+```
+
+Evaluation fails if the loaded graph checksum does not match the expected
+checksum.
+
+## Validation Boundaries
+
+`engine.validate()` and `invespro validate` ask ZenEngine to validate graph
+structure. To verify the Invespro business contract, also run a sample
+evaluation with the same definition.
+
+The contract check happens during evaluation:
+
+- answers are validated against the definition,
+- JDM output is checked for required fields,
+- `profile_id` is checked against declared profiles,
+- allocation is resolved from the definition,
+- the result is enriched with definition and checksum metadata.
+
+## Tested Guarantees
+
+Current tests cover the core expert-JDM contract:
+
+- deterministic graph generation and checksums,
+- custom loader execution,
+- rejection when a graph returns an undeclared profile,
+- checksum mismatch rejection,
+- CLI loader behavior for `--jdm-path`.
+
+The CLI command reference documents `compile`, `validate`, and `--jdm-path`;
+end-to-end CLI command tests can be added later if those workflows become a
+larger compatibility surface.

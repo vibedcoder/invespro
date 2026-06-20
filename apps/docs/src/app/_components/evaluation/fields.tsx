@@ -24,10 +24,12 @@ export function Button({
 
 export function TextField({
   defaultValue,
+  hint,
   label,
   name,
 }: {
   readonly defaultValue: string;
+  readonly hint?: string;
   readonly label: string;
   readonly name: string;
 }) {
@@ -41,25 +43,34 @@ export function TextField({
         required
         type="text"
       />
+      {hint && (
+        <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">
+          {hint}
+        </span>
+      )}
     </label>
   );
 }
 
 export function NumberField({
   defaultValue,
+  hint,
   label,
   max,
   min,
   name,
   prefix,
+  step = 1,
   suffix,
 }: {
   readonly defaultValue: number;
+  readonly hint?: string;
   readonly label: string;
   readonly max?: number;
   readonly min: number;
   readonly name: string;
   readonly prefix?: string;
+  readonly step?: number | "any";
   readonly suffix?: string;
 }) {
   return (
@@ -78,6 +89,7 @@ export function NumberField({
           min={min}
           name={name}
           required
+          step={step}
           type="number"
         />
         {suffix && (
@@ -86,17 +98,22 @@ export function NumberField({
           </span>
         )}
       </span>
+      <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">
+        {hint ?? formatNumberHint(min, max)}
+      </span>
     </label>
   );
 }
 
 export function SelectField({
   defaultValue,
+  hint,
   label,
   name,
   options,
 }: {
   readonly defaultValue: string;
+  readonly hint?: string;
   readonly label: string;
   readonly name: string;
   readonly options: readonly SelectOption[];
@@ -116,6 +133,16 @@ export function SelectField({
           </option>
         ))}
       </select>
+      {hint && (
+        <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">
+          {hint}
+        </span>
+      )}
     </label>
   );
+}
+
+function formatNumberHint(min: number, max: number | undefined): string {
+  if (max === undefined) return `Minimum ${min}.`;
+  return `Allowed range ${min}-${max}.`;
 }

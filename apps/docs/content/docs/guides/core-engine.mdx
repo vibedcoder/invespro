@@ -1,0 +1,89 @@
+---
+title: Core Engine
+description: Embed Invespro directly in a TypeScript service.
+---
+
+Use `@vibedcoder/invespro-core` when evaluation should run inside your own
+Node.js service or application.
+
+```ts
+import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
+
+const engine = new RiskProfilerEngine();
+
+const result = await engine.evaluate({
+  applicantId: "APP-001",
+  answers: {
+    investmentHorizonYears: 10,
+    riskAttitude: "hold",
+    investmentObjective: "balanced_growth",
+    annualIncome: 95000,
+    dtiRatio: 22,
+    liquidityMonths: 4,
+    investmentExperience: "intermediate",
+  },
+});
+
+console.log(result.profile.label);
+console.log(result.normalizedScore);
+console.log(result.allocation);
+```
+
+The core engine is the lowest-level integration surface. The REST adapter and
+CLI build on the same evaluation behavior.
+
+## When to use it
+
+- You want in-process evaluation.
+- You control the service that receives applicant input.
+- You need direct access to batch helpers, CSV parsing, or custom definitions.
+
+## Result shape
+
+The returned object includes score metadata, the final profile, allocation, and
+definition metadata:
+
+```json
+{
+  "applicantId": "APP-001",
+  "rawScore": 40,
+  "normalizedScore": 71.43,
+  "profile": {
+    "id": "moderatelyAggressive",
+    "label": "Moderately Aggressive"
+  },
+  "overrideApplied": false,
+  "allocation": {
+    "equities": 70,
+    "fixedIncome": 20,
+    "cash": 5,
+    "alternatives": 5
+  },
+  "definition": {
+    "id": "invesproDefaultRiskProfiler",
+    "version": "0.1.0",
+    "schemaVersion": "1.0",
+    "graphChecksum": "sha256:..."
+  }
+}
+```
+
+This is a trimmed result. See [Result Shape](/docs/reference/result-shape) for
+the full response contract.
+
+## Batch helper
+
+```ts
+const batch = await engine.evaluateMany(
+  {
+    items: [firstApplicant, secondApplicant],
+  },
+  {
+    maxBatchSize: 100,
+    continueOnError: true,
+  },
+);
+```
+
+Use `continueOnError: false` when the first invalid applicant should fail the
+whole call. The default is `true`, which returns per-item rejection details.

@@ -1,0 +1,86 @@
+---
+title: Model Concepts
+description: The definition pieces that drive profiling and allocation.
+---
+
+Invespro is definition-driven. A definition describes the questions, scoring,
+profiles, score bands, overrides, and allocation map used by the engine.
+
+The engine evaluates in three broad steps:
+
+1. Validate the applicant answers against the active definition.
+2. Score the declared factors and normalize the result to a 0-100 scale.
+3. Resolve the final profile, apply any matching override, and attach the
+   allocation for that profile.
+
+## Questions
+
+Questions define the allowed answer shape. They can be number, boolean, or
+select-style values. Informational questions can exist without contributing to
+score. Question IDs are also the public input contract: applicant answers and
+CSV columns should use the same IDs.
+
+Generated JDM graphs convert question IDs to snake case internally, but callers
+should always send the public lower camel case IDs from the definition.
+
+Question purposes matter:
+
+- `scored` questions must have scoring rules and are required.
+- `override` questions can drive rule-based profile changes.
+- `informational` questions are validated and carried by the input contract, but
+  do not affect the score.
+
+## Scoring
+
+Scoring maps answers to points. Each scoring factor is compared against its own
+maximum possible score, multiplied by its weight, and then normalized to a
+0-100 result. Select and boolean questions use option scoring, while number
+questions use range scoring. Number ranges must cover all possible values
+without gaps or overlaps.
+
+Every scored factor must have at least one positive score. Boolean scoring must
+cover both `true` and `false`; select scoring must cover every declared option.
+
+## Profiles
+
+Profiles are the risk categories returned to the caller, such as conservative,
+moderate, or aggressive. The default model includes five risk bands, but custom
+definitions may use custom profile IDs and labels.
+
+Score bands map normalized scores to profiles. Every profile needs exactly one
+band, and the bands must include a minimum score of `0`.
+
+## Allocations
+
+Each profile maps to a percentage allocation. The default model uses a simple
+percentage map across asset classes such as equities, fixed income, cash, and
+alternatives. Every declared profile must have an allocation, every declared
+asset class must be present in each allocation, and each allocation must total
+`100`.
+
+## Overrides
+
+Overrides handle rule-based exceptions. For example, an applicant with a high
+debt-to-income ratio may be forced into a more conservative profile even if the
+raw score is higher.
+
+Overrides are evaluated after scoring. When multiple overrides are declared,
+the generated graph uses the first matching override.
+
+An override changes the final profile and allocation, but the result still
+includes the original score fields. This makes it possible to explain outcomes
+such as "high score, conservative result because an override matched."
+
+## Batch results
+
+Batch evaluation returns one item per applicant. Each item is either
+`fulfilled` with a normal evaluation result or `rejected` with an error object.
+Validation failures preserve structured details when available. A single invalid
+applicant does not have to fail the whole batch.
+
+## Versioning
+
+Definitions are versioned. Every evaluation result includes model metadata so a
+stored result can be traced back to the definition used at evaluation time. The
+metadata includes the definition ID, semantic version, schema version, and graph
+checksum.

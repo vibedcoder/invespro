@@ -1,0 +1,10 @@
+{
+  "title": "Guides",
+  "pages": [
+    "core-engine",
+    "rest-api",
+    "cli",
+    "csv-batch-evaluation",
+    "custom-definitions"
+  ]
+}

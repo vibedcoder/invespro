@@ -8,12 +8,19 @@ import {
 } from "./demo-data";
 import { copyText } from "./copy";
 import { Button, NumberField, SelectField, TextField } from "./fields";
-import { createSingleEvaluationRequest, stringifyJson } from "./requests";
+import { ErrorDetails } from "./ErrorDetails";
+import {
+  createSingleEvaluationRequest,
+  errorFromResponse,
+  stringifyJson,
+  toApiError,
+} from "./requests";
+import type { ApiError } from "./requests";
 import { ResultPanel } from "./ResultPanel";
 
 export function SingleEvaluationPanel() {
   const [result, setResult] = useState<EvaluationResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ApiError | null>(null);
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,12 +45,14 @@ export function SingleEvaluationPanel() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data?.error?.message ?? "Evaluation failed.");
+        setError(errorFromResponse(data, "Evaluation failed."));
+        setResult(null);
+        return;
       }
 
       setResult(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(toApiError(err, "Something went wrong."));
       setResult(null);
     } finally {
       setIsSubmitting(false);
@@ -79,6 +88,7 @@ export function SingleEvaluationPanel() {
         <div className="mt-6 grid gap-5 sm:grid-cols-2">
           <TextField
             defaultValue={defaultAnswers.applicantId}
+            hint="Used only to trace the result; it does not affect scoring."
             label="Applicant ID"
             name="applicantId"
           />
@@ -92,12 +102,14 @@ export function SingleEvaluationPanel() {
           />
           <SelectField
             defaultValue={defaultAnswers.riskAttitude}
+            hint="Higher risk tolerance generally increases the score."
             label="Market drop reaction"
             name="riskAttitude"
             options={riskAttitudeOptions}
           />
           <SelectField
             defaultValue={defaultAnswers.investmentObjective}
+            hint="Objectives map to the default definition's option values."
             label="Investment objective"
             name="investmentObjective"
             options={objectiveOptions}
@@ -111,6 +123,7 @@ export function SingleEvaluationPanel() {
           />
           <NumberField
             defaultValue={defaultAnswers.dtiRatio}
+            hint="At 50% or higher, the default override forces Conservative."
             label="Debt-to-income ratio"
             max={100}
             min={0}
@@ -126,6 +139,7 @@ export function SingleEvaluationPanel() {
           />
           <SelectField
             defaultValue={defaultAnswers.investmentExperience}
+            hint="More experience contributes more points in the default model."
             label="Investment experience"
             name="investmentExperience"
             options={experienceOptions}
@@ -139,11 +153,6 @@ export function SingleEvaluationPanel() {
             loadingLabel="Evaluating..."
             type="submit"
           />
-          {error && (
-            <p className="text-sm font-medium text-destructive" role="alert">
-              {error}
-            </p>
-          )}
           <button
             className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
             type="button"
@@ -156,6 +165,7 @@ export function SingleEvaluationPanel() {
               {copyStatus}
             </p>
           )}
+          {error && <ErrorDetails error={error} />}
         </div>
       </form>
 

@@ -5,7 +5,16 @@ description: Install the packages you need for embedded, REST, or CLI usage.
 
 Install only the package required by your integration surface.
 
+| Need | Install |
+| --- | --- |
+| Embed evaluation in your app | `@vibedcoder/invespro-core` |
+| Expose evaluation over HTTP | `@vibedcoder/invespro-hono` and `hono` |
+| Run local JSON or CSV evaluations | `@vibedcoder/invespro-cli` |
+| Use schemas and TypeScript types only | `@vibedcoder/invespro-types` |
+
 ## Core engine
+
+Use this when you want to evaluate applicants inside an existing Node.js service.
 
 <CodeBlockTabs defaultValue="pnpm">
   <CodeBlockTabsList>
@@ -48,9 +57,9 @@ bun add @vibedcoder/invespro-core
   </CodeBlockTab>
 </CodeBlockTabs>
 
-Use this when you want to evaluate applicants inside an existing Node.js service.
-
 ## REST adapter
+
+Use this when another system should call Invespro over HTTP.
 
 <CodeBlockTabs defaultValue="pnpm">
   <CodeBlockTabsList>
@@ -93,9 +102,9 @@ bun add @vibedcoder/invespro-hono hono
   </CodeBlockTab>
 </CodeBlockTabs>
 
-Use this when another system should call Invespro over HTTP.
-
 ## CLI
+
+Use this for local files, operations workflows, or quick checks from JSON and CSV.
 
 <CodeBlockTabs defaultValue="pnpm">
   <CodeBlockTabsList>
@@ -138,9 +147,10 @@ bun add --global @vibedcoder/invespro-cli
   </CodeBlockTab>
 </CodeBlockTabs>
 
-Use this for local files, operations workflows, or quick checks from JSON and CSV.
-
 ## Types
+
+You usually do not need to install this directly unless you want the schemas
+without the engine.
 
 <CodeBlockTabs defaultValue="pnpm">
   <CodeBlockTabsList>
@@ -182,9 +192,6 @@ bun add @vibedcoder/invespro-types
 
   </CodeBlockTab>
 </CodeBlockTabs>
-
-You usually do not need to install this directly unless you want the schemas
-without the engine.
 
 ## Runtime
 

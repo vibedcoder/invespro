@@ -2,7 +2,14 @@ import { useState } from "react";
 import type { BatchEvaluationResult } from "@vibedcoder/invespro-types";
 import { copyText } from "./copy";
 import { batchSampleCsv, batchSampleJson } from "./demo-data";
+import { ErrorDetails } from "./ErrorDetails";
 import { Button } from "./fields";
+import {
+  errorFromResponse,
+  parseJsonInput,
+  toApiError,
+} from "./requests";
+import type { ApiError } from "./requests";
 import { BatchResultPanel } from "./BatchResultPanel";
 
 export function BatchEvaluationPanel() {
@@ -12,8 +19,8 @@ export function BatchEvaluationPanel() {
   const [batchResult, setBatchResult] = useState<BatchEvaluationResult | null>(
     null,
   );
-  const [batchError, setBatchError] = useState<string | null>(null);
-  const [csvError, setCsvError] = useState<string | null>(null);
+  const [batchError, setBatchError] = useState<ApiError | null>(null);
+  const [csvError, setCsvError] = useState<ApiError | null>(null);
   const [jsonCopyStatus, setJsonCopyStatus] = useState<string | null>(null);
   const [csvCopyStatus, setCsvCopyStatus] = useState<string | null>(null);
   const [isBatchSubmitting, setIsBatchSubmitting] = useState(false);
@@ -26,7 +33,7 @@ export function BatchEvaluationPanel() {
     setBatchError(null);
 
     try {
-      const input = JSON.parse(batchInput) as unknown;
+      const input = parseJsonInput(batchInput, "Batch request JSON");
       const response = await fetch("/api/evaluate/batch", {
         method: "POST",
         headers: {
@@ -38,14 +45,14 @@ export function BatchEvaluationPanel() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data?.error?.message ?? "Batch evaluation failed.");
+        setBatchError(errorFromResponse(data, "Batch evaluation failed."));
+        setBatchResult(null);
+        return;
       }
 
       setBatchResult(data);
     } catch (err) {
-      setBatchError(
-        err instanceof Error ? err.message : "Something went wrong.",
-      );
+      setBatchError(toApiError(err, "Something went wrong."));
       setBatchResult(null);
     } finally {
       setIsBatchSubmitting(false);
@@ -65,6 +72,16 @@ export function BatchEvaluationPanel() {
     setCsvError(null);
 
     try {
+      if (csvInput.trim().length === 0) {
+        throw {
+          message: "CSV input is empty.",
+          details: {
+            formErrors: ["Paste CSV text or upload a CSV file before evaluating."],
+            fieldErrors: {},
+          },
+        } satisfies ApiError;
+      }
+
       const response = await fetch("/api/evaluate/batch/csv", {
         method: "POST",
         headers: {
@@ -75,12 +92,14 @@ export function BatchEvaluationPanel() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data?.error?.message ?? "CSV evaluation failed.");
+        setCsvError(errorFromResponse(data, "CSV evaluation failed."));
+        setBatchResult(null);
+        return;
       }
 
       setBatchResult(data);
     } catch (err) {
-      setCsvError(err instanceof Error ? err.message : "Something went wrong.");
+      setCsvError(toApiError(err, "Something went wrong."));
       setBatchResult(null);
     } finally {
       setIsCsvSubmitting(false);
@@ -122,6 +141,10 @@ export function BatchEvaluationPanel() {
 
           <label className="mt-6 block text-sm font-medium text-foreground">
             Batch request JSON
+            <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">
+              Use an object with an `items` array. Individual invalid applicants
+              are returned as rejected batch rows.
+            </span>
             <textarea
               className="mt-2 min-h-96 w-full rounded-md border border-input bg-code p-4 font-mono text-xs leading-5 text-code-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
               value={batchInput}
@@ -151,16 +174,12 @@ export function BatchEvaluationPanel() {
             >
               Copy request
             </button>
-            {batchError && (
-              <p className="text-sm font-medium text-destructive" role="alert">
-                {batchError}
-              </p>
-            )}
             {jsonCopyStatus && (
               <p className="text-sm font-medium text-success">
                 {jsonCopyStatus}
               </p>
             )}
+            {batchError && <ErrorDetails error={batchError} />}
           </div>
         </form>
 
@@ -195,6 +214,10 @@ export function BatchEvaluationPanel() {
 
           <label className="mt-5 block text-sm font-medium text-foreground">
             CSV preview
+            <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">
+              Headers must match active definition question IDs. Unknown columns
+              are ignored.
+            </span>
             <textarea
               className="mt-2 min-h-56 w-full rounded-md border border-input bg-code p-4 font-mono text-xs leading-5 text-code-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
               value={csvInput}
@@ -227,16 +250,12 @@ export function BatchEvaluationPanel() {
             >
               Copy CSV
             </button>
-            {csvError && (
-              <p className="text-sm font-medium text-destructive" role="alert">
-                {csvError}
-              </p>
-            )}
             {csvCopyStatus && (
               <p className="text-sm font-medium text-success">
                 {csvCopyStatus}
               </p>
             )}
+            {csvError && <ErrorDetails error={csvError} />}
           </div>
         </form>
       </div>

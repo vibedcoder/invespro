@@ -1,0 +1,152 @@
+---
+title: REST Endpoints
+description: Endpoints exposed by the Hono adapter.
+---
+
+The Hono adapter exposes the default service endpoints:
+
+| Method | Path | Body | Success | Purpose |
+| --- | --- | --- | --- | --- |
+| `GET` | `/health` | None | `200` | Health check. |
+| `GET` | `/definition` | None | `200` | Active model definition. |
+| `GET` | `/questions` | None | `200` | Active questionnaire only. |
+| `POST` | `/definitions/validate` | JSON definition | `200` | Validate a custom definition. |
+| `POST` | `/evaluate` | JSON evaluation input | `200` | Evaluate one applicant. |
+| `POST` | `/evaluate/batch` | JSON batch envelope | `200` | Evaluate a JSON batch. |
+| `POST` | `/evaluate/batch/csv` | Raw CSV text | `200` | Evaluate a raw CSV batch and return JSON. |
+
+See the [REST API guide](/docs/guides/rest-api) for setup and example payloads.
+
+The default maximum batch size is `100`. Hosts can change it when creating the
+Hono service or route app.
+
+## Responses
+
+`GET /health`
+
+```json
+{
+  "status": "ok"
+}
+```
+
+`GET /definition`
+
+Returns the active `RiskProfileDefinition`. See
+[Definition Schema](/docs/reference/definition-schema).
+
+`GET /questions`
+
+Returns `definition.questions` for the active model.
+
+## Request Bodies
+
+`POST /evaluate`
+
+```json
+{
+  "applicantId": "APP-001",
+  "answers": {
+    "investmentHorizonYears": 10,
+    "riskAttitude": "hold",
+    "investmentObjective": "balanced_growth",
+    "annualIncome": 95000,
+    "dtiRatio": 22,
+    "liquidityMonths": 4,
+    "investmentExperience": "intermediate"
+  }
+}
+```
+
+`POST /evaluate/batch`
+
+Body must be an object with an `items` array:
+
+```json
+{
+  "items": [
+    {
+      "applicantId": "APP-001",
+      "answers": {
+        "investmentHorizonYears": 10,
+        "riskAttitude": "hold",
+        "investmentObjective": "balanced_growth",
+        "annualIncome": 95000,
+        "dtiRatio": 22,
+        "liquidityMonths": 4,
+        "investmentExperience": "intermediate"
+      }
+    }
+  ]
+}
+```
+
+`POST /evaluate/batch/csv`
+
+Body is plain CSV text. The header must use active definition question IDs.
+`applicantId` is treated as metadata when present.
+
+```csv
+applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience
+APP-001,10,hold,balanced_growth,95000,22,4,intermediate
+```
+
+`POST /definitions/validate`
+
+Pass a full risk-profile definition JSON object. A valid response returns the
+parsed definition, including defaulted fields such as omitted question `required`
+flags or omitted `overrides`:
+
+```json
+{
+  "valid": true,
+  "definition": {}
+}
+```
+
+Invalid definitions return `422` with structured Zod validation details.
+
+## Error Envelope
+
+All adapter errors use this shape:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Invalid evaluation input.",
+    "details": {
+      "formErrors": [],
+      "fieldErrors": {}
+    }
+  }
+}
+```
+
+| Code | Typical status | Meaning |
+| --- | --- | --- |
+| `invalid_json` | `400` | JSON body could not be parsed. |
+| `invalid_text` | `400` | Text body could not be read. |
+| `validation_error` | `400` or `422` | Request shape, definition, CSV, or batch limits failed validation. |
+| `evaluation_error` | `500` | Runtime evaluation failed unexpectedly. |
+
+Validation details use Zod's flattened shape when the failure comes from schema
+validation:
+
+```json
+{
+  "formErrors": [],
+  "fieldErrors": {
+    "items": ["Too small: expected array to have >=1 items"]
+  }
+}
+```
+
+## Status Codes
+
+| Status | Used when |
+| --- | --- |
+| `200` | Request succeeded. Batch responses may still include rejected items. |
+| `400` | Body parsing failed or CSV text could not be parsed. |
+| `422` | JSON shape, definition, evaluation input, empty CSV batch, or batch size validation failed. |
+| `500` | Evaluation raised an unexpected runtime error. |

@@ -1,0 +1,123 @@
+---
+title: CLI
+description: Run Invespro evaluations from JSON and CSV files.
+---
+
+Use `@vibedcoder/invespro-cli` for local checks, scripted workflows, or
+operations tasks where input already exists as JSON or CSV.
+
+The CLI is useful when you want to evaluate files without building an HTTP
+service around the engine.
+
+## Common uses
+
+- Validate a custom definition before using it in a service.
+- Evaluate a JSON applicant payload.
+- Evaluate a CSV batch exported from another system.
+- Compile a definition into a JDM graph for inspection or expert workflows.
+- Run an interactive questionnaire from the terminal.
+
+See [Installation](/docs/getting-started/installation) for package-manager
+commands.
+
+## Running the binary
+
+Global installation exposes the `invespro` binary on your shell `PATH` through
+the package `bin` entry. After installing globally, you can run commands
+directly:
+
+```bash
+invespro evaluate applicant.json --output json
+```
+
+For project-local installation, add the CLI as a development dependency and run
+it through your package manager:
+
+<CodeBlockTabs defaultValue="pnpm">
+  <CodeBlockTabsList>
+    <CodeBlockTabsTrigger value="npm">npm</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="pnpm">pnpm</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="yarn">yarn</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="bun">bun</CodeBlockTabsTrigger>
+  </CodeBlockTabsList>
+
+  <CodeBlockTab value="npm">
+
+```bash
+npm install --save-dev @vibedcoder/invespro-cli
+npx invespro evaluate applicant.json --output json
+```
+
+  </CodeBlockTab>
+
+  <CodeBlockTab value="pnpm">
+
+```bash
+pnpm add --save-dev @vibedcoder/invespro-cli
+pnpm exec invespro evaluate applicant.json --output json
+```
+
+  </CodeBlockTab>
+
+  <CodeBlockTab value="yarn">
+
+```bash
+yarn add --dev @vibedcoder/invespro-cli
+yarn invespro evaluate applicant.json --output json
+```
+
+  </CodeBlockTab>
+
+  <CodeBlockTab value="bun">
+
+```bash
+bun add --dev @vibedcoder/invespro-cli
+bunx invespro evaluate applicant.json --output json
+```
+
+  </CodeBlockTab>
+</CodeBlockTabs>
+
+Local installation is usually better for repeatable project scripts. Global
+installation is convenient for ad hoc local checks.
+
+## Commands
+
+```bash
+invespro profile
+```
+
+Runs the active questionnaire interactively and prints a table result. Use
+`--output json` when another script should consume the result.
+
+```bash
+invespro evaluate applicant.json --output json
+```
+
+Evaluates one JSON applicant input.
+
+```bash
+invespro evaluate-batch applicants.csv --input-format csv --output json
+```
+
+Evaluates a JSON or CSV batch. The input format is inferred from the file
+extension unless `--input-format` is provided.
+
+```bash
+invespro compile custom-definition.json --output risk-profiler.json
+```
+
+Compiles a custom definition into a JDM graph and prints the graph checksum.
+
+```bash
+invespro validate risk-profiler.json --definition custom-definition.json --input sample.json
+```
+
+Validates a JDM graph and, when `--input` is provided, checks that the graph
+also satisfies the Invespro result contract.
+
+## Custom definitions
+
+Most commands accept `--definition custom-definition.json`. `evaluate`,
+`evaluate-batch`, `profile`, and `validate` also accept `--jdm-path` when you
+need to run an expert-managed JDM graph instead of the generated graph.

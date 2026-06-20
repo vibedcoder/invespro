@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { Hono } from 'hono';
 import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
 import {
   createRiskProfilerApp,
@@ -31,6 +32,91 @@ describe('createRiskProfilerApp', () => {
 
     expect(response.status).toBe(200);
     expect(questions).toHaveLength(7);
+  });
+
+  it('serves the active definition', async () => {
+    const response = await app.request('/definition');
+    const definition = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(definition).toMatchObject({
+      schemaVersion: '1.0',
+      id: 'invesproDefaultRiskProfiler',
+      version: '0.1.0',
+    });
+    expect(definition.questions).toHaveLength(7);
+    expect(definition.allocations).toHaveProperty('moderate');
+  });
+
+  it('validates a definition payload', async () => {
+    const definitionResponse = await app.request('/definition');
+    const definition = await definitionResponse.json();
+
+    const response = await app.request('/definitions/validate', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(definition),
+    });
+    const result = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(result).toMatchObject({
+      valid: true,
+      definition: {
+        id: 'invesproDefaultRiskProfiler',
+      },
+    });
+  });
+
+  it('returns structured definition validation details', async () => {
+    const response = await app.request('/definitions/validate', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        schemaVersion: '1.0',
+        id: 'invalidDefinition',
+        name: 'Invalid Definition',
+        version: '0.1.0',
+        questions: [],
+        scoring: [],
+        profiles: [],
+        scoreBands: [],
+        assetClasses: [],
+        allocations: {},
+      }),
+    });
+    const result = await response.json();
+
+    expect(response.status).toBe(422);
+    expect(result).toMatchObject({
+      error: {
+        code: 'validation_error',
+        message: 'Invalid risk profile definition.',
+        details: {
+          fieldErrors: {
+            questions: expect.any(Array),
+            scoring: expect.any(Array),
+          },
+        },
+      },
+    });
+  });
+
+  it('returns the shared error envelope for invalid JSON', async () => {
+    const response = await app.request('/evaluate', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: '{',
+    });
+    const result = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(result).toEqual({
+      error: {
+        code: 'invalid_json',
+        message: 'Request body must be valid JSON.',
+      },
+    });
   });
 
   it('evaluates a valid applicant', async () => {
@@ -170,6 +256,30 @@ describe('createRiskProfilerApp', () => {
     });
   });
 
+  it('rejects malformed batch requests with structured details', async () => {
+    const response = await app.request('/evaluate/batch', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        items: [],
+      }),
+    });
+    const result = await response.json();
+
+    expect(response.status).toBe(422);
+    expect(result).toMatchObject({
+      error: {
+        code: 'validation_error',
+        message: 'Invalid batch evaluation input.',
+        details: {
+          fieldErrors: {
+            items: expect.any(Array),
+          },
+        },
+      },
+    });
+  });
+
   it('evaluates CSV batch input and returns JSON results', async () => {
     const csv = [
       'applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience',
@@ -217,6 +327,25 @@ describe('createRiskProfilerApp', () => {
     });
   });
 
+  it('rejects empty CSV batches', async () => {
+    const response = await app.request('/evaluate/batch/csv', {
+      method: 'POST',
+      headers: { 'content-type': 'text/csv' },
+      body: [
+        'applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience',
+      ].join('\n'),
+    });
+    const result = await response.json();
+
+    expect(response.status).toBe(422);
+    expect(result).toEqual({
+      error: {
+        code: 'validation_error',
+        message: 'CSV batch input must contain at least one row.',
+      },
+    });
+  });
+
   it('rejects batch requests above the configured limit', async () => {
     const limitedApp = createRiskProfilerApp({
       engine,
@@ -249,6 +378,16 @@ describe('createRiskProfilerApp', () => {
         message: 'Batch size 2 exceeds the maximum of 1.',
       },
     });
+  });
+
+  it('can be mounted under a parent Hono app', async () => {
+    const parent = new Hono();
+    parent.route('/risk', app);
+
+    const response = await parent.request('/risk/health');
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ status: 'ok' });
   });
 
   it('exposes explicit lifecycle ownership through the service API', async () => {

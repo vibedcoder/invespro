@@ -57,12 +57,12 @@ Try the live demo at [invespro.vercel.app](https://invespro.vercel.app/).
 
 ## Packages
 
-| Package | Purpose |
-| --- | --- |
-| `@vibedcoder/invespro-types` | Public Zod schemas and TypeScript contracts. |
-| `@vibedcoder/invespro-core` | ZEN-backed profiling engine, compiler, loader helpers, and default definition. |
-| `@vibedcoder/invespro-hono` | Mountable Hono REST adapter. |
-| `@vibedcoder/invespro-cli` | CLI for interactive, JSON, CSV, compile, and validate workflows. |
+| Package                      | Purpose                                                                        |
+| ---------------------------- | ------------------------------------------------------------------------------ |
+| `@vibedcoder/invespro-types` | Public Zod schemas and TypeScript contracts.                                   |
+| `@vibedcoder/invespro-core`  | ZEN-backed profiling engine, compiler, loader helpers, and default definition. |
+| `@vibedcoder/invespro-hono`  | Mountable Hono REST adapter.                                                   |
+| `@vibedcoder/invespro-cli`   | CLI for interactive, JSON, CSV, compile, and validate workflows.               |
 
 The package split is intentional:
 
@@ -139,42 +139,42 @@ It includes:
 
 ### Default Questions
 
-| ID | Type | Purpose |
-| --- | --- | --- |
-| `investmentHorizonYears` | number | Scored |
-| `riskAttitude` | select | Scored |
-| `investmentObjective` | select | Scored |
-| `annualIncome` | number | Scored |
-| `dtiRatio` | number | Scored and override input |
-| `liquidityMonths` | number | Scored |
-| `investmentExperience` | select | Scored |
+| ID                       | Type   | Purpose                   |
+| ------------------------ | ------ | ------------------------- |
+| `investmentHorizonYears` | number | Scored                    |
+| `riskAttitude`           | select | Scored                    |
+| `investmentObjective`    | select | Scored                    |
+| `annualIncome`           | number | Scored                    |
+| `dtiRatio`               | number | Scored and override input |
+| `liquidityMonths`        | number | Scored                    |
+| `investmentExperience`   | select | Scored                    |
 
 ### Default Profiles
 
-| ID | Label |
-| --- | --- |
-| `conservative` | Conservative |
+| ID                       | Label                   |
+| ------------------------ | ----------------------- |
+| `conservative`           | Conservative            |
 | `moderatelyConservative` | Moderately Conservative |
-| `moderate` | Moderate |
-| `moderatelyAggressive` | Moderately Aggressive |
-| `aggressive` | Aggressive |
+| `moderate`               | Moderate                |
+| `moderatelyAggressive`   | Moderately Aggressive   |
+| `aggressive`             | Aggressive              |
 
 ### Default Asset Classes
 
-| ID | Label |
-| --- | --- |
-| `equities` | Equities |
-| `fixedIncome` | Fixed Income |
-| `cash` | Cash |
+| ID             | Label        |
+| -------------- | ------------ |
+| `equities`     | Equities     |
+| `fixedIncome`  | Fixed Income |
+| `cash`         | Cash         |
 | `alternatives` | Alternatives |
 
 ### Default Select Values
 
-| Question | Allowed values |
-| --- | --- |
-| `riskAttitude` | `buy_more`, `hold`, `sell_some`, `sell_all` |
-| `investmentObjective` | `maximum_growth`, `balanced_growth`, `income_generation`, `capital_preservation` |
-| `investmentExperience` | `experienced`, `intermediate`, `beginner`, `none` |
+| Question               | Allowed values                                                                   |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| `riskAttitude`         | `buy_more`, `hold`, `sell_some`, `sell_all`                                      |
+| `investmentObjective`  | `maximum_growth`, `balanced_growth`, `income_generation`, `capital_preservation` |
+| `investmentExperience` | `experienced`, `intermediate`, `beginner`, `none`                                |
 
 ### Default Override
 
@@ -186,21 +186,21 @@ regardless of their calculated score.
 Use `RiskProfilerEngine` when embedding profiling directly in a Node service.
 
 ```ts
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
 
 const engine = new RiskProfilerEngine();
 
 try {
   const result = await engine.evaluate({
-    applicantId: 'APP-001',
+    applicantId: "APP-001",
     answers: {
       investmentHorizonYears: 10,
-      riskAttitude: 'hold',
-      investmentObjective: 'balanced_growth',
+      riskAttitude: "hold",
+      investmentObjective: "balanced_growth",
       annualIncome: 75000,
       dtiRatio: 20,
       liquidityMonths: 4,
-      investmentExperience: 'intermediate',
+      investmentExperience: "intermediate",
     },
   });
 
@@ -267,21 +267,21 @@ Use `evaluateMany` for synchronous batch evaluation.
 const batch = await engine.evaluateMany({
   items: [
     {
-      applicantId: 'APP-001',
+      applicantId: "APP-001",
       answers: {
         investmentHorizonYears: 10,
-        riskAttitude: 'hold',
-        investmentObjective: 'balanced_growth',
+        riskAttitude: "hold",
+        investmentObjective: "balanced_growth",
         annualIncome: 75000,
         dtiRatio: 20,
         liquidityMonths: 4,
-        investmentExperience: 'intermediate',
+        investmentExperience: "intermediate",
       },
     },
     {
-      applicantId: 'APP-002',
+      applicantId: "APP-002",
       answers: {
-        dtiRatio: 150
+        dtiRatio: 150,
       },
     },
   ],
@@ -481,15 +481,15 @@ Validation checks:
 Use `@vibedcoder/invespro-hono` to mount the service in a Hono app.
 
 ```ts
-import { Hono } from 'hono';
-import { createRiskProfilerService } from '@vibedcoder/invespro-hono';
+import { Hono } from "hono";
+import { createRiskProfilerService } from "@vibedcoder/invespro-hono";
 
 const app = new Hono();
 const profiler = createRiskProfilerService({
   maxBatchSize: 100,
 });
 
-app.route('/risk-profiler', profiler.app);
+app.route("/risk-profiler", profiler.app);
 
 // Call this from the host application's shutdown hook.
 profiler.dispose();
@@ -498,8 +498,8 @@ profiler.dispose();
 If your application already owns the engine:
 
 ```ts
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
-import { createRiskProfilerApp } from '@vibedcoder/invespro-hono';
+import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
+import { createRiskProfilerApp } from "@vibedcoder/invespro-hono";
 
 const engine = new RiskProfilerEngine({ definition });
 const app = createRiskProfilerApp({
@@ -510,15 +510,15 @@ const app = createRiskProfilerApp({
 
 ### Endpoints
 
-| Method | Path | Description |
-| --- | --- | --- |
-| `GET` | `/health` | Health check. |
-| `GET` | `/definition` | Active risk profile definition. |
-| `GET` | `/questions` | Active questionnaire. |
-| `POST` | `/evaluate` | Evaluate one applicant. |
-| `POST` | `/evaluate/batch` | Evaluate multiple applicants. |
-| `POST` | `/evaluate/batch/csv` | Evaluate multiple applicants from CSV and return JSON. |
-| `POST` | `/definitions/validate` | Validate a definition payload. |
+| Method | Path                    | Description                                            |
+| ------ | ----------------------- | ------------------------------------------------------ |
+| `GET`  | `/health`               | Health check.                                          |
+| `GET`  | `/definition`           | Active risk profile definition.                        |
+| `GET`  | `/questions`            | Active questionnaire.                                  |
+| `POST` | `/evaluate`             | Evaluate one applicant.                                |
+| `POST` | `/evaluate/batch`       | Evaluate multiple applicants.                          |
+| `POST` | `/evaluate/batch/csv`   | Evaluate multiple applicants from CSV and return JSON. |
+| `POST` | `/definitions/validate` | Validate a definition payload.                         |
 
 ### POST /evaluate
 
@@ -591,7 +591,7 @@ Customization is definition-driven. A definition declares the business contract,
 and core compiles it into a deterministic JDM graph.
 
 ```ts
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
 
 const engine = new RiskProfilerEngine({
   definition,
@@ -762,11 +762,11 @@ Evaluate against it:
 const engine = new RiskProfilerEngine({ definition });
 
 const result = await engine.evaluate({
-  applicantId: 'APP-100',
+  applicantId: "APP-100",
   answers: {
     riskCapacity: 8,
     needsEmergencyAccess: false,
-    adviserNote: 'none',
+    adviserNote: "none",
   },
 });
 ```
@@ -805,12 +805,12 @@ This lets downstream systems store which rules produced a decision.
 You can supply your own JDM loader instead of using the generated graph.
 
 ```ts
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
 
 const engine = new RiskProfilerEngine({
   definition,
   loader: async () => Buffer.from(customJdmJson),
-  graphChecksum: 'sha256:...',
+  graphChecksum: "sha256:...",
 });
 ```
 

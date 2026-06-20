@@ -7,13 +7,14 @@ import {
 import { copyText } from "./copy";
 import { ErrorDetails } from "./ErrorDetails";
 import { Button } from "./fields";
-import { stringifyJson } from "./requests";
+import {
+  errorFromResponse,
+  parseJsonInput,
+  stringifyJson,
+  toApiError,
+} from "./requests";
+import type { ApiError } from "./requests";
 import { ResultPanel } from "./ResultPanel";
-
-type ApiError = {
-  readonly message: string;
-  readonly details?: unknown;
-};
 
 export function CustomDefinitionPanel() {
   const [definitionJson, setDefinitionJson] = useState(customDefinitionJson);
@@ -30,8 +31,8 @@ export function CustomDefinitionPanel() {
     setError(null);
 
     try {
-      const definition = JSON.parse(definitionJson) as unknown;
-      const input = JSON.parse(inputJson) as unknown;
+      const definition = parseJsonInput(definitionJson, "Definition JSON");
+      const input = parseJsonInput(inputJson, "Applicant answers JSON");
 
       const response = await fetch("/api/evaluate/custom", {
         method: "POST",
@@ -43,20 +44,14 @@ export function CustomDefinitionPanel() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError({
-          message: data?.error?.message ?? "Custom evaluation failed.",
-          details: data?.error?.details,
-        });
+        setError(errorFromResponse(data, "Custom evaluation failed."));
         setResult(null);
         return;
       }
 
       setResult(data);
     } catch (err) {
-      setError({
-        message:
-          err instanceof Error ? err.message : "Custom evaluation failed.",
-      });
+      setError(toApiError(err, "Custom evaluation failed."));
       setResult(null);
     } finally {
       setIsSubmitting(false);
@@ -69,10 +64,16 @@ export function CustomDefinitionPanel() {
   }
 
   async function copyRequest() {
-    const definition = JSON.parse(definitionJson) as unknown;
-    const input = JSON.parse(inputJson) as unknown;
-    await copyText(stringifyJson({ definition, input }));
-    showCopyStatus("Copied custom request JSON");
+    setError(null);
+
+    try {
+      const definition = parseJsonInput(definitionJson, "Definition JSON");
+      const input = parseJsonInput(inputJson, "Applicant answers JSON");
+      await copyText(stringifyJson({ definition, input }));
+      showCopyStatus("Copied custom request JSON");
+    } catch (err) {
+      setError(toApiError(err, "Unable to copy custom request."));
+    }
   }
 
   function resetExample() {
@@ -106,6 +107,10 @@ export function CustomDefinitionPanel() {
         <div className="mt-6 grid gap-5 lg:grid-cols-2">
           <label className="block text-sm font-medium text-foreground">
             Definition JSON
+            <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">
+              This declares the questions, scoring, profiles, bands, and
+              allocations.
+            </span>
             <textarea
               className="mt-2 min-h-96 w-full rounded-md border border-input bg-code p-4 font-mono text-xs leading-5 text-code-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
               onChange={(event) => setDefinitionJson(event.target.value)}
@@ -116,6 +121,9 @@ export function CustomDefinitionPanel() {
 
           <label className="block text-sm font-medium text-foreground">
             Applicant Answers JSON
+            <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">
+              Answer keys must match the question IDs declared in the definition.
+            </span>
             <textarea
               className="mt-2 min-h-96 w-full rounded-md border border-input bg-code p-4 font-mono text-xs leading-5 text-code-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
               onChange={(event) => setInputJson(event.target.value)}

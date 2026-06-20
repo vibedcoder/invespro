@@ -1,4 +1,5 @@
 import type { BatchEvaluationResult } from "@vibedcoder/invespro-types";
+import { ErrorDetails } from "./ErrorDetails";
 
 export function BatchResultPanel({
   result,
@@ -55,9 +56,9 @@ export function BatchResultPanel({
                     {item.result.normalizedScore.toFixed(2)}
                   </p>
                 ) : (
-                  <p className="mt-2 text-sm text-destructive">
-                    {item.error.message}
-                  </p>
+                  <div className="mt-2">
+                    <ErrorDetails error={item.error} />
+                  </div>
                 )}
               </div>
             ))}
