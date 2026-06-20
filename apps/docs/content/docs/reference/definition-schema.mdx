@@ -1,0 +1,198 @@
+---
+title: Definition Schema
+description: The model definition contract at a glance.
+---
+
+A custom definition describes the questionnaire, scoring model, risk profiles,
+score bands, allocation map, and rule-based overrides.
+
+## Top-level fields
+
+| Field           | Required | Notes                                           |
+| --------------- | -------- | ----------------------------------------------- |
+| `schemaVersion` | Yes      | Must currently be `"1.0"`.                      |
+| `id`            | Yes      | Lower camel case definition ID.                 |
+| `name`          | Yes      | Human-readable model name.                      |
+| `version`       | Yes      | Semantic version string.                        |
+| `currency`      | No       | Three-letter currency code, for example `AUD`.  |
+| `questions`     | Yes      | At least one question.                          |
+| `scoring`       | Yes      | At least one scoring factor.                    |
+| `profiles`      | Yes      | At least two profiles.                          |
+| `scoreBands`    | Yes      | At least two score bands.                       |
+| `assetClasses`  | Yes      | At least one asset class.                       |
+| `allocations`   | Yes      | Allocation map keyed by profile ID.             |
+| `overrides`     | No       | Rule-based profile overrides. Defaults to `[]`. |
+
+### Questions
+
+Questions use lower camel case IDs and one of three types.
+
+| Field      | Required   | Notes                                                                       |
+| ---------- | ---------- | --------------------------------------------------------------------------- |
+| `id`       | Yes        | Lower camel case question ID.                                               |
+| `text`     | Yes        | Human-readable question text.                                               |
+| `purpose`  | No         | `scored`, `override`, or `informational`. Defaults to `scored`.             |
+| `required` | No         | Defaults to `true`. Scored questions must be required.                      |
+| `hint`     | No         | Optional UI/help text.                                                      |
+| `type`     | Yes        | `select`, `number`, or `boolean`.                                           |
+| `options`  | For select | Required for select questions. Not allowed for number or boolean questions. |
+| `unit`     | No         | Useful for number questions, for example `years` or `AUD`.                  |
+| `min`      | No         | Minimum accepted number answer.                                             |
+| `max`      | No         | Maximum accepted number answer.                                             |
+
+| Type      | Expected answer       | Notes                                |
+| --------- | --------------------- | ------------------------------------ |
+| `select`  | Declared option value | Requires an `options` array.         |
+| `number`  | Number                | May define `min`, `max`, and `unit`. |
+| `boolean` | Boolean               | Useful for override checks.          |
+
+Question `purpose` can be `scored`, `override`, or `informational`.
+
+### Scoring
+
+Scoring factors reference scored question IDs. Select and boolean questions use
+`option` rules. Number questions use `range` rules.
+
+| Field        | Required | Notes                                                        |
+| ------------ | -------- | ------------------------------------------------------------ |
+| `questionId` | Yes      | Must reference a declared question with `purpose: "scored"`. |
+| `weight`     | No       | Positive number up to `100`. Defaults to `1`.                |
+| `rules`      | Yes      | At least one option or range scoring rule.                   |
+
+```json
+{
+  "questionId": "riskCapacity",
+  "weight": 1,
+  "rules": [
+    { "type": "range", "max": 5, "score": 0 },
+    { "type": "range", "min": 5, "score": 10 }
+  ]
+}
+```
+
+`option` scoring rules:
+
+```json
+{
+  "type": "option",
+  "value": "balanced_growth",
+  "score": 6
+}
+```
+
+`range` scoring rules:
+
+```json
+{
+  "type": "range",
+  "min": 5,
+  "max": 10,
+  "includeMin": true,
+  "includeMax": false,
+  "score": 10
+}
+```
+
+Scoring rules must follow these constraints:
+
+- Each scored question has exactly one scoring factor.
+- Select scoring must score every declared option exactly once.
+- Select scoring cannot score undeclared option values.
+- Boolean scoring must score both `true` and `false`.
+- Number questions must use range scoring rules.
+- Number ranges must cover all possible values without gaps or overlaps.
+- Each scored factor needs at least one positive score.
+
+### Profiles, bands, and allocations
+
+**Profiles:**
+
+| Field         | Required | Notes                                          |
+| ------------- | -------- | ---------------------------------------------- |
+| `id`          | Yes      | Lower camel case profile ID.                   |
+| `label`       | Yes      | Human-readable profile label.                  |
+| `description` | No       | Optional profile description.                  |
+| `order`       | Yes      | Unique non-negative integer for display order. |
+
+**Score bands:**
+
+| Field       | Required | Notes                              |
+| ----------- | -------- | ---------------------------------- |
+| `profileId` | Yes      | Must reference a declared profile. |
+| `minScore`  | Yes      | Number from `0` to `100`.          |
+
+Every profile must have exactly one score band. Score bands must include a
+minimum score of `0`, and `minScore` values cannot be duplicated.
+
+**Asset classes:**
+
+| Field         | Required | Notes                             |
+| ------------- | -------- | --------------------------------- |
+| `id`          | Yes      | Lower camel case asset class ID.  |
+| `label`       | Yes      | Human-readable asset class label. |
+| `description` | No       | Optional asset class description. |
+
+Allocations are keyed by profile ID. Every profile needs an allocation entry,
+each allocation must include every declared asset class, unknown asset classes
+are rejected, and each allocation must total `100`.
+
+### Overrides
+
+Overrides compare one answer value and force a profile when the condition
+matches.
+
+| Field         | Required | Notes                                       |
+| ------------- | -------- | ------------------------------------------- |
+| `id`          | Yes      | Lower camel case override ID.               |
+| `description` | No       | Optional explanation of the override.       |
+| `questionId`  | Yes      | Must reference a declared question.         |
+| `operator`    | Yes      | One of `<`, `<=`, `>`, `>=`, `==`, or `!=`. |
+| `value`       | Yes      | Must match the referenced question type.    |
+| `profileId`   | Yes      | Must reference a declared profile.          |
+
+```json
+{
+  "id": "emergencyAccess",
+  "questionId": "needsEmergencyAccess",
+  "operator": "==",
+  "value": true,
+  "profileId": "capitalCare"
+}
+```
+
+Supported operators are `<`, `<=`, `>`, `>=`, `==`, and `!=`.
+
+Overrides are evaluated after scoring. When multiple overrides are declared,
+the first matching override in the definition order determines the final
+profile.
+
+## Identifier And Reference Rules
+
+- Definition, question, profile, asset class, and override IDs must be lower camel case.
+- Question, profile, and asset class IDs must be unique within their arrays.
+- Scoring factors, score bands, allocations, and overrides must reference declared IDs.
+- Unknown answer keys are rejected at evaluation time.
+- Optional questions may be omitted from `answers`.
+
+## Custom JDM Contract
+
+Custom JDM graphs can use their own internal graph topology, but the public
+contract remains definition-driven. For the full contract, see
+[Expert JDM Contract](/docs/reference/expert-jdm-contract).
+
+At minimum, the graph must accept inputs derived from question IDs and return:
+
+| Output field       | Type      | Notes                                      |
+| ------------------ | --------- | ------------------------------------------ |
+| `profile_id`       | `string`  | Must match a declared profile ID.          |
+| `raw_score`        | `number`  | Non-negative score before normalization.   |
+| `normalized_score` | `number`  | Number from `0` to `100`.                  |
+| `override_applied` | `boolean` | Optional. Defaults to `false` when absent. |
+| `override_id`      | `string`  | Optional matching override identifier.     |
+
+Generated definition graphs also emit per-question score fields. Those fields
+are used to populate `scores` in the public result when all expected score
+fields are present.
+
+Use the shared schemas from `@vibedcoder/invespro-types` or the demo validator
+before deploying a custom definition.

@@ -5,9 +5,11 @@ import {
   DocsDescription,
   DocsPage,
   DocsTitle,
+  PageLastUpdate,
 } from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { getMDXComponents } from "@/mdx-components";
+import { getDocsPageLastModified } from "@/lib/page-last-modified";
 import { source } from "@/lib/source";
 
 type PageProps = {
@@ -39,6 +41,7 @@ export default async function Page(props: PageProps) {
   if (!page) notFound();
 
   const MDX = page.data.body;
+  const lastModifiedTime = await getDocsPageLastModified(params.slug);
 
   return (
     <DocsPage toc={page.data.toc}>
@@ -50,6 +53,7 @@ export default async function Page(props: PageProps) {
             a: createRelativeLink(source, page),
           })}
         />
+        {lastModifiedTime && <PageLastUpdate date={lastModifiedTime} />}
       </DocsBody>
     </DocsPage>
   );

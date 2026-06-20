@@ -1,6 +1,19 @@
 import type { Metadata } from "next";
+import { JetBrains_Mono, Manrope } from "next/font/google";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import "./globals.css";
+
+const bodyFont = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-body",
+});
+
+const codeFont = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-code",
+});
 
 const siteUrl = "https://invespro.vercel.app";
 const siteTitle = "Invespro - Investment Profiling and Portfolio Allocation";
@@ -74,9 +87,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="flex min-h-full flex-col">
-        <RootProvider search={{ enabled: false }} theme={{ enabled: false }}>
+    <html
+      lang="en"
+      className={`${bodyFont.variable} ${codeFont.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <body className="flex min-h-full flex-col bg-background text-foreground">
+        <RootProvider search={{ enabled: true }} theme={{ enabled: true }}>
           {children}
         </RootProvider>
       </body>

@@ -142,6 +142,85 @@ describe('definition-driven evaluation', () => {
     ]);
   });
 
+  it('skips empty CSV cells and ignores unknown columns', () => {
+    const items = parseCsvBatch(
+      [
+        'applicantId,riskCapacity,needsEmergencyAccess,adviserNote,externalStatus',
+        'APP-CSV,8,,review,imported',
+      ].join('\n'),
+      compileRiskProfileDefinition(customDefinition).definition,
+    );
+
+    expect(items).toEqual([
+      {
+        applicantId: 'APP-CSV',
+        answers: {
+          riskCapacity: 8,
+          adviserNote: 'review',
+        },
+      },
+    ]);
+  });
+
+  it.each([
+    ['true', true],
+    ['t', true],
+    ['yes', true],
+    ['y', true],
+    ['1', true],
+    ['false', false],
+    ['f', false],
+    ['no', false],
+    ['n', false],
+    ['0', false],
+  ])('coerces CSV boolean value "%s"', (raw, expected) => {
+    const items = parseCsvBatch(
+      ['applicantId,riskCapacity,needsEmergencyAccess', `APP-CSV,8,${raw}`].join('\n'),
+      compileRiskProfileDefinition(customDefinition).definition,
+    );
+
+    expect(items[0]?.answers).toMatchObject({
+      needsEmergencyAccess: expected,
+    });
+  });
+
+  it('preserves unrecognized CSV values so validation can reject them later', () => {
+    const items = parseCsvBatch(
+      [
+        'applicantId,riskCapacity,needsEmergencyAccess,adviserNote',
+        'APP-CSV,not-a-number,maybe,Unknown label',
+      ].join('\n'),
+      compileRiskProfileDefinition(customDefinition).definition,
+    );
+
+    expect(items).toEqual([
+      {
+        applicantId: 'APP-CSV',
+        answers: {
+          riskCapacity: 'not-a-number',
+          needsEmergencyAccess: 'maybe',
+          adviserNote: 'Unknown label',
+        },
+      },
+    ]);
+  });
+
+  it('omits blank applicant IDs', () => {
+    const items = parseCsvBatch(
+      ['applicantId,riskCapacity,needsEmergencyAccess', ',8,no'].join('\n'),
+      compileRiskProfileDefinition(customDefinition).definition,
+    );
+
+    expect(items).toEqual([
+      {
+        answers: {
+          riskCapacity: 8,
+          needsEmergencyAccess: false,
+        },
+      },
+    ]);
+  });
+
   it('applies a custom override', async () => {
     const engine = track(new RiskProfilerEngine({ definition: customDefinition }));
     const result = await engine.evaluate({

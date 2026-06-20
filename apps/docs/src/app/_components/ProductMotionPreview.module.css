@@ -1,0 +1,115 @@
+.stage {
+  animation: preview-stage 40s ease-in-out infinite;
+  inset: 0.75rem;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: translateY(10px) scale(0.985);
+}
+
+.csvIntro {
+  animation-delay: 0s;
+}
+
+.csvUpload {
+  animation-delay: 4s;
+}
+
+.csvEvaluate {
+  animation-delay: 8s;
+}
+
+.csvResults {
+  animation-delay: 12s;
+}
+
+.csvDetail {
+  animation-delay: 16s;
+}
+
+.definitionIntro {
+  animation-delay: 20s;
+}
+
+.definitionEdit {
+  animation-delay: 24s;
+}
+
+.definitionApply {
+  animation-delay: 28s;
+}
+
+.definitionEvaluate {
+  animation-delay: 32s;
+}
+
+.definitionResults {
+  animation-delay: 36s;
+}
+
+.meter {
+  transform-origin: left;
+}
+
+.meter {
+  animation: meter-fill 4s ease-in-out infinite;
+}
+
+.scoreMeter {
+  transform-origin: left;
+}
+
+.item {
+  animation: item-enter 4s ease-in-out infinite;
+}
+
+@keyframes preview-stage {
+  0%,
+  7.8% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  9.4%,
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+  }
+}
+
+@keyframes meter-fill {
+  0% {
+    transform: scaleX(0.12);
+  }
+
+  45%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes item-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  30%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .meter,
+  .item {
+    animation: none;
+  }
+
+  .csvIntro {
+    opacity: 1;
+    transform: none;
+  }
+}

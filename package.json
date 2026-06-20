@@ -21,6 +21,7 @@
     "build": "pnpm -r build",
     "dev": "pnpm -r dev",
     "docs:dev": "pnpm --filter @invespro/docs dev",
+    "docs:dev:webpack": "pnpm --filter @invespro/docs dev:webpack",
     "docs:build": "pnpm --filter @invespro/docs... build",
     "test": "pnpm -r test",
     "typecheck": "tsc -b --emitDeclarationOnly",

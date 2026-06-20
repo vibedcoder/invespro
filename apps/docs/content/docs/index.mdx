@@ -1,43 +1,51 @@
 ---
-title: Overview
+title: Introduction
 description: What Invespro provides and how the packages fit together.
 ---
 
 Invespro is a rules-based investment profiling and portfolio allocation engine.
 It evaluates applicant answers against a versioned model definition and returns
-a risk profile, score metadata, allocation map, and definition checksum.
+a risk profile, score metadata, allocation map, and graph checksum for
+traceability.
 
 The project is useful when you want a standard profiling flow that can still be
 customized at the question, scoring, band, override, and allocation level.
 
 ## What it includes
 
-- A default investment profiling model.
 - A core TypeScript engine for embedded Node.js services.
 - A Hono REST adapter for service integration.
 - A CLI for JSON and CSV evaluation.
-- Shared Zod schemas and TypeScript types.
 - Batch evaluation for JSON and CSV inputs.
+- A sensible default investment profiling model.
 - Custom definition support for controlled model customization.
+- Expert support for custom JDM graphs that satisfy the Invespro input and
+  result contract.
+- Shared Zod schemas and TypeScript types.
 
-## Package map
+## Packages
 
-| Package | Purpose |
-| --- | --- |
-| `@vibedcoder/invespro-core` | Main engine, default definition, compiler, CSV parser, batch evaluation. |
-| `@vibedcoder/invespro-hono` | REST API adapter for Hono services. |
-| `@vibedcoder/invespro-cli` | Command-line evaluation and validation. |
-| `@vibedcoder/invespro-types` | Shared Zod schemas and TypeScript types. |
+| Package                      | Purpose                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| `@vibedcoder/invespro-core`  | Main engine, default definition, compiler, CSV parser, batch evaluation. |
+| `@vibedcoder/invespro-hono`  | REST API adapter for Hono services.                                      |
+| `@vibedcoder/invespro-cli`   | Command-line evaluation and validation.                                  |
+| `@vibedcoder/invespro-types` | Shared Zod schemas and TypeScript types.                                 |
 
 ## Default path
 
-Most users should start with the default model and only customize once their
-policy requirements are clear.
+Use the default model when you want a ready-made profiling flow or a reference
+model for your own policy design. Use a custom definition when your questions,
+scoring, bands, overrides, or allocations need to match a specific business
+policy.
 
 1. Install the core package.
-2. Evaluate one applicant.
-3. Add batch evaluation if needed.
+2. Evaluate one applicant with the quickstart.
+3. Add batch evaluation for JSON or CSV inputs.
 4. Add the REST adapter if another service needs access.
-5. Introduce custom definitions when the default questions or scoring are not enough.
+5. Introduce a custom definition or expert JDM graph when the model contract
+   needs to change.
 
-[Try the demo](/demo) to inspect the default and custom flows without writing code.
+[Install Invespro](/docs/getting-started/installation), follow the
+[quickstart](/docs/getting-started/quickstart), or [try the demo](/demo) to
+inspect the default and custom flows without writing code.

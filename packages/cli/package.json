@@ -37,6 +37,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsx --tsconfig tsconfig.dev.json src/index.ts",
+    "test": "vitest run",
     "typecheck": "tsc -b --emitDeclarationOnly",
     "lint": "eslint .",
     "clean": "rm -rf dist"
@@ -54,6 +55,7 @@
     "@types/node": "^25.9.3",
     "tsdown": "^0.22.2",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   }
 }

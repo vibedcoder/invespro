@@ -1,0 +1,164 @@
+---
+title: Result Shape
+description: Fields returned by an evaluation.
+---
+
+An evaluation returns profile, scoring, allocation, and model metadata.
+
+## Evaluation input
+
+Single evaluations use a definition-driven envelope:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `applicantId` | `string` | Optional external applicant identifier. |
+| `answers` | `Record<string, string \| number \| boolean>` | Answers keyed by definition question ID. |
+
+```json
+{
+  "applicantId": "APP-001",
+  "answers": {
+    "investmentHorizonYears": 10,
+    "riskAttitude": "hold",
+    "investmentObjective": "balanced_growth",
+    "annualIncome": 95000,
+    "dtiRatio": 22,
+    "liquidityMonths": 4,
+    "investmentExperience": "intermediate"
+  }
+}
+```
+
+Custom definitions use the same envelope, but the keys inside `answers` come
+from the active definition.
+
+## Evaluation result
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `applicantId` | `string` | Present when the input included an applicant ID. |
+| `scores` | `Record<string, number>` | Optional per-scored-question points, keyed by question ID. |
+| `rawScore` | `number` | Sum of weighted score contributions before normalization. |
+| `normalizedScore` | `number` | Final score on a 0-100 scale, rounded to two decimals. |
+| `profile` | `{ id: string, label: string, description?: string }` | Final profile after score-band resolution and overrides. |
+| `overrideApplied` | `boolean` | Whether an override changed the final profile. |
+| `overrideId` | `string` | Present when an override matched. |
+| `allocation` | `Record<string, number>` | Allocation percentages for the final profile. |
+| `evaluatedAt` | `string` | ISO timestamp generated at evaluation time. |
+| `definition` | `{ id: string, version: string, schemaVersion: string, graphChecksum: string }` | Model metadata for auditability. |
+
+The `definition` metadata includes the definition ID, version, schema version,
+and graph checksum so stored results can be traced back to the model version
+that produced them.
+
+```json
+{
+  "applicantId": "APP-001",
+  "scores": {
+    "investmentHorizonYears": 25,
+    "riskAttitude": 10
+  },
+  "rawScore": 56,
+  "normalizedScore": 70,
+  "profile": {
+    "id": "moderate",
+    "label": "Moderate"
+  },
+  "overrideApplied": false,
+  "allocation": {
+    "equities": 55,
+    "fixedIncome": 30,
+    "cash": 5,
+    "alternatives": 10
+  },
+  "evaluatedAt": "2026-06-20T10:00:00.000Z",
+  "definition": {
+    "id": "invesproDefaultRiskProfiler",
+    "version": "0.1.0",
+    "schemaVersion": "1.0",
+    "graphChecksum": "sha256:..."
+  }
+}
+```
+
+## Batch result
+
+Batch input can be an object with an `items` array. The core engine also accepts
+a raw array directly; REST uses the object envelope for JSON batch requests.
+
+```json
+{
+  "items": [
+    {
+      "applicantId": "APP-001",
+      "answers": {}
+    }
+  ]
+}
+```
+
+Batch evaluation returns one status per input item. A failed item does not stop
+the rest of the batch.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `summary.total` | `number` | Number of submitted applicants. |
+| `summary.fulfilled` | `number` | Number of successful evaluations. |
+| `summary.rejected` | `number` | Number of failed evaluations. |
+| `items[].index` | `number` | Original zero-based item position. |
+| `items[].applicantId` | `string` | Present when the input included one. |
+| `items[].status` | `"fulfilled" \| "rejected"` | Per-applicant outcome. |
+| `items[].result` | `EvaluationResult` | Present for fulfilled items. |
+| `items[].error` | `{ code, message, details? }` | Present for rejected items. |
+
+Rejected item errors preserve validation details when the failure comes from
+input validation.
+
+```json
+{
+  "summary": {
+    "total": 2,
+    "fulfilled": 1,
+    "rejected": 1
+  },
+  "items": [
+    {
+      "index": 0,
+      "applicantId": "APP-001",
+      "status": "fulfilled",
+      "result": {
+        "rawScore": 56,
+        "normalizedScore": 70,
+        "profile": {
+          "id": "moderate",
+          "label": "Moderate"
+        },
+        "overrideApplied": false,
+        "allocation": {
+          "equities": 55,
+          "fixedIncome": 30,
+          "cash": 5,
+          "alternatives": 10
+        },
+        "evaluatedAt": "2026-06-20T10:00:00.000Z",
+        "definition": {
+          "id": "invesproDefaultRiskProfiler",
+          "version": "0.1.0",
+          "schemaVersion": "1.0",
+          "graphChecksum": "sha256:..."
+        }
+      }
+    },
+    {
+      "index": 1,
+      "applicantId": "APP-002",
+      "status": "rejected",
+      "error": {
+        "code": "evaluation_error",
+        "message": "Expected number, received string",
+        "details": {}
+      }
+    }
+  ]
+}
+```

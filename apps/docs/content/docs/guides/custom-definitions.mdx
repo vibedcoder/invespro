@@ -1,0 +1,213 @@
+---
+title: Custom Definitions
+description: Customize questions, scoring, profiles, bands, overrides, and allocations.
+---
+
+Custom definitions are the controlled customization path. They let a team adapt
+the model without writing an arbitrary decision graph from scratch.
+
+## What can be customized
+
+- Definition ID, name, semantic version, and optional currency.
+- Question IDs, labels, descriptions, hints, types, options, required flags, units, and number bounds.
+- Scored, override-only, and informational questions.
+- Scoring rules and weights.
+- Profile IDs, labels, descriptions, and display order.
+- Score bands.
+- Asset classes and allocation percentages.
+- Rule-based overrides, including comparison operator and target profile.
+
+### Example
+
+```ts
+import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
+import type { RiskProfileDefinitionInput } from "@vibedcoder/invespro-types";
+
+const definition = {
+  schemaVersion: "1.0",
+  id: "customCapacityModel",
+  name: "Custom Capacity Model",
+  version: "1.0.0",
+  currency: "AUD",
+  questions: [
+    {
+      id: "riskCapacity",
+      text: "How much investment risk can you financially absorb?",
+      purpose: "scored",
+      type: "number",
+      min: 0,
+      max: 10,
+    },
+    {
+      id: "needsEmergencyAccess",
+      text: "Do you need emergency access to the investment?",
+      purpose: "override",
+      type: "boolean",
+    },
+    {
+      id: "adviserNote",
+      text: "Optional adviser classification",
+      purpose: "informational",
+      required: false,
+      type: "select",
+      options: [
+        { label: "Standard", value: "standard" },
+        { label: "Review", value: "review" },
+      ],
+    },
+  ],
+  scoring: [
+    {
+      questionId: "riskCapacity",
+      weight: 1,
+      rules: [
+        { type: "range", max: 5, score: 0 },
+        { type: "range", min: 5, score: 10 },
+      ],
+    },
+  ],
+  profiles: [
+    { id: "capitalCare", label: "Capital Care", order: 0 },
+    { id: "longTermGrowth", label: "Long-term Growth", order: 1 },
+  ],
+  scoreBands: [
+    { profileId: "capitalCare", minScore: 0 },
+    { profileId: "longTermGrowth", minScore: 50 },
+  ],
+  assetClasses: [
+    { id: "growthAssets", label: "Growth Assets" },
+    { id: "defensiveAssets", label: "Defensive Assets" },
+  ],
+  allocations: {
+    capitalCare: {
+      growthAssets: 20,
+      defensiveAssets: 80,
+    },
+    longTermGrowth: {
+      growthAssets: 80,
+      defensiveAssets: 20,
+    },
+  },
+  overrides: [
+    {
+      id: "emergencyAccess",
+      questionId: "needsEmergencyAccess",
+      operator: "==",
+      value: true,
+      profileId: "capitalCare",
+    },
+  ],
+} satisfies RiskProfileDefinitionInput;
+
+const engine = new RiskProfilerEngine({ definition });
+```
+
+This definition does three useful things:
+
+- It scores one numeric capacity question.
+- It returns one of two custom profiles with custom asset classes.
+- It forces `Capital Care` when the applicant needs emergency access.
+
+### Evaluate the custom model
+
+```ts
+const batch = await engine.evaluateMany({
+  items: [
+    {
+      applicantId: "APP-CUSTOM-001",
+      answers: {
+        riskCapacity: 8,
+        needsEmergencyAccess: false,
+        adviserNote: "standard",
+      },
+    },
+    {
+      applicantId: "APP-CUSTOM-002",
+      answers: {
+        riskCapacity: 8,
+        needsEmergencyAccess: true,
+        adviserNote: "review",
+      },
+    },
+  ],
+});
+```
+
+Both applicants score `100`, but the second applicant is moved into the more
+defensive profile because the override matches:
+
+```json
+{
+  "summary": {
+    "total": 2,
+    "fulfilled": 2,
+    "rejected": 0
+  },
+  "items": [
+    {
+      "applicantId": "APP-CUSTOM-001",
+      "status": "fulfilled",
+      "result": {
+        "normalizedScore": 100,
+        "profile": {
+          "id": "longTermGrowth",
+          "label": "Long-term Growth"
+        },
+        "overrideApplied": false,
+        "allocation": {
+          "growthAssets": 80,
+          "defensiveAssets": 20
+        }
+      }
+    },
+    {
+      "applicantId": "APP-CUSTOM-002",
+      "status": "fulfilled",
+      "result": {
+        "normalizedScore": 100,
+        "profile": {
+          "id": "capitalCare",
+          "label": "Capital Care"
+        },
+        "overrideApplied": true,
+        "overrideId": "emergencyAccess",
+        "allocation": {
+          "growthAssets": 20,
+          "defensiveAssets": 80
+        }
+      }
+    }
+  ]
+}
+```
+
+Use the demo validator or `RiskProfileDefinitionSchema` from
+`@vibedcoder/invespro-types` before deploying a custom model.
+
+### Validation rules to remember
+
+- IDs must be lower camel case.
+- `schemaVersion` must currently be `"1.0"` and `version` must be semantic.
+- Select questions need declared options.
+- Only select questions can define options.
+- Scored questions must be required and have exactly one scoring factor.
+- Select scoring must cover every declared option and cannot score undeclared options.
+- Boolean scoring must score both `true` and `false`.
+- Number questions must use range scoring rules, and ranges must cover all possible values without gaps or overlap.
+- Every profile needs a unique order, one score band, and one allocation.
+- Score bands must include a minimum score of `0`.
+- Each allocation must include every asset class and total `100`.
+- Overrides must reference declared questions and profiles, and their value must match the question type.
+
+See [Definition Schema](/docs/reference/definition-schema) for the full field
+contract.
+
+## Expert JDM mode
+
+Custom definitions cover the supported Invespro model: questions, scoring,
+score bands, overrides, profiles, and allocations. Expert JDM mode lets
+advanced users replace the generated decision graph while keeping the same input
+and result contract.
+
+If your workflow needs a different public contract, you may need to extend
+Invespro at the package level.

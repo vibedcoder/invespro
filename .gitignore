@@ -43,4 +43,4 @@ lerna-debug.log*
 *.sw?
 sample.json
 AGENTS.md
-GIT_WORKFLOW.md
+/docs/internal/

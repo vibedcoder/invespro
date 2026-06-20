@@ -1,0 +1,157 @@
+---
+title: REST API
+description: Expose Invespro evaluation through the Hono adapter.
+---
+
+The Hono adapter wraps an engine instance and exposes JSON endpoints.
+
+Use it when another service, frontend, operations script, or batch workflow
+should call Invespro over HTTP instead of importing the core engine directly.
+
+## Standalone service
+
+```ts
+import { serve } from "@hono/node-server";
+import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
+import { createRiskProfilerApp } from "@vibedcoder/invespro-hono";
+
+const engine = new RiskProfilerEngine();
+const app = createRiskProfilerApp({ engine });
+
+serve({ fetch: app.fetch, port: 3000 });
+```
+
+This pattern works well when multiple systems need the same profiling service.
+Your host application still owns deployment, authentication, logging, and
+storage.
+
+## Mount inside an existing Hono app
+
+```ts
+import { Hono } from "hono";
+import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
+import { createRiskProfilerApp } from "@vibedcoder/invespro-hono";
+
+const app = new Hono();
+const engine = new RiskProfilerEngine();
+
+app.route("/risk", createRiskProfilerApp({ engine }));
+```
+
+Mounted routes are prefixed by the parent path, for example
+`POST /risk/evaluate` and `GET /risk/definition`.
+
+The Hono package currently targets modern Node.js, matching the core engine and
+published package runtime assumptions. Treat other Hono runtimes as unverified
+until they are explicitly tested.
+
+## Endpoints
+
+| Method | Path                    | Purpose                                   |
+| ------ | ----------------------- | ----------------------------------------- |
+| `GET`  | `/health`               | Health check.                             |
+| `GET`  | `/definition`           | Active model definition.                  |
+| `GET`  | `/questions`            | Active questionnaire.                     |
+| `POST` | `/definitions/validate` | Validate a custom definition.             |
+| `POST` | `/evaluate`             | Evaluate one applicant.                   |
+| `POST` | `/evaluate/batch`       | Evaluate a JSON batch.                    |
+| `POST` | `/evaluate/batch/csv`   | Evaluate a raw CSV batch and return JSON. |
+
+### Single evaluation
+
+```http
+POST /evaluate
+Content-Type: application/json
+```
+
+```json
+{
+  "applicantId": "APP-001",
+  "answers": {
+    "investmentHorizonYears": 10,
+    "riskAttitude": "hold",
+    "investmentObjective": "balanced_growth",
+    "annualIncome": 95000,
+    "dtiRatio": 22,
+    "liquidityMonths": 4,
+    "investmentExperience": "intermediate"
+  }
+}
+```
+
+### Batch evaluation
+
+```json
+{
+  "items": [
+    {
+      "applicantId": "APP-001",
+      "answers": {
+        "investmentHorizonYears": 10,
+        "riskAttitude": "hold",
+        "investmentObjective": "balanced_growth",
+        "annualIncome": 95000,
+        "dtiRatio": 22,
+        "liquidityMonths": 4,
+        "investmentExperience": "intermediate"
+      }
+    },
+    {
+      "applicantId": "APP-002",
+      "answers": {
+        "investmentHorizonYears": 20,
+        "riskAttitude": "buy_more",
+        "investmentObjective": "maximum_growth",
+        "annualIncome": 180000,
+        "dtiRatio": 50,
+        "liquidityMonths": 8,
+        "investmentExperience": "experienced"
+      }
+    }
+  ]
+}
+```
+
+The response includes a summary and one result item per applicant.
+
+```json
+{
+  "summary": {
+    "total": 2,
+    "fulfilled": 2,
+    "rejected": 0
+  },
+  "items": [
+    {
+      "index": 0,
+      "applicantId": "APP-001",
+      "status": "fulfilled"
+    },
+    {
+      "index": 1,
+      "applicantId": "APP-002",
+      "status": "fulfilled"
+    }
+  ]
+}
+```
+
+### Definition validation
+
+Use `/definitions/validate` before deploying or storing a custom model.
+Validation errors use the shared API error envelope:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Invalid risk profile definition.",
+    "details": {
+      "formErrors": [],
+      "fieldErrors": {
+        "questions": ["Too small: expected array to have >=1 items"]
+      }
+    }
+  }
+}
+```

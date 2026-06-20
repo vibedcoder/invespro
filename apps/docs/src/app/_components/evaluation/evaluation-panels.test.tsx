@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { RiskProfileDefinition } from "@vibedcoder/invespro-types";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -181,6 +181,24 @@ describe("evaluation demo panels", () => {
     expect(await screen.findByText("fulfilled")).toBeInTheDocument();
   });
 
+  it("shows a local validation message for malformed batch JSON", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<BatchEvaluationPanel />);
+
+    const editor = screen.getByLabelText(/batch request json/i);
+    fireEvent.change(editor, { target: { value: "{bad json" } });
+    await userEvent.click(
+      screen.getByRole("button", { name: /evaluate batch/i }),
+    );
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText("Batch request JSON is not valid JSON."),
+    ).toBeInTheDocument();
+  });
+
   it("uploads and submits CSV batch input", async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse(batchResult));
     vi.stubGlobal("fetch", fetchMock);
@@ -233,6 +251,24 @@ describe("evaluation demo panels", () => {
       expect.objectContaining({ method: "POST" }),
     );
     expect(await screen.findByText("Growth")).toBeInTheDocument();
+  });
+
+  it("shows a local validation message for malformed custom definition JSON", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<CustomDefinitionPanel />);
+
+    const editor = screen.getByLabelText(/definition json/i);
+    fireEvent.change(editor, { target: { value: "{bad json" } });
+    await userEvent.click(
+      screen.getByRole("button", { name: /evaluate custom model/i }),
+    );
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText("Definition JSON is not valid JSON."),
+    ).toBeInTheDocument();
   });
 
   it("renders structured validation details from custom evaluation failures", async () => {

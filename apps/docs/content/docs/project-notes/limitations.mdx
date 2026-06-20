@@ -14,7 +14,15 @@ Current boundaries:
 - No hosted admin UI for editing definitions.
 - No signed model registry.
 - No hosted API authentication or rate limiting.
+- Custom definitions are intentionally limited to the supported profiling model:
+  questions, scoring, score bands, overrides, profiles, and allocations.
+- Expert JDM mode can replace the generated graph, but it must keep the same
+  public input and result contract.
 - The default questionnaire should be reviewed before regulated production use.
+
+If your workflow needs different public inputs, outputs, or result semantics,
+extend Invespro at the package level rather than treating expert JDM mode as a
+general-purpose product-suitability platform.
 
 ## Recommended production pattern
 

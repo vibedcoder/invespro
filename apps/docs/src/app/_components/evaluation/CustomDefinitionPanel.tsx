@@ -7,13 +7,14 @@ import {
 import { copyText } from "./copy";
 import { ErrorDetails } from "./ErrorDetails";
 import { Button } from "./fields";
-import { stringifyJson } from "./requests";
+import {
+  errorFromResponse,
+  parseJsonInput,
+  stringifyJson,
+  toApiError,
+} from "./requests";
+import type { ApiError } from "./requests";
 import { ResultPanel } from "./ResultPanel";
-
-type ApiError = {
-  readonly message: string;
-  readonly details?: unknown;
-};
 
 export function CustomDefinitionPanel() {
   const [definitionJson, setDefinitionJson] = useState(customDefinitionJson);
@@ -30,8 +31,8 @@ export function CustomDefinitionPanel() {
     setError(null);
 
     try {
-      const definition = JSON.parse(definitionJson) as unknown;
-      const input = JSON.parse(inputJson) as unknown;
+      const definition = parseJsonInput(definitionJson, "Definition JSON");
+      const input = parseJsonInput(inputJson, "Applicant answers JSON");
 
       const response = await fetch("/api/evaluate/custom", {
         method: "POST",
@@ -43,20 +44,14 @@ export function CustomDefinitionPanel() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError({
-          message: data?.error?.message ?? "Custom evaluation failed.",
-          details: data?.error?.details,
-        });
+        setError(errorFromResponse(data, "Custom evaluation failed."));
         setResult(null);
         return;
       }
 
       setResult(data);
     } catch (err) {
-      setError({
-        message:
-          err instanceof Error ? err.message : "Custom evaluation failed.",
-      });
+      setError(toApiError(err, "Custom evaluation failed."));
       setResult(null);
     } finally {
       setIsSubmitting(false);
@@ -69,10 +64,16 @@ export function CustomDefinitionPanel() {
   }
 
   async function copyRequest() {
-    const definition = JSON.parse(definitionJson) as unknown;
-    const input = JSON.parse(inputJson) as unknown;
-    await copyText(stringifyJson({ definition, input }));
-    showCopyStatus("Copied custom request JSON");
+    setError(null);
+
+    try {
+      const definition = parseJsonInput(definitionJson, "Definition JSON");
+      const input = parseJsonInput(inputJson, "Applicant answers JSON");
+      await copyText(stringifyJson({ definition, input }));
+      showCopyStatus("Copied custom request JSON");
+    } catch (err) {
+      setError(toApiError(err, "Unable to copy custom request."));
+    }
   }
 
   function resetExample() {
@@ -90,34 +91,41 @@ export function CustomDefinitionPanel() {
   return (
     <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
       <form
-        className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
+        className="rounded-lg border border-border bg-card p-6 shadow-sm"
         onSubmit={handleSubmit}
       >
-        <div className="border-b border-slate-200 pb-5">
-          <h2 className="text-lg font-semibold text-slate-950">
+        <div className="border-b border-border pb-5">
+          <h2 className="text-lg font-semibold text-foreground">
             Custom Model
           </h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Edit a versioned Invespro definition and applicant answers, then
             evaluate them without writing a custom JDM graph.
           </p>
         </div>
 
         <div className="mt-6 grid gap-5 lg:grid-cols-2">
-          <label className="block text-sm font-medium text-slate-700">
+          <label className="block text-sm font-medium text-foreground">
             Definition JSON
+            <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">
+              This declares the questions, scoring, profiles, bands, and
+              allocations.
+            </span>
             <textarea
-              className="mt-2 min-h-96 w-full rounded-md border border-slate-300 bg-slate-950 p-4 font-mono text-xs leading-5 text-slate-100 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+              className="mt-2 min-h-96 w-full rounded-md border border-input bg-code p-4 font-mono text-xs leading-5 text-code-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
               onChange={(event) => setDefinitionJson(event.target.value)}
               spellCheck={false}
               value={definitionJson}
             />
           </label>
 
-          <label className="block text-sm font-medium text-slate-700">
+          <label className="block text-sm font-medium text-foreground">
             Applicant Answers JSON
+            <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">
+              Answer keys must match the question IDs declared in the definition.
+            </span>
             <textarea
-              className="mt-2 min-h-96 w-full rounded-md border border-slate-300 bg-slate-950 p-4 font-mono text-xs leading-5 text-slate-100 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+              className="mt-2 min-h-96 w-full rounded-md border border-input bg-code p-4 font-mono text-xs leading-5 text-code-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/25"
               onChange={(event) => setInputJson(event.target.value)}
               spellCheck={false}
               value={inputJson}
@@ -125,7 +133,7 @@ export function CustomDefinitionPanel() {
           </label>
         </div>
 
-        <div className="mt-6 flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="mt-6 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:flex-wrap sm:items-center">
           <Button
             disabled={isSubmitting}
             label="Evaluate custom model"
@@ -133,28 +141,28 @@ export function CustomDefinitionPanel() {
             type="submit"
           />
           <button
-            className="inline-flex h-11 items-center justify-center rounded-md border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
             onClick={copyDefinition}
             type="button"
           >
             Copy definition
           </button>
           <button
-            className="inline-flex h-11 items-center justify-center rounded-md border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
             onClick={copyRequest}
             type="button"
           >
             Copy request
           </button>
           <button
-            className="inline-flex h-11 items-center justify-center rounded-md border border-slate-300 bg-white px-5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
             onClick={resetExample}
             type="button"
           >
             Reset example
           </button>
           {copyStatus && (
-            <p className="text-sm font-medium text-emerald-700">
+            <p className="text-sm font-medium text-success">
               {copyStatus}
             </p>
           )}
@@ -163,11 +171,11 @@ export function CustomDefinitionPanel() {
       </form>
 
       <div className="space-y-6">
-        <aside className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-950">
+        <aside className="rounded-lg border border-border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-foreground">
             What You Can Change
           </h2>
-          <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
+          <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
             <li>Question IDs, wording, options, and required flags.</li>
             <li>Question weights and scoring rules.</li>
             <li>Profile IDs, score bands, and allocation percentages.</li>

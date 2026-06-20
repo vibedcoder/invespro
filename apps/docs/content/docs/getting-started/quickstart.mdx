@@ -1,0 +1,123 @@
+---
+title: Quickstart
+description: Evaluate one applicant using the default Invespro model.
+---
+
+The fastest path is to create a `RiskProfilerEngine` with no options. That uses
+the bundled default definition.
+
+```ts
+import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
+
+const engine = new RiskProfilerEngine();
+
+const result = await engine.evaluate({
+  applicantId: "APP-001",
+  answers: {
+    investmentHorizonYears: 10,
+    riskAttitude: "hold",
+    investmentObjective: "balanced_growth",
+    annualIncome: 95000,
+    dtiRatio: 22,
+    liquidityMonths: 4,
+    investmentExperience: "intermediate",
+  },
+});
+
+console.log(result.profile.label);
+console.log(result.allocation);
+```
+
+The result is an audit-friendly object with the score, final profile,
+allocation, and model metadata:
+
+```json
+{
+  "applicantId": "APP-001",
+  "scores": {
+    "investmentHorizonYears": 7,
+    "riskAttitude": 7,
+    "investmentObjective": 6,
+    "annualIncome": 6,
+    "dtiRatio": 6,
+    "liquidityMonths": 4,
+    "investmentExperience": 4
+  },
+  "rawScore": 40,
+  "normalizedScore": 71.43,
+  "profile": {
+    "id": "moderatelyAggressive",
+    "label": "Moderately Aggressive"
+  },
+  "overrideApplied": false,
+  "allocation": {
+    "equities": 70,
+    "fixedIncome": 20,
+    "cash": 5,
+    "alternatives": 5
+  },
+  "evaluatedAt": "2026-06-20T00:00:00.000Z",
+  "definition": {
+    "id": "invesproDefaultRiskProfiler",
+    "version": "0.1.0",
+    "schemaVersion": "1.0",
+    "graphChecksum": "sha256:..."
+  }
+}
+```
+
+The `definition` metadata lets stored results be traced back to the model graph
+that produced them.
+
+## Batch evaluation
+
+```ts
+const batch = await engine.evaluateMany({
+  items: [
+    {
+      applicantId: "APP-001",
+      answers: {
+        investmentHorizonYears: 10,
+        riskAttitude: "hold",
+        investmentObjective: "balanced_growth",
+        annualIncome: 95000,
+        dtiRatio: 22,
+        liquidityMonths: 4,
+        investmentExperience: "intermediate",
+      },
+    },
+    {
+      applicantId: "APP-002",
+      answers: {
+        investmentHorizonYears: 20,
+        riskAttitude: "buy_more",
+        investmentObjective: "maximum_growth",
+        annualIncome: 180000,
+        dtiRatio: 50,
+        liquidityMonths: 8,
+        investmentExperience: "experienced",
+      },
+    },
+  ],
+});
+
+console.log(batch.summary);
+console.log(batch.items.map((item) => item.status));
+```
+
+Example summary:
+
+```json
+{
+  "total": 2,
+  "fulfilled": 2,
+  "rejected": 0
+}
+```
+
+Each batch item is returned as fulfilled or rejected, so one invalid applicant
+does not break the full batch.
+
+In the default model, overrides can change the final profile. For example, an
+applicant can score like a growth investor but still receive a conservative
+allocation when a high debt-to-income rule matches.
