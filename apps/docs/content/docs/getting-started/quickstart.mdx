@@ -11,22 +11,29 @@ import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
 
 const engine = new RiskProfilerEngine();
 
-const result = await engine.evaluate({
-  applicantId: "APP-001",
-  answers: {
-    investmentHorizonYears: 10,
-    riskAttitude: "hold",
-    investmentObjective: "balanced_growth",
-    annualIncome: 95000,
-    dtiRatio: 22,
-    liquidityMonths: 4,
-    investmentExperience: "intermediate",
-  },
-});
+try {
+  const result = await engine.evaluate({
+    applicantId: "APP-001",
+    answers: {
+      investmentHorizonYears: 10,
+      riskAttitude: "hold",
+      investmentObjective: "balanced_growth",
+      annualIncome: 95000,
+      dtiRatio: 22,
+      liquidityMonths: 4,
+      investmentExperience: "intermediate",
+    },
+  });
 
-console.log(result.profile.label);
-console.log(result.allocation);
+  console.log(result.profile.label);
+  console.log(result.allocation);
+} finally {
+  engine.dispose();
+}
 ```
+
+Call `engine.dispose()` when the engine is no longer needed so the underlying
+ZenEngine resources are released.
 
 The result is an audit-friendly object with the score, final profile,
 allocation, and model metadata:

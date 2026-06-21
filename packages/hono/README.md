@@ -1,8 +1,10 @@
 # @vibedcoder/invespro-hono
 
-Hono REST adapter for Invespro, a rules-based investment profiling and portfolio allocation engine.
+Hono REST adapter for Invespro, a rules-based investment profiling and
+portfolio allocation engine.
 
-Use this package when another service needs to call Invespro over HTTP instead of importing the core engine directly.
+Use this package when another service should call Invespro over HTTP instead of
+importing the core engine directly.
 
 ## Installation
 
@@ -18,16 +20,25 @@ npm install @vibedcoder/invespro-hono hono
 
 ```ts
 import { serve } from '@hono/node-server';
+import { createRiskProfilerService } from '@vibedcoder/invespro-hono';
+
+const service = createRiskProfilerService();
+
+serve({
+  fetch: service.app.fetch,
+  port: 3000,
+});
+```
+
+If you already own the engine lifecycle, create routes around an existing
+engine:
+
+```ts
 import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
 import { createRiskProfilerApp } from '@vibedcoder/invespro-hono';
 
 const engine = new RiskProfilerEngine();
 const app = createRiskProfilerApp({ engine });
-
-serve({
-  fetch: app.fetch,
-  port: 3000,
-});
 ```
 
 ## Endpoints
@@ -36,9 +47,17 @@ serve({
 
 Returns service health.
 
+### `GET /definition`
+
+Returns the active risk profile definition.
+
 ### `GET /questions`
 
 Returns the active questionnaire metadata.
+
+### `POST /definitions/validate`
+
+Validates a custom risk profile definition.
 
 ### `POST /evaluate`
 
@@ -61,7 +80,7 @@ Evaluates one applicant.
 
 ### `POST /evaluate/batch`
 
-Evaluates multiple applicants in one request.
+Evaluates multiple applicants in one JSON request.
 
 ```json
 {
@@ -95,14 +114,15 @@ APP-001,10,hold,balanced_growth,75000,20,4,intermediate
 CSV columns should use the active definition's question IDs. `applicantId` is
 optional.
 
-## Custom Engine
+## Custom Definitions
 
 ```ts
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
-import { createRiskProfilerApp } from '@vibedcoder/invespro-hono';
+import { createRiskProfilerService } from '@vibedcoder/invespro-hono';
 
-const engine = new RiskProfilerEngine({ definition: customDefinition });
-const app = createRiskProfilerApp({ engine });
+const service = createRiskProfilerService({
+  definition: customDefinition,
+  maxBatchSize: 100,
+});
 ```
 
 ## Related Packages
@@ -111,4 +131,4 @@ const app = createRiskProfilerApp({ engine });
 - `@vibedcoder/invespro-types` provides request and result schemas.
 - `@vibedcoder/invespro-cli` offers command-line workflows.
 
-See the main project documentation at [github.com/vibedcoder/invespro](https://github.com/vibedcoder/invespro).
+Full documentation: [invespro.vercel.app](https://invespro.vercel.app/).

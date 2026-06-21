@@ -1,8 +1,10 @@
 # @vibedcoder/invespro-cli
 
-Command-line interface for Invespro, a rules-based investment profiling and portfolio allocation engine.
+Command-line interface for Invespro, a rules-based investment profiling and
+portfolio allocation engine.
 
-Use this package to evaluate JSON or CSV inputs, validate custom definitions, compile definitions to JDM, or run an interactive profiling flow.
+Use this package to evaluate JSON or CSV inputs, compile definitions to JDM,
+validate JDM graphs, or run an interactive profiling flow.
 
 ## Installation
 
@@ -32,12 +34,13 @@ Example input:
 {
   "applicantId": "APP-001",
   "answers": {
-    "age": 34,
-    "investmentHorizon": "fiveToTenYears",
-    "riskTolerance": "moderate",
-    "objective": "balancedGrowth",
-    "experience": "some",
-    "liquidityNeeds": "medium"
+    "investmentHorizonYears": 10,
+    "riskAttitude": "hold",
+    "investmentObjective": "balanced_growth",
+    "annualIncome": 75000,
+    "dtiRatio": 20,
+    "liquidityMonths": 4,
+    "investmentExperience": "intermediate"
   }
 }
 ```
@@ -56,24 +59,37 @@ CSV batch:
 invespro evaluate-batch applicants.csv --input-format csv --output csv
 ```
 
+Example CSV:
+
+```csv
+applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience
+APP-001,10,hold,balanced_growth,75000,20,4,intermediate
+```
+
 ## Interactive Profiling
 
 ```sh
 invespro profile
 ```
 
-## Custom Definitions
-
-Validate a custom definition:
-
-```sh
-invespro validate definition.json
-```
+## Custom Definitions and JDM Graphs
 
 Compile a definition to a ZenEngine/Gorules JDM graph:
 
 ```sh
 invespro compile definition.json --output graph.json
+```
+
+Validate a JDM graph:
+
+```sh
+invespro validate graph.json
+```
+
+Validate a graph against a custom definition contract:
+
+```sh
+invespro validate graph.json --definition definition.json --input sample-input.json
 ```
 
 Evaluate with a custom definition:
@@ -88,4 +104,4 @@ invespro evaluate input.json --definition definition.json --output json
 - `@vibedcoder/invespro-types` provides schemas and types.
 - `@vibedcoder/invespro-hono` exposes the engine through REST.
 
-See the main project documentation at [github.com/vibedcoder/invespro](https://github.com/vibedcoder/invespro).
+Full documentation: [invespro.vercel.app](https://invespro.vercel.app/).

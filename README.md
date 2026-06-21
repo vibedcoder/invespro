@@ -1,206 +1,66 @@
 # invespro
 
-Rules-based investment profiling and portfolio allocation engine for Node.js
-services, REST APIs, and command-line workflows.
+Rules-based investment profiling and portfolio allocation for Node.js services,
+REST APIs, and command-line workflows.
 
-`invespro` helps fintech teams collect applicant answers, evaluate a versioned
-risk model, assign an investment risk profile, and return a suitable portfolio
-allocation. It provides an opinionated default model backed by
-[ZEN Engine](https://gorules.io/zen/), while still allowing teams to customize
-questions, scores, profile bands, asset classes, allocations, and override
-rules through a versioned JSON definition.
+Invespro evaluates applicant answers against a versioned risk model and returns
+a normalized score, risk profile, portfolio allocation, and definition metadata
+for auditability. It ships with a default profiling model and supports custom
+definitions when your questions, scoring, bands, overrides, or allocations need
+to match a specific policy.
 
-It is designed for systems that need reusable investment profiling and
-allocation decisions: embed it directly in a Node service, expose it through the
-Hono REST adapter, or run it from the CLI for operations and data workflows.
-
-Try the live demo at [invespro.vercel.app](https://invespro.vercel.app/).
+Learn more in the [documentation](https://invespro.vercel.app/docs), or
+[try the interactive demo](https://invespro.vercel.app/demo).
 
 > This project provides software primitives for investment profiling and
-> allocation. It is not financial advice, and production users remain
-> responsible for regulatory, suitability, audit, and disclosure requirements in
-> their jurisdiction.
-
-## Contents
-
-- [Features](#features)
-- [Packages](#packages)
-- [Docs App](#docs-app)
-- [Installation](#installation)
-- [Default Model](#default-model)
-- [Core Usage](#core-usage)
-- [Batch Evaluation](#batch-evaluation)
-- [CLI Usage](#cli-usage)
-- [REST API With Hono](#rest-api-with-hono)
-- [Customization](#customization)
-- [Expert Custom JDM Mode](#expert-custom-jdm-mode)
-- [Current Limits](#current-limits)
-- [Development](#development)
-- [Release Notes](#release-notes)
-- [License](#license)
-
-## Features
-
-- Default investment profiling and allocation model with seven scored factors.
-- Deterministic JDM graph generation from versioned definitions.
-- Zod schemas and TypeScript types for definitions, inputs, and outputs.
-- Normalized weighted scoring from `0` to `100`.
-- Configurable profiles, score bands, asset classes, allocations, and overrides.
-- Suitable asset allocation returned for every successful profile result.
-- Single applicant and batch evaluation.
-- Ordered batch results with per-item success or validation failure.
-- REST adapter for Hono.
-- CLI for interactive profiling, JSON evaluation, CSV batch input, and JDM validation.
-- Graph checksum and definition metadata included in every result.
-- Expert mode for externally authored JDM graphs that follow the Invespro contract.
-- Hosted Next.js docs app with single, batch, default-definition, validation, and custom-definition demo flows.
+> allocation. It is not financial advice. Production users remain responsible
+> for regulatory, suitability, audit, and disclosure requirements in their
+> jurisdiction.
 
 ## Packages
 
-| Package                      | Purpose                                                                        |
-| ---------------------------- | ------------------------------------------------------------------------------ |
-| `@vibedcoder/invespro-types` | Public Zod schemas and TypeScript contracts.                                   |
-| `@vibedcoder/invespro-core`  | ZEN-backed profiling engine, compiler, loader helpers, and default definition. |
-| `@vibedcoder/invespro-hono`  | Mountable Hono REST adapter.                                                   |
-| `@vibedcoder/invespro-cli`   | CLI for interactive, JSON, CSV, compile, and validate workflows.               |
+| Package                      | Purpose                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| `@vibedcoder/invespro-core`  | Main engine, default definition, compiler, CSV parser, batch evaluation. |
+| `@vibedcoder/invespro-hono`  | REST API adapter for Hono services.                                      |
+| `@vibedcoder/invespro-cli`   | Command-line evaluation, validation, and compilation.                    |
+| `@vibedcoder/invespro-types` | Shared Zod schemas and TypeScript types.                                 |
 
-The package split is intentional:
-
-- Use `types` when another system only needs the public contracts.
-- Use `core` when embedding profiling directly in a Node service.
-- Use `hono` when exposing profiling over HTTP.
-- Use `cli` for local workflows, batch files, demos, and operational tooling.
-
-## Docs App
-
-The hosted docs app is available at
-[https://invespro.vercel.app/](https://invespro.vercel.app/).
-
-Its interactive demo demonstrates:
-
-- Single-applicant evaluation against the default model.
-- Batch evaluation with ordered per-item results.
-- CSV batch upload against the default model.
-- The active default definition, profiles, score bands, and allocations.
-- Definition validation against the public schema.
-- A custom model example where questions, answer options, weights, score bands,
-  and allocations are changed without writing a custom JDM graph.
-
-The docs app lives in `apps/docs` and uses the workspace packages via
-`workspace:*`. In local development and on Vercel, the docs build must compile
-its workspace dependencies first so `@vibedcoder/invespro-types` and
-`@vibedcoder/invespro-core` have fresh `dist` outputs.
-
-Local docs commands:
-
-```bash
-pnpm docs:dev
-pnpm docs:build
-```
-
-The Vercel project uses `apps/docs` as the root directory with these commands:
-
-```bash
-corepack enable && corepack pnpm --version && corepack pnpm install --frozen-lockfile
-corepack pnpm --filter @invespro/docs... build
-```
+Use `core` when embedding profiling directly in a service, `hono` when another
+system should call the engine over HTTP, `cli` for local or operational
+workflows, and `types` when you only need validation contracts.
 
 ## Installation
 
-Install the package or packages needed by your integration:
+Install only the package or packages your integration needs:
 
 ```bash
 pnpm add @vibedcoder/invespro-core
 pnpm add @vibedcoder/invespro-hono hono
 pnpm add -D @vibedcoder/invespro-cli
-```
-
-For local development inside this repository:
-
-```bash
-pnpm install
-pnpm build
+pnpm add @vibedcoder/invespro-types
 ```
 
 The workspace targets Node.js `>=24.0.0` and pnpm `>=11.0.0`.
 
-## Default Model
-
-The bundled definition is exported as `DEFAULT_RISK_PROFILE_DEFINITION`.
-
-It includes:
-
-- Seven scored questions.
-- Five risk profiles.
-- Four asset classes.
-- One debt-to-income override.
-- AUD as the default currency.
-- Normalized scoring from `0` to `100`.
-
-### Default Questions
-
-| ID                       | Type   | Purpose                   |
-| ------------------------ | ------ | ------------------------- |
-| `investmentHorizonYears` | number | Scored                    |
-| `riskAttitude`           | select | Scored                    |
-| `investmentObjective`    | select | Scored                    |
-| `annualIncome`           | number | Scored                    |
-| `dtiRatio`               | number | Scored and override input |
-| `liquidityMonths`        | number | Scored                    |
-| `investmentExperience`   | select | Scored                    |
-
-### Default Profiles
-
-| ID                       | Label                   |
-| ------------------------ | ----------------------- |
-| `conservative`           | Conservative            |
-| `moderatelyConservative` | Moderately Conservative |
-| `moderate`               | Moderate                |
-| `moderatelyAggressive`   | Moderately Aggressive   |
-| `aggressive`             | Aggressive              |
-
-### Default Asset Classes
-
-| ID             | Label        |
-| -------------- | ------------ |
-| `equities`     | Equities     |
-| `fixedIncome`  | Fixed Income |
-| `cash`         | Cash         |
-| `alternatives` | Alternatives |
-
-### Default Select Values
-
-| Question               | Allowed values                                                                   |
-| ---------------------- | -------------------------------------------------------------------------------- |
-| `riskAttitude`         | `buy_more`, `hold`, `sell_some`, `sell_all`                                      |
-| `investmentObjective`  | `maximum_growth`, `balanced_growth`, `income_generation`, `capital_preservation` |
-| `investmentExperience` | `experienced`, `intermediate`, `beginner`, `none`                                |
-
-### Default Override
-
-If `dtiRatio >= 50`, the applicant is assigned the `conservative` profile
-regardless of their calculated score.
-
-## Core Usage
-
-Use `RiskProfilerEngine` when embedding profiling directly in a Node service.
+## Quick Start
 
 ```ts
-import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
+import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
 
 const engine = new RiskProfilerEngine();
 
 try {
   const result = await engine.evaluate({
-    applicantId: "APP-001",
+    applicantId: 'APP-001',
     answers: {
       investmentHorizonYears: 10,
-      riskAttitude: "hold",
-      investmentObjective: "balanced_growth",
+      riskAttitude: 'hold',
+      investmentObjective: 'balanced_growth',
       annualIncome: 75000,
       dtiRatio: 20,
       liquidityMonths: 4,
-      investmentExperience: "intermediate",
+      investmentExperience: 'intermediate',
     },
   });
 
@@ -212,671 +72,76 @@ try {
 }
 ```
 
-The single-applicant input envelope is always:
+Call `engine.dispose()` when the engine is no longer needed so the underlying
+ZenEngine resources are released.
 
-```json
-{
-  "applicantId": "APP-001",
-  "answers": {
-    "investmentHorizonYears": 10,
-    "riskAttitude": "hold",
-    "investmentObjective": "balanced_growth",
-    "annualIncome": 75000,
-    "dtiRatio": 20,
-    "liquidityMonths": 4,
-    "investmentExperience": "intermediate"
-  }
-}
-```
+The default model includes seven scored factors, five risk profiles, four asset
+classes, and an override that assigns a conservative profile when debt-to-income
+ratio is high. See
+[Model Concepts](https://invespro.vercel.app/docs/model-concepts) for the full
+model details.
 
-For custom definitions, the keys inside `answers` come from the active
-definition's question IDs.
+## Common Workflows
 
-### Example Result
+### Core Engine
 
-```json
-{
-  "applicantId": "APP-001",
-  "rawScore": 38,
-  "normalizedScore": 67.86,
-  "profile": {
-    "id": "moderatelyAggressive",
-    "label": "Moderately Aggressive"
-  },
-  "overrideApplied": false,
-  "allocation": {
-    "equities": 70,
-    "fixedIncome": 20,
-    "cash": 5,
-    "alternatives": 5
-  },
-  "definition": {
-    "id": "invesproDefaultRiskProfiler",
-    "version": "0.1.0",
-    "schemaVersion": "1.0",
-    "graphChecksum": "sha256:..."
-  }
-}
-```
+Use `RiskProfilerEngine` for direct evaluation from a Node.js service. It
+supports single-applicant evaluation, ordered batch evaluation, CSV batch
+parsing, default definitions, and custom definitions.
 
-## Batch Evaluation
+See the [core guide](https://invespro.vercel.app/docs/guides/core-engine).
 
-Use `evaluateMany` for synchronous batch evaluation.
+### REST API
+
+Mount the Hono adapter when another service should call Invespro over HTTP:
 
 ```ts
-const batch = await engine.evaluateMany({
-  items: [
-    {
-      applicantId: "APP-001",
-      answers: {
-        investmentHorizonYears: 10,
-        riskAttitude: "hold",
-        investmentObjective: "balanced_growth",
-        annualIncome: 75000,
-        dtiRatio: 20,
-        liquidityMonths: 4,
-        investmentExperience: "intermediate",
-      },
-    },
-    {
-      applicantId: "APP-002",
-      answers: {
-        dtiRatio: 150,
-      },
-    },
-  ],
-});
+import { serve } from '@hono/node-server';
+import { createRiskProfilerService } from '@vibedcoder/invespro-hono';
 
-console.log(batch.summary);
-```
+const service = createRiskProfilerService();
 
-Batch evaluation preserves input order. Each item is either `fulfilled` or
-`rejected`, so one invalid applicant does not fail the whole batch by default.
-
-```json
-{
-  "items": [
-    {
-      "index": 0,
-      "applicantId": "APP-001",
-      "status": "fulfilled",
-      "result": {}
-    },
-    {
-      "index": 1,
-      "applicantId": "APP-002",
-      "status": "rejected",
-      "error": {
-        "code": "validation_error",
-        "message": "Invalid evaluation input.",
-        "details": {}
-      }
-    }
-  ],
-  "summary": {
-    "total": 2,
-    "fulfilled": 1,
-    "rejected": 1
-  }
-}
-```
-
-Options:
-
-```ts
-await engine.evaluateMany(batchInput, {
-  maxBatchSize: 100,
-  continueOnError: true,
+serve({
+  fetch: service.app.fetch,
+  port: 3000,
 });
 ```
 
-The current implementation is synchronous and sequential. It is intended for
-request-sized batches, imports, and operational workflows, not long-running job
-queues.
+The adapter exposes health, definition, questions, validation, single
+evaluation, JSON batch, and CSV batch endpoints.
 
-## CLI Usage
+See the [REST API guide](https://invespro.vercel.app/docs/guides/rest-api) and
+[endpoint reference](https://invespro.vercel.app/docs/reference/rest-endpoints).
 
-The CLI is exposed as `invespro`.
+### CLI
 
-```bash
-invespro --help
-```
-
-### Interactive Profile
-
-Runs the active questionnaire in the terminal.
+Use the CLI for local evaluation, CSV workflows, definition compilation, and
+JDM graph validation:
 
 ```bash
-invespro profile
-invespro profile --output json
-invespro profile --definition model.json
+pnpm add --save-dev @vibedcoder/invespro-cli
+pnpm exec invespro --help
+pnpm exec invespro evaluate input.json --output json
+pnpm exec invespro evaluate-batch applicants.csv --input-format csv --output csv
+pnpm exec invespro compile definition.json --output graph.jdm.json
+pnpm exec invespro validate graph.jdm.json --definition definition.json
 ```
 
-### Evaluate One Applicant
-
-```bash
-invespro evaluate --input applicant.json
-invespro evaluate --input applicant.json --output json
-invespro evaluate --input applicant.json --definition model.json
-invespro evaluate --input applicant.json --definition model.json --jdm-path model.jdm.json
-```
-
-`applicant.json`:
-
-```json
-{
-  "applicantId": "APP-001",
-  "answers": {
-    "investmentHorizonYears": 10,
-    "riskAttitude": "hold",
-    "investmentObjective": "balanced_growth",
-    "annualIncome": 75000,
-    "dtiRatio": 20,
-    "liquidityMonths": 4,
-    "investmentExperience": "intermediate"
-  }
-}
-```
-
-### Evaluate a Batch From JSON
-
-```bash
-invespro evaluate-batch --input applicants.json --output json
-```
-
-`applicants.json` may be an array:
-
-```json
-[
-  {
-    "applicantId": "APP-001",
-    "answers": {
-      "investmentHorizonYears": 10,
-      "riskAttitude": "hold",
-      "investmentObjective": "balanced_growth",
-      "annualIncome": 75000,
-      "dtiRatio": 20,
-      "liquidityMonths": 4,
-      "investmentExperience": "intermediate"
-    }
-  }
-]
-```
-
-Or an envelope:
-
-```json
-{
-  "items": [
-    {
-      "applicantId": "APP-001",
-      "answers": {
-        "investmentHorizonYears": 10,
-        "riskAttitude": "hold",
-        "investmentObjective": "balanced_growth",
-        "annualIncome": 75000,
-        "dtiRatio": 20,
-        "liquidityMonths": 4,
-        "investmentExperience": "intermediate"
-      }
-    }
-  ]
-}
-```
-
-### Evaluate a Batch From CSV
-
-CSV is supported by the CLI as an import/export convenience format.
-
-```bash
-invespro evaluate-batch --input applicants.csv --output json
-invespro evaluate-batch --input applicants.csv --output csv
-```
-
-`applicants.csv`:
-
-```csv
-applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience
-APP-001,10,hold,balanced_growth,75000,20,4,intermediate
-APP-002,20,buy_more,maximum_growth,180000,50,8,experienced
-```
-
-CSV rules:
-
-- Use one column per question ID.
-- Include `applicantId` when you want it echoed in results.
-- Number questions are parsed as numbers.
-- Boolean questions accept `true`, `false`, `yes`, `no`, `1`, and `0`.
-- Select questions should use the option value, not the display label.
-- Empty cells are omitted from the answers object.
-
-CSV output is a flat report with profile, score, allocation, and error columns.
-
-### Compile a Definition to JDM
-
-```bash
-invespro compile --definition model.json --output model.jdm.json
-```
-
-Use this when you want to inspect, archive, or deploy the generated JDM graph
-separately.
-
-### Validate a JDM Graph
-
-```bash
-invespro validate --jdm model.jdm.json
-invespro validate --jdm model.jdm.json --definition model.json
-invespro validate --jdm model.jdm.json --definition model.json --input applicant.json
-```
-
-Validation checks:
-
-- The file is valid JSON.
-- The file has JDM-like `nodes` and `edges`.
-- ZenEngine can load and validate the graph.
-- When `--input` is supplied, the graph satisfies the runtime Invespro contract.
-
-## REST API With Hono
-
-Use `@vibedcoder/invespro-hono` to mount the service in a Hono app.
-
-```ts
-import { Hono } from "hono";
-import { createRiskProfilerService } from "@vibedcoder/invespro-hono";
-
-const app = new Hono();
-const profiler = createRiskProfilerService({
-  maxBatchSize: 100,
-});
-
-app.route("/risk-profiler", profiler.app);
-
-// Call this from the host application's shutdown hook.
-profiler.dispose();
-```
-
-If your application already owns the engine:
-
-```ts
-import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
-import { createRiskProfilerApp } from "@vibedcoder/invespro-hono";
-
-const engine = new RiskProfilerEngine({ definition });
-const app = createRiskProfilerApp({
-  engine,
-  maxBatchSize: 100,
-});
-```
-
-### Endpoints
-
-| Method | Path                    | Description                                            |
-| ------ | ----------------------- | ------------------------------------------------------ |
-| `GET`  | `/health`               | Health check.                                          |
-| `GET`  | `/definition`           | Active risk profile definition.                        |
-| `GET`  | `/questions`            | Active questionnaire.                                  |
-| `POST` | `/evaluate`             | Evaluate one applicant.                                |
-| `POST` | `/evaluate/batch`       | Evaluate multiple applicants.                          |
-| `POST` | `/evaluate/batch/csv`   | Evaluate multiple applicants from CSV and return JSON. |
-| `POST` | `/definitions/validate` | Validate a definition payload.                         |
-
-### POST /evaluate
-
-Request:
-
-```json
-{
-  "applicantId": "APP-001",
-  "answers": {
-    "investmentHorizonYears": 10,
-    "riskAttitude": "hold",
-    "investmentObjective": "balanced_growth",
-    "annualIncome": 75000,
-    "dtiRatio": 20,
-    "liquidityMonths": 4,
-    "investmentExperience": "intermediate"
-  }
-}
-```
-
-### POST /evaluate/batch
-
-Request:
-
-```json
-{
-  "items": [
-    {
-      "applicantId": "APP-001",
-      "answers": {
-        "investmentHorizonYears": 10,
-        "riskAttitude": "hold",
-        "investmentObjective": "balanced_growth",
-        "annualIncome": 75000,
-        "dtiRatio": 20,
-        "liquidityMonths": 4,
-        "investmentExperience": "intermediate"
-      }
-    }
-  ]
-}
-```
-
-The adapter returns `400` for invalid JSON, `422` for invalid input, and `500`
-for unexpected evaluation failures.
-
-### POST /evaluate/batch/csv
-
-Request body uses `text/csv`. The response is the same JSON batch result shape
-returned by `POST /evaluate/batch`.
-
-```csv
-applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience
-APP-001,10,hold,balanced_growth,75000,20,4,intermediate
-APP-002,20,buy_more,maximum_growth,180000,50,8,experienced
-```
-
-CSV rules:
-
-- Use one column per active definition question ID.
-- Include `applicantId` when you want it echoed in results.
-- Number questions are parsed as numbers.
-- Boolean questions accept `true`, `false`, `yes`, `no`, `1`, and `0`.
-- Select questions should use the option value, not the display label.
-- Empty cells are omitted from the answers object.
-
-## Customization
-
-Customization is definition-driven. A definition declares the business contract,
-and core compiles it into a deterministic JDM graph.
-
-```ts
-import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
-
-const engine = new RiskProfilerEngine({
-  definition,
-});
-```
-
-### What You Can Customize
-
-- Definition ID, name, version, and currency.
-- Questions.
-- Question order.
-- Question text and hints.
-- Question types: `select`, `number`, and `boolean`.
-- Question purposes: `scored`, `informational`, and `override`.
-- Select options and option values.
-- Numeric min/max bounds.
-- Scoring rules for options and numeric ranges.
-- Relative factor weights.
-- Risk profile IDs, labels, descriptions, and ordering.
-- Normalized score bands from `0` to `100`.
-- Asset class IDs, labels, and descriptions.
-- Allocation percentages per profile.
-- Override rules that force a profile when a condition matches.
-
-### What Is Intentionally Constrained
-
-- IDs must be lower camel case, for example `riskCapacity`.
-- Every scored question must be required.
-- Every scored question must have exactly one scoring factor.
-- Informational questions are collected and validated but not scored by the
-  generated graph.
-- Numeric score ranges must cover all possible values without gaps or overlaps.
-- Select and boolean scoring must cover all declared values.
-- Every profile must have one score band.
-- Score bands use normalized `0` to `100` thresholds.
-- Every profile must have an allocation.
-- Allocations must use declared asset classes and sum to `100`.
-- Generated JDM always returns a profiled applicant, not an eligibility status.
-- Custom JDM must follow the Invespro input and output contract.
-
-These constraints are deliberate. They keep the system customizable without
-becoming an arbitrary decision-graph host. Teams that need fully arbitrary
-decisioning can still author their own JDM and use expert mode.
-
-### Minimal Custom Definition
-
-```json
-{
-  "schemaVersion": "1.0",
-  "id": "simpleRiskProfiler",
-  "name": "Simple Risk Profiler",
-  "version": "1.0.0",
-  "currency": "AUD",
-  "questions": [
-    {
-      "id": "riskCapacity",
-      "text": "Risk capacity from 0 to 10",
-      "type": "number",
-      "min": 0,
-      "max": 10,
-      "purpose": "scored"
-    },
-    {
-      "id": "needsEmergencyAccess",
-      "text": "Does the applicant need emergency access?",
-      "type": "boolean",
-      "purpose": "override"
-    },
-    {
-      "id": "adviserNote",
-      "text": "Adviser note",
-      "type": "select",
-      "required": false,
-      "purpose": "informational",
-      "options": [
-        {
-          "label": "None",
-          "value": "none"
-        },
-        {
-          "label": "Review manually",
-          "value": "review_manually"
-        }
-      ]
-    }
-  ],
-  "scoring": [
-    {
-      "questionId": "riskCapacity",
-      "weight": 1,
-      "rules": [
-        {
-          "type": "range",
-          "min": 7,
-          "score": 10
-        },
-        {
-          "type": "range",
-          "min": 4,
-          "max": 7,
-          "score": 5
-        },
-        {
-          "type": "range",
-          "max": 4,
-          "score": 1
-        }
-      ]
-    }
-  ],
-  "profiles": [
-    {
-      "id": "capitalCare",
-      "label": "Capital Care",
-      "order": 0
-    },
-    {
-      "id": "longTermGrowth",
-      "label": "Long-term Growth",
-      "order": 1
-    }
-  ],
-  "scoreBands": [
-    {
-      "profileId": "longTermGrowth",
-      "minScore": 70
-    },
-    {
-      "profileId": "capitalCare",
-      "minScore": 0
-    }
-  ],
-  "assetClasses": [
-    {
-      "id": "growthAssets",
-      "label": "Growth Assets"
-    },
-    {
-      "id": "defensiveAssets",
-      "label": "Defensive Assets"
-    }
-  ],
-  "allocations": {
-    "capitalCare": {
-      "growthAssets": 20,
-      "defensiveAssets": 80
-    },
-    "longTermGrowth": {
-      "growthAssets": 80,
-      "defensiveAssets": 20
-    }
-  },
-  "overrides": [
-    {
-      "id": "emergencyAccessOverride",
-      "questionId": "needsEmergencyAccess",
-      "operator": "==",
-      "value": true,
-      "profileId": "capitalCare"
-    }
-  ]
-}
-```
-
-Evaluate against it:
-
-```ts
-const engine = new RiskProfilerEngine({ definition });
-
-const result = await engine.evaluate({
-  applicantId: "APP-100",
-  answers: {
-    riskCapacity: 8,
-    needsEmergencyAccess: false,
-    adviserNote: "none",
-  },
-});
-```
-
-### Scoring Model
-
-Each scored factor has its own raw score scale. The compiler normalizes each
-factor by its maximum score, applies the factor weight, and produces a final
-score from `0` to `100`.
-
-Conceptually:
-
-```text
-normalized_score =
-  sum((factor_score / factor_max_score) * factor_weight)
-  / total_weight
-  * 100
-```
-
-This allows one question to use a `0..10` scale and another to use a `0..4`
-scale while weights still express relative importance.
-
-### Definitions and Auditability
-
-Every successful result includes:
-
-- `definition.id`
-- `definition.version`
-- `definition.schemaVersion`
-- `definition.graphChecksum`
-
-This lets downstream systems store which rules produced a decision.
-
-## Expert Custom JDM Mode
-
-You can supply your own JDM loader instead of using the generated graph.
-
-```ts
-import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
-
-const engine = new RiskProfilerEngine({
-  definition,
-  loader: async () => Buffer.from(customJdmJson),
-  graphChecksum: "sha256:...",
-});
-```
-
-The custom JDM may use any internal graph topology, but it must follow the
-Invespro boundary contract.
-
-### Input Contract
-
-Public question IDs are lower camel case:
-
-```json
-{
-  "riskCapacity": 8
-}
-```
-
-At the JDM boundary they are converted to snake case:
-
-```json
-{
-  "risk_capacity": 8
-}
-```
-
-### Output Contract
-
-The JDM must return:
-
-```json
-{
-  "profile_id": "capitalCare",
-  "raw_score": 5,
-  "normalized_score": 50,
-  "override_applied": false
-}
-```
-
-Optional fields:
-
-```json
-{
-  "override_id": "emergencyAccessOverride",
-  "risk_capacity_score": 5
-}
-```
-
-Core rejects malformed outputs and undeclared profile IDs before adapters return
-the response to consumers.
-
-## Current Limits
-
-The current design is intentionally opinionated.
-
-- No eligibility status yet. Successful evaluations return a profile and
-  allocation. A future model may introduce outcomes such as `profiled` and
-  `ineligible`.
-- No background jobs or queues. Batch evaluation is synchronous.
-- No streaming CSV processing yet. CSV files are read as a single file by the
-  CLI.
-- No concurrent batch execution yet. Items are evaluated sequentially to keep
-  ZenEngine usage conservative.
-- No automatic persistence. Store results in your own application database.
-- No hosted server binary yet. The Hono adapter is meant to be mounted inside a
-  host application.
-- No arbitrary schema-free question model. Customization happens through the
-  versioned definition schema.
+See the [CLI guide](https://invespro.vercel.app/docs/guides/cli) and
+[CLI reference](https://invespro.vercel.app/docs/reference/cli-reference).
+
+### Custom Definitions
+
+Invespro is definition-driven. A definition controls questions, scoring,
+profiles, score bands, overrides, asset classes, and allocations. Expert users
+can also supply custom JDM graphs when they follow the Invespro input and
+result contract.
+
+See the
+[custom definitions guide](https://invespro.vercel.app/docs/guides/custom-definitions),
+[definition schema reference](https://invespro.vercel.app/docs/reference/definition-schema),
+and
+[expert JDM contract](https://invespro.vercel.app/docs/reference/expert-jdm-contract).
 
 ## Development
 
@@ -888,41 +153,15 @@ pnpm test
 pnpm build
 ```
 
-Useful package commands:
+Useful docs commands:
 
 ```bash
 pnpm docs:dev
 pnpm docs:build
-pnpm --filter @vibedcoder/invespro-core test
-pnpm --filter @vibedcoder/invespro-hono test
-pnpm --filter @vibedcoder/invespro-cli exec tsx --tsconfig tsconfig.dev.json src/index.ts --help
 ```
 
-The workspace uses:
-
-- pnpm workspaces.
-- TypeScript project references.
-- tsdown for package builds.
-- Vitest for tests.
-- ESLint for linting.
-- Changesets for release management.
-- Next.js for the hosted docs app.
-
-## Release Notes
-
-Changes are tracked with Changesets. Add a changeset for user-facing package
-changes:
-
-```bash
-pnpm changeset
-```
-
-Then version and publish:
-
-```bash
-pnpm version-packages
-pnpm release
-```
+The workspace uses pnpm workspaces, TypeScript project references, tsdown,
+Vitest, ESLint, and a Next.js docs app.
 
 ## License
 
