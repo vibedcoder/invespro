@@ -15,6 +15,7 @@ import {
 } from "./requests";
 import type { ApiError } from "./requests";
 import { ResultPanel } from "./ResultPanel";
+import { Button as UiButton } from "@/components/ui/button";
 
 export function CustomDefinitionPanel() {
   const [definitionJson, setDefinitionJson] = useState(customDefinitionJson);
@@ -89,9 +90,9 @@ export function CustomDefinitionPanel() {
   }
 
   return (
-    <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
+    <section className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
       <form
-        className="rounded-lg border border-border bg-card p-6 shadow-sm"
+        className="min-w-0 rounded-lg border border-border bg-card p-6 shadow-sm"
         onSubmit={handleSubmit}
       >
         <div className="border-b border-border pb-5">
@@ -104,7 +105,7 @@ export function CustomDefinitionPanel() {
           </p>
         </div>
 
-        <div className="mt-6 grid gap-5 lg:grid-cols-2">
+        <div className="mt-6 grid min-w-0 gap-5 lg:grid-cols-2">
           <label className="block text-sm font-medium text-foreground">
             Definition JSON
             <span className="mt-1.5 block text-xs font-normal leading-5 text-muted-foreground">
@@ -140,27 +141,30 @@ export function CustomDefinitionPanel() {
             loadingLabel="Evaluating..."
             type="submit"
           />
-          <button
-            className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
+          <UiButton
+            size="lg"
+            variant="outline"
             onClick={copyDefinition}
             type="button"
           >
             Copy definition
-          </button>
-          <button
-            className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
+          </UiButton>
+          <UiButton
+            size="lg"
+            variant="outline"
             onClick={copyRequest}
             type="button"
           >
             Copy request
-          </button>
-          <button
-            className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
+          </UiButton>
+          <UiButton
+            size="lg"
+            variant="outline"
             onClick={resetExample}
             type="button"
           >
             Reset example
-          </button>
+          </UiButton>
           {copyStatus && (
             <p className="text-sm font-medium text-success">
               {copyStatus}
@@ -170,7 +174,7 @@ export function CustomDefinitionPanel() {
         </div>
       </form>
 
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <aside className="rounded-lg border border-border bg-card p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-foreground">
             What You Can Change

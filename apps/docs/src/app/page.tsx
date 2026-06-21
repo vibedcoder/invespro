@@ -84,7 +84,7 @@ export default function Home() {
                   <CardHeader>
                     <item.icon
                       aria-hidden="true"
-                      className="size-5 text-primary"
+                      className="size-5 text-primary mb-1"
                     />
                     <CardTitle>{item.title}</CardTitle>
                     <CardDescription>{item.description}</CardDescription>

@@ -17,6 +17,7 @@ import {
 } from "./requests";
 import type { ApiError } from "./requests";
 import { ResultPanel } from "./ResultPanel";
+import { Button as UiButton } from "@/components/ui/button";
 
 export function SingleEvaluationPanel() {
   const [result, setResult] = useState<EvaluationResult | null>(null);
@@ -70,10 +71,10 @@ export function SingleEvaluationPanel() {
   }
 
   return (
-    <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
+    <section className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <form
         onSubmit={handleSubmit}
-        className="rounded-lg border border-border bg-card p-6 shadow-sm"
+        className="min-w-0 rounded-lg border border-border bg-card p-6 shadow-sm"
       >
         <div className="border-b border-border pb-5">
           <h2 className="text-lg font-semibold text-foreground">
@@ -153,13 +154,14 @@ export function SingleEvaluationPanel() {
             loadingLabel="Evaluating..."
             type="submit"
           />
-          <button
-            className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
+          <UiButton
+            size="lg"
+            variant="outline"
             type="button"
             onClick={handleCopyRequest}
           >
             Copy request
-          </button>
+          </UiButton>
           {copyStatus && (
             <p className="text-sm font-medium text-success">
               {copyStatus}

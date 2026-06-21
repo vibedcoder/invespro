@@ -1,4 +1,5 @@
 import type { SelectOption } from "./demo-data";
+import { Button as UiButton } from "@/components/ui/button";
 
 export function Button({
   disabled,
@@ -12,13 +13,13 @@ export function Button({
   readonly type: "button" | "submit";
 }) {
   return (
-    <button
-      className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:bg-muted"
+    <UiButton
+      size="lg"
       type={type}
       disabled={disabled}
     >
       {disabled ? loadingLabel : label}
-    </button>
+    </UiButton>
   );
 }
 
