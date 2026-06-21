@@ -11,6 +11,7 @@ import {
 } from "./requests";
 import type { ApiError } from "./requests";
 import { BatchResultPanel } from "./BatchResultPanel";
+import { Button as UiButton } from "@/components/ui/button";
 
 export function BatchEvaluationPanel() {
   const [batchInput, setBatchInput] = useState(batchSampleJson);
@@ -123,11 +124,11 @@ export function BatchEvaluationPanel() {
   }
 
   return (
-    <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
-      <div className="space-y-6">
+    <section className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
+      <div className="min-w-0 space-y-6">
         <form
           onSubmit={handleBatchSubmit}
-          className="rounded-lg border border-border bg-card p-6 shadow-sm"
+          className="min-w-0 rounded-lg border border-border bg-card p-6 shadow-sm"
         >
           <div className="border-b border-border pb-5">
             <h2 className="text-lg font-semibold text-foreground">
@@ -160,20 +161,22 @@ export function BatchEvaluationPanel() {
               loadingLabel="Evaluating..."
               type="submit"
             />
-            <button
-              className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
+            <UiButton
+              size="lg"
+              variant="outline"
               type="button"
               onClick={() => setBatchInput(batchSampleJson)}
             >
               Reset sample
-            </button>
-            <button
-              className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
+            </UiButton>
+            <UiButton
+              size="lg"
+              variant="outline"
               type="button"
               onClick={handleCopyRequest}
             >
               Copy request
-            </button>
+            </UiButton>
             {jsonCopyStatus && (
               <p className="text-sm font-medium text-success">
                 {jsonCopyStatus}
@@ -185,7 +188,7 @@ export function BatchEvaluationPanel() {
 
         <form
           onSubmit={handleCsvSubmit}
-          className="rounded-lg border border-border bg-card p-6 shadow-sm"
+          className="min-w-0 rounded-lg border border-border bg-card p-6 shadow-sm"
         >
           <div className="border-b border-border pb-5">
             <h2 className="text-lg font-semibold text-foreground">
@@ -233,8 +236,9 @@ export function BatchEvaluationPanel() {
               loadingLabel="Evaluating..."
               type="submit"
             />
-            <button
-              className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
+            <UiButton
+              size="lg"
+              variant="outline"
               type="button"
               onClick={() => {
                 setCsvInput(batchSampleCsv);
@@ -242,14 +246,15 @@ export function BatchEvaluationPanel() {
               }}
             >
               Reset sample
-            </button>
-            <button
-              className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-card px-5 text-sm font-medium text-foreground hover:bg-muted"
+            </UiButton>
+            <UiButton
+              size="lg"
+              variant="outline"
               type="button"
               onClick={handleCopyCsv}
             >
               Copy CSV
-            </button>
+            </UiButton>
             {csvCopyStatus && (
               <p className="text-sm font-medium text-success">
                 {csvCopyStatus}

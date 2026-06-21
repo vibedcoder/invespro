@@ -9,7 +9,7 @@ export function ResultPanel({
   const resultJson = result === null ? "" : JSON.stringify(result, null, 2);
 
   return (
-    <aside className="rounded-lg border border-border bg-card p-6 shadow-sm">
+    <aside className="min-w-0 rounded-lg border border-border bg-card p-6 shadow-sm">
       <div className="border-b border-border pb-5">
         <h2 className="text-lg font-semibold text-foreground">Result</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -40,10 +40,10 @@ export function ResultPanel({
             </p>
           </div>
 
-          <dl className="grid grid-cols-2 gap-3">
+          <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {Object.entries(result.allocation).map(([assetClass, value]) => (
               <div
-                className="rounded-md border border-border bg-muted p-3"
+                className="min-w-0 rounded-md border border-border bg-muted p-3"
                 key={assetClass}
               >
                 <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -64,10 +64,10 @@ export function ResultPanel({
               <dl className="mt-3 space-y-2">
                 {Object.entries(result.scores).map(([questionId, score]) => (
                   <div
-                    className="flex items-center justify-between gap-3 rounded-md border border-border bg-muted px-3 py-2"
+                    className="flex min-w-0 items-center justify-between gap-3 rounded-md border border-border bg-muted px-3 py-2"
                     key={questionId}
                   >
-                    <dt className="text-xs font-medium text-muted-foreground">
+                    <dt className="min-w-0 break-words text-xs font-medium text-muted-foreground">
                       {questionId}
                     </dt>
                     <dd className="text-sm font-semibold text-foreground">
@@ -85,7 +85,7 @@ export function ResultPanel({
             {result.definition.graphChecksum}
           </div>
 
-          <pre className="max-h-96 overflow-auto rounded-md bg-code p-4 text-xs leading-5 text-code-foreground">
+          <pre className="max-h-96 max-w-full overflow-auto rounded-md bg-code p-4 text-xs leading-5 text-code-foreground">
             {resultJson}
           </pre>
         </div>

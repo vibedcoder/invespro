@@ -7,7 +7,7 @@ export function DefinitionPanel({
   readonly definition: RiskProfileDefinition;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6 shadow-sm">
+    <section className="min-w-0 rounded-lg border border-border bg-card p-6 shadow-sm">
       <div className="border-b border-border pb-5">
         <h2 className="text-lg font-semibold text-foreground">
           Active Definition
@@ -17,20 +17,20 @@ export function DefinitionPanel({
         </p>
       </div>
 
-      <div className="mt-6 grid gap-5 lg:grid-cols-3">
-        <div className="rounded-md border border-border bg-muted p-4">
+      <div className="mt-6 grid min-w-0 gap-5 lg:grid-cols-3">
+        <div className="min-w-0 rounded-md border border-border bg-muted p-4">
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Model
           </p>
-          <p className="mt-2 text-sm font-semibold text-foreground">
+          <p className="mt-2 break-words text-sm font-semibold text-foreground">
             {definition.name}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 break-words text-xs text-muted-foreground">
             {definition.id} - v{definition.version}
           </p>
         </div>
 
-        <div className="rounded-md border border-border bg-muted p-4">
+        <div className="min-w-0 rounded-md border border-border bg-muted p-4">
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Profiles
           </p>
@@ -38,12 +38,14 @@ export function DefinitionPanel({
             {[...definition.profiles]
               .sort((left, right) => left.order - right.order)
               .map((profile) => (
-                <li key={profile.id}>{profile.label}</li>
+                <li className="break-words" key={profile.id}>
+                  {profile.label}
+                </li>
               ))}
           </ul>
         </div>
 
-        <div className="rounded-md border border-border bg-muted p-4">
+        <div className="min-w-0 rounded-md border border-border bg-muted p-4">
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Score bands
           </p>
@@ -55,7 +57,7 @@ export function DefinitionPanel({
                   (candidate) => candidate.id === band.profileId,
                 );
                 return (
-                  <li key={band.profileId}>
+                  <li className="break-words" key={band.profileId}>
                     {profile?.label ?? band.profileId}:{" "}
                     {band.minScore.toFixed(2)}+
                   </li>
@@ -64,7 +66,7 @@ export function DefinitionPanel({
           </ul>
         </div>
 
-        <div className="lg:col-span-3">
+        <div className="min-w-0 lg:col-span-3">
           <p className="text-sm font-semibold text-foreground">
             Allocation map
           </p>
@@ -73,20 +75,22 @@ export function DefinitionPanel({
               .sort((left, right) => left.order - right.order)
               .map((profile) => (
                 <div
-                  className="rounded-md border border-border bg-muted p-3"
+                  className="min-w-0 rounded-md border border-border bg-muted p-3"
                   key={profile.id}
                 >
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="break-words text-sm font-medium text-foreground">
                     {profile.label}
                   </p>
                   <dl className="mt-2 space-y-1">
                     {Object.entries(definition.allocations[profile.id] ?? {}).map(
                       ([assetClass, value]) => (
                         <div
-                          className="flex justify-between gap-3 text-xs text-muted-foreground"
+                          className="flex min-w-0 justify-between gap-3 text-xs text-muted-foreground"
                           key={assetClass}
                         >
-                          <dt>{formatAssetClass(assetClass)}</dt>
+                          <dt className="min-w-0 break-words">
+                            {formatAssetClass(assetClass)}
+                          </dt>
                           <dd className="font-medium text-foreground">
                             {value}%
                           </dd>

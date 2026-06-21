@@ -14,10 +14,10 @@ export function ErrorDetails({ error }: { readonly error: ApiError }) {
     flattened.formErrors.length > 0 || flattened.fieldErrors.length > 0;
 
   return (
-    <div className="space-y-3 text-sm text-destructive" role="alert">
-      <p className="font-medium">{error.message}</p>
+    <div className="min-w-0 space-y-3 text-sm text-destructive" role="alert">
+      <p className="break-words font-medium">{error.message}</p>
       {hasFlattenedDetails ? (
-        <div className="rounded-md border border-destructive/25 bg-destructive/10 p-3">
+        <div className="min-w-0 rounded-md border border-destructive/25 bg-destructive/10 p-3">
           {flattened.formErrors.length > 0 && (
             <ul className="list-disc space-y-1 pl-5">
               {flattened.formErrors.map((message, index) => (
@@ -29,12 +29,12 @@ export function ErrorDetails({ error }: { readonly error: ApiError }) {
             <dl className="space-y-2">
               {flattened.fieldErrors.map(([field, messages]) => (
                 <div key={field}>
-                  <dt className="font-semibold">{field}</dt>
+                  <dt className="break-words font-semibold">{field}</dt>
                   <dd className="mt-1">
                     <ul className="list-disc space-y-1 pl-5">
                       {messages.map((message, index) => (
                         <li key={`${field}-${message}-${index}`}>
-                          {message}
+                          <span className="break-words">{message}</span>
                         </li>
                       ))}
                     </ul>
@@ -46,7 +46,7 @@ export function ErrorDetails({ error }: { readonly error: ApiError }) {
         </div>
       ) : null}
       {!hasFlattenedDetails && error.details !== undefined ? (
-        <pre className="max-h-56 overflow-auto rounded-md border border-destructive/25 bg-destructive/10 p-3 font-mono text-xs leading-5 text-destructive">
+        <pre className="max-h-56 max-w-full overflow-auto rounded-md border border-destructive/25 bg-destructive/10 p-3 font-mono text-xs leading-5 text-destructive">
           {JSON.stringify(error.details, null, 2)}
         </pre>
       ) : null}

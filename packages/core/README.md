@@ -1,8 +1,11 @@
 # @vibedcoder/invespro-core
 
-Core engine for Invespro, a rules-based investment profiling and portfolio allocation system.
+Core engine for Invespro, a rules-based investment profiling and portfolio
+allocation system.
 
-This package evaluates applicant answers against the default profiling model or a versioned custom definition, then returns a normalized score, risk profile, allocation, and definition metadata.
+Use this package when you want to evaluate applicants directly inside a Node.js
+service. It includes the default risk model, custom definition support, batch
+evaluation, CSV batch parsing, and definition-to-JDM compilation helpers.
 
 ## Installation
 
@@ -21,38 +24,58 @@ import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
 
 const engine = new RiskProfilerEngine();
 
-const result = await engine.evaluate({
-  applicantId: 'APP-001',
-  answers: {
-    investmentHorizonYears: 10,
-    riskAttitude: 'hold',
-    investmentObjective: 'balanced_growth',
-    annualIncome: 75000,
-    dtiRatio: 20,
-    liquidityMonths: 4,
-    investmentExperience: 'intermediate',
-  },
-});
+try {
+  const result = await engine.evaluate({
+    applicantId: 'APP-001',
+    answers: {
+      investmentHorizonYears: 10,
+      riskAttitude: 'hold',
+      investmentObjective: 'balanced_growth',
+      annualIncome: 75000,
+      dtiRatio: 20,
+      liquidityMonths: 4,
+      investmentExperience: 'intermediate',
+    },
+  });
 
-console.log(result.profile.label);
-console.log(result.allocation);
+  console.log(result.profile.label);
+  console.log(result.normalizedScore);
+  console.log(result.allocation);
+} finally {
+  engine.dispose();
+}
 ```
 
-## Custom Definitions
+Call `engine.dispose()` when the engine is no longer needed so the underlying
+ZenEngine resources are released.
 
-You can compile and run a custom, versioned profiler definition while keeping the standard Invespro result contract.
+## Batch Evaluation
 
 ```ts
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
-
-const engine = new RiskProfilerEngine({ definition: customDefinition });
+const result = await engine.evaluateMany({
+  items: [
+    {
+      applicantId: 'APP-001',
+      answers: {
+        investmentHorizonYears: 10,
+        riskAttitude: 'hold',
+        investmentObjective: 'balanced_growth',
+        annualIncome: 75000,
+        dtiRatio: 20,
+        liquidityMonths: 4,
+        investmentExperience: 'intermediate',
+      },
+    },
+  ],
+});
 ```
 
-Custom definitions can change question labels, options, scores, weights, bands, profile IDs, and allocations. Expert custom JDM graphs are supported when they follow the Invespro graph contract.
+Batch results preserve input order. Each item is either `fulfilled` with an
+evaluation result or `rejected` with validation details.
 
 ## CSV Batch Input
 
-`parseCsvBatch` converts CSV rows into the same batch item shape accepted by
+`parseCsvBatch` converts CSV rows into the same item shape accepted by
 `RiskProfilerEngine.evaluateMany`.
 
 ```ts
@@ -76,32 +99,27 @@ CSV columns should use the active definition's question IDs. The parser handles
 numbers, booleans, select option values, optional `applicantId`, and omitted
 empty cells.
 
-## Result Shape
+## Custom Definitions
 
-```json
-{
-  "applicantId": "APP-001",
-  "rawScore": 38,
-  "normalizedScore": 67.86,
-  "profile": {
-    "id": "moderatelyAggressive",
-    "label": "Moderately Aggressive"
-  },
-  "overrideApplied": false,
-  "allocation": {
-    "equities": 70,
-    "fixedIncome": 20,
-    "cash": 5,
-    "alternatives": 5
-  },
-  "definition": {
-    "id": "invesproDefaultRiskProfiler",
-    "version": "0.1.0",
-    "schemaVersion": "1.0",
-    "graphChecksum": "sha256:..."
-  }
-}
+```ts
+import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+
+const engine = new RiskProfilerEngine({ definition: customDefinition });
 ```
+
+Custom definitions can change question labels, options, scores, weights, bands,
+profile IDs, asset classes, allocations, and overrides while keeping the
+standard Invespro result contract.
+
+## Key Exports
+
+- `RiskProfilerEngine`
+- `DEFAULT_RISK_PROFILE_DEFINITION`
+- `parseCsvBatch`
+- `compileRiskProfileDefinition`
+- `checksumJdmGraph`
+- `createDefaultLoader`
+- `createGraphLoader`
 
 ## Related Packages
 
@@ -109,4 +127,4 @@ empty cells.
 - `@vibedcoder/invespro-hono` exposes this engine through REST.
 - `@vibedcoder/invespro-cli` evaluates inputs from the command line.
 
-See the main project documentation at [github.com/vibedcoder/invespro](https://github.com/vibedcoder/invespro).
+Full documentation: [invespro.vercel.app](https://invespro.vercel.app/).

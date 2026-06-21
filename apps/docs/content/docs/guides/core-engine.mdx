@@ -11,26 +11,34 @@ import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
 
 const engine = new RiskProfilerEngine();
 
-const result = await engine.evaluate({
-  applicantId: "APP-001",
-  answers: {
-    investmentHorizonYears: 10,
-    riskAttitude: "hold",
-    investmentObjective: "balanced_growth",
-    annualIncome: 95000,
-    dtiRatio: 22,
-    liquidityMonths: 4,
-    investmentExperience: "intermediate",
-  },
-});
+try {
+  const result = await engine.evaluate({
+    applicantId: "APP-001",
+    answers: {
+      investmentHorizonYears: 10,
+      riskAttitude: "hold",
+      investmentObjective: "balanced_growth",
+      annualIncome: 95000,
+      dtiRatio: 22,
+      liquidityMonths: 4,
+      investmentExperience: "intermediate",
+    },
+  });
 
-console.log(result.profile.label);
-console.log(result.normalizedScore);
-console.log(result.allocation);
+  console.log(result.profile.label);
+  console.log(result.normalizedScore);
+  console.log(result.allocation);
+} finally {
+  engine.dispose();
+}
 ```
 
 The core engine is the lowest-level integration surface. The REST adapter and
 CLI build on the same evaluation behavior.
+
+Call `engine.dispose()` from your application shutdown hook or after short-lived
+scripts finish using the engine. This releases the native ZenEngine resources
+owned by the instance.
 
 ## When to use it
 

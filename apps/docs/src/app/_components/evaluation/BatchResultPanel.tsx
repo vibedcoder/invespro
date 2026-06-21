@@ -9,7 +9,7 @@ export function BatchResultPanel({
   const resultJson = result === null ? "" : JSON.stringify(result, null, 2);
 
   return (
-    <aside className="rounded-lg border border-border bg-card p-6 shadow-sm">
+    <aside className="min-w-0 rounded-lg border border-border bg-card p-6 shadow-sm">
       <div className="border-b border-border pb-5">
         <h2 className="text-lg font-semibold text-foreground">Batch Result</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -24,7 +24,7 @@ export function BatchResultPanel({
         </div>
       ) : (
         <div className="mt-6 space-y-5">
-          <dl className="grid grid-cols-3 gap-3">
+          <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <SummaryStat label="Total" value={result.summary.total} />
             <SummaryStat label="Fulfilled" value={result.summary.fulfilled} />
             <SummaryStat label="Rejected" value={result.summary.rejected} />
@@ -33,11 +33,11 @@ export function BatchResultPanel({
           <div className="space-y-3">
             {result.items.map((item) => (
               <div
-                className="rounded-md border border-border bg-muted p-3"
+                className="min-w-0 rounded-md border border-border bg-muted p-3"
                 key={item.index}
               >
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-medium text-foreground">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <p className="min-w-0 break-words text-sm font-medium text-foreground">
                     {item.applicantId ?? `Item ${item.index + 1}`}
                   </p>
                   <span
@@ -64,7 +64,7 @@ export function BatchResultPanel({
             ))}
           </div>
 
-          <pre className="max-h-96 overflow-auto rounded-md bg-code p-4 text-xs leading-5 text-code-foreground">
+          <pre className="max-h-96 max-w-full overflow-auto rounded-md bg-code p-4 text-xs leading-5 text-code-foreground">
             {resultJson}
           </pre>
         </div>
@@ -81,7 +81,7 @@ function SummaryStat({
   readonly value: number;
 }) {
   return (
-    <div className="rounded-md border border-border bg-muted p-3">
+    <div className="min-w-0 rounded-md border border-border bg-muted p-3">
       <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </dt>

@@ -5,7 +5,7 @@ import { ThemeSwitch } from "fumadocs-ui/layouts/shared/slots/theme-switch";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { href: "/docs", label: "Documentation" },
+  { href: "/docs", label: "Docs" },
   { href: "/demo", label: "Demo" },
 ];
 
@@ -22,7 +22,7 @@ export function SiteHeader() {
               src="/vibedcoder-logo.jpg"
               width={32}
             />
-            <span className="truncate text-sm font-semibold text-foreground">
+            <span className="truncate hidden sm:block text-sm font-semibold text-foreground">
               Invespro
             </span>
           </Link>
@@ -36,7 +36,7 @@ export function SiteHeader() {
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <ThemeSwitch />
-          <Button asChild size="sm" variant="outline">
+          <Button asChild size="icon" variant="outline">
             <a
               aria-label="Open Invespro on GitHub"
               href="https://github.com/vibedcoder/invespro"

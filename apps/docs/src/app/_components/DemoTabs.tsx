@@ -42,8 +42,8 @@ export function DemoTabs({
   const idPrefix = useId();
 
   return (
-    <section className="space-y-6">
-      <div className="rounded-lg border border-border bg-card p-2 shadow-sm">
+    <section className="min-w-0 space-y-6">
+      <div className="min-w-0 rounded-lg border border-border bg-card p-2 shadow-sm">
         <div
           className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5"
           role="tablist"
@@ -76,6 +76,7 @@ export function DemoTabs({
 
       <div
         aria-labelledby={`${idPrefix}-${activeTab}-tab`}
+        className="min-w-0"
         id={`${idPrefix}-${activeTab}-panel`}
         role="tabpanel"
       >
