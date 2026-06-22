@@ -1,16 +1,16 @@
 {
-  "name": "@vibedcoder/invespro-hono",
-  "version": "0.2.1",
+  "name": "@zagvar/helm-hono",
+  "version": "0.1.0",
   "description": "Hono REST adapter for investment profiling and portfolio allocation",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vibedcoder/invespro.git",
+    "url": "git+https://github.com/zagvar/helm.git",
     "directory": "packages/hono"
   },
-  "homepage": "https://github.com/vibedcoder/invespro/tree/main/packages/hono#readme",
+  "homepage": "https://github.com/zagvar/helm/tree/main/packages/hono#readme",
   "bugs": {
-    "url": "https://github.com/vibedcoder/invespro/issues"
+    "url": "https://github.com/zagvar/helm/issues"
   },
   "keywords": [
     "investment",
@@ -56,13 +56,13 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@vibedcoder/invespro-core": "^0.2.1",
-    "@vibedcoder/invespro-types": "^0.1.1",
+    "@zagvar/helm-core": "^0.1.0",
+    "@zagvar/helm-types": "^0.1.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@invespro/eslint-config": "workspace:*",
-    "@invespro/tsconfig": "workspace:*",
+    "@helm/eslint-config": "workspace:*",
+    "@helm/tsconfig": "workspace:*",
     "hono": "^4.12.25",
     "tsdown": "^0.22.2",
     "typescript": "^6.0.3",

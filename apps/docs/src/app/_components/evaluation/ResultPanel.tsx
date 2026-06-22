@@ -1,4 +1,4 @@
-import type { EvaluationResult } from "@vibedcoder/invespro-types";
+import type { EvaluationResult } from "@zagvar/helm-types";
 import { formatAssetClass } from "./format";
 
 export function ResultPanel({

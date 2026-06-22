@@ -4,12 +4,12 @@ import * as z from 'zod';
 import {
   parseCsvBatch,
   RiskProfilerEngine,
-} from '@vibedcoder/invespro-core';
+} from '@zagvar/helm-core';
 import {
   RiskProfileBatchEvaluationInputSchema,
   RiskProfileDefinitionSchema,
-} from '@vibedcoder/invespro-types';
-import type { RiskProfileDefinitionInput } from '@vibedcoder/invespro-types';
+} from '@zagvar/helm-types';
+import type { RiskProfileDefinitionInput } from '@zagvar/helm-types';
 
 export interface RiskProfilerServiceOptions {
   readonly engine?: RiskProfilerEngine;

@@ -1,9 +1,9 @@
 ---
 title: Introduction
-description: What Invespro provides and how the packages fit together.
+description: What Helm provides and how the packages fit together.
 ---
 
-Invespro is a rules-based investment profiling and portfolio allocation engine.
+Helm is a rules-based investment profiling and portfolio allocation engine.
 It evaluates applicant answers against a versioned model definition and returns
 a risk profile, score metadata, allocation map, and graph checksum for
 traceability.
@@ -19,7 +19,7 @@ customized at the question, scoring, band, override, and allocation level.
 - Batch evaluation for JSON and CSV inputs.
 - A sensible default investment profiling model.
 - Custom definition support for controlled model customization.
-- Expert support for custom JDM graphs that satisfy the Invespro input and
+- Expert support for custom JDM graphs that satisfy the Helm input and
   result contract.
 - Shared Zod schemas and TypeScript types.
 
@@ -27,10 +27,10 @@ customized at the question, scoring, band, override, and allocation level.
 
 | Package                      | Purpose                                                                  |
 | ---------------------------- | ------------------------------------------------------------------------ |
-| `@vibedcoder/invespro-core`  | Main engine, default definition, compiler, CSV parser, batch evaluation. |
-| `@vibedcoder/invespro-hono`  | REST API adapter for Hono services.                                      |
-| `@vibedcoder/invespro-cli`   | Command-line evaluation and validation.                                  |
-| `@vibedcoder/invespro-types` | Shared Zod schemas and TypeScript types.                                 |
+| `@zagvar/helm-core`  | Main engine, default definition, compiler, CSV parser, batch evaluation. |
+| `@zagvar/helm-hono`  | REST API adapter for Hono services.                                      |
+| `@zagvar/helm-cli`   | Command-line evaluation and validation.                                  |
+| `@zagvar/helm-types` | Shared Zod schemas and TypeScript types.                                 |
 
 ## Default path
 
@@ -46,6 +46,6 @@ policy.
 5. Introduce a custom definition or expert JDM graph when the model contract
    needs to change.
 
-[Install Invespro](/docs/getting-started/installation), follow the
+[Install Helm](/docs/getting-started/installation), follow the
 [quickstart](/docs/getting-started/quickstart), or [try the demo](/demo) to
 inspect the default and custom flows without writing code.

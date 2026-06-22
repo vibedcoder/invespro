@@ -1,31 +1,31 @@
 ---
 title: CLI Reference
-description: Commands and options exposed by the Invespro CLI.
+description: Commands and options exposed by the Helm CLI.
 ---
 
-The CLI binary name is `invespro`. Global package installs expose that command
+The CLI binary name is `zagvar-helm`. Global package installs expose that command
 on your shell `PATH`; local installs can run it through your package manager.
 
 ```bash
-pnpm exec invespro --help
+pnpm exec zagvar-helm --help
 ```
 
 ## Commands
 
 | Command                   | Purpose                                                        |
 | ------------------------- | -------------------------------------------------------------- |
-| `invespro evaluate`       | Evaluate one applicant from a JSON file.                       |
-| `invespro evaluate-batch` | Evaluate multiple applicants from JSON or CSV.                 |
-| `invespro compile`        | Compile a risk-profile definition into a JDM graph.            |
-| `invespro validate`       | Validate a JDM graph and optionally test it with sample input. |
-| `invespro profile`        | Run an interactive terminal questionnaire.                     |
+| `zagvar-helm evaluate`       | Evaluate one applicant from a JSON file.                       |
+| `zagvar-helm evaluate-batch` | Evaluate multiple applicants from JSON or CSV.                 |
+| `zagvar-helm compile`        | Compile a risk-profile definition into a JDM graph.            |
+| `zagvar-helm validate`       | Validate a JDM graph and optionally test it with sample input. |
+| `zagvar-helm profile`        | Run an interactive terminal questionnaire.                     |
 
 ### `evaluate`
 
 Evaluate one applicant from a JSON file.
 
 ```bash
-invespro evaluate applicant.json --output json
+zagvar-helm evaluate applicant.json --output json
 ```
 
 | Argument or option | Required | Notes                                            |
@@ -44,7 +44,7 @@ definition declares the contract and the JDM file supplies the executable graph.
 Evaluate multiple applicants from a JSON or CSV file.
 
 ```bash
-invespro evaluate-batch applicants.csv --input-format csv --output json
+zagvar-helm evaluate-batch applicants.csv --input-format csv --output json
 ```
 
 | Argument or option | Required | Notes                                                                            |
@@ -77,7 +77,7 @@ columns.
 Compile a risk-profile definition into a JDM graph.
 
 ```bash
-invespro compile definition.json --output risk-profiler.json
+zagvar-helm compile definition.json --output risk-profiler.json
 ```
 
 | Argument or option | Required | Notes                                                             |
@@ -93,7 +93,7 @@ graph checksum to standard error.
 Validate a JDM graph file.
 
 ```bash
-invespro validate risk-profiler.json --definition definition.json --input sample.json
+zagvar-helm validate risk-profiler.json --definition definition.json --input sample.json
 ```
 
 | Argument or option | Required | Notes                                                      |
@@ -111,7 +111,7 @@ sample input is available.
 Run the default questionnaire interactively in the terminal.
 
 ```bash
-invespro profile
+zagvar-helm profile
 ```
 
 | Option         | Required | Notes                                     |

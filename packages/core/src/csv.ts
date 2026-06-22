@@ -3,7 +3,7 @@ import type {
   AnswerValue,
   DefinitionQuestion,
   RiskProfileDefinition,
-} from '@vibedcoder/invespro-types';
+} from '@zagvar/helm-types';
 
 /**
  * Converts CSV rows into definition-driven batch evaluation inputs.

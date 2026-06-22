@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { RiskProfilerEngine } from '../src/engine.js';
-import type { EvaluationResult } from '@vibedcoder/invespro-types';
+import type { EvaluationResult } from '@zagvar/helm-types';
 
 describe('RiskProfilerEngine', () => {
   let engine: RiskProfilerEngine;

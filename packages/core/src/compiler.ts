@@ -1,13 +1,13 @@
 import { createHash } from 'node:crypto';
 import {
   RiskProfileDefinitionSchema,
-} from '@vibedcoder/invespro-types';
+} from '@zagvar/helm-types';
 import type {
   DefinitionOverride,
   DefinitionScoreRule,
   RiskProfileDefinition,
   RiskProfileDefinitionInput,
-} from '@vibedcoder/invespro-types';
+} from '@zagvar/helm-types';
 import { DEFAULT_GRAPH_KEY } from './constants.js';
 
 export interface CompiledRiskProfileDefinition {

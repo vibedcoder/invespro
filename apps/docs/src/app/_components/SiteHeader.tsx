@@ -16,14 +16,14 @@ export function SiteHeader() {
         <div className="flex min-w-0 items-center gap-3">
           <Link className="flex min-w-0 items-center gap-3" href="/">
             <Image
-              alt="Vibedcoder logo"
+              alt="Zagvar logo"
               className="size-8 rounded-md"
               height={32}
-              src="/vibedcoder-logo.jpg"
+              src="/zagvar-logo.jpg"
               width={32}
             />
             <span className="truncate hidden sm:block text-sm font-semibold text-foreground">
-              Invespro
+              Helm
             </span>
           </Link>
           <nav aria-label="Main navigation" className="flex items-center gap-1">
@@ -38,8 +38,8 @@ export function SiteHeader() {
           <ThemeSwitch />
           <Button asChild size="icon" variant="outline">
             <a
-              aria-label="Open Invespro on GitHub"
-              href="https://github.com/vibedcoder/invespro"
+              aria-label="Open Helm on GitHub"
+              href="https://github.com/zagvar/helm"
               rel="noreferrer"
               target="_blank"
             >

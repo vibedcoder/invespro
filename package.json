@@ -1,16 +1,16 @@
 {
-  "name": "invespro",
+  "name": "helm",
   "private": true,
   "version": "0.0.0",
   "description": "Rules-based investment profiling and portfolio allocation engine",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vibedcoder/invespro.git"
+    "url": "git+https://github.com/zagvar/helm.git"
   },
-  "homepage": "https://github.com/vibedcoder/invespro#readme",
+  "homepage": "https://github.com/zagvar/helm#readme",
   "bugs": {
-    "url": "https://github.com/vibedcoder/invespro/issues"
+    "url": "https://github.com/zagvar/helm/issues"
   },
   "packageManager": "pnpm@11.6.0",
   "engines": {
@@ -20,9 +20,9 @@
   "scripts": {
     "build": "pnpm -r build",
     "dev": "pnpm -r dev",
-    "docs:dev": "pnpm --filter @invespro/docs dev",
-    "docs:dev:webpack": "pnpm --filter @invespro/docs dev:webpack",
-    "docs:build": "pnpm --filter @invespro/docs... build",
+    "docs:dev": "pnpm --filter @helm/docs dev",
+    "docs:dev:webpack": "pnpm --filter @helm/docs dev:webpack",
+    "docs:build": "pnpm --filter @helm/docs... build",
     "test": "pnpm -r test",
     "typecheck": "tsc -b --emitDeclarationOnly",
     "lint": "pnpm -r lint",

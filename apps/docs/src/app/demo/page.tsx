@@ -6,7 +6,7 @@ import { riskProfilerEngine } from "@/lib/risk-profiler";
 export const metadata: Metadata = {
   title: "Interactive Demo",
   description:
-    "Try Invespro single applicant, batch, CSV, and custom definition evaluation flows.",
+    "Try Helm single applicant, batch, CSV, and custom definition evaluation flows.",
 };
 
 export default function DemoPage() {
@@ -19,13 +19,13 @@ export default function DemoPage() {
         <header className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-md font-bold uppercase tracking-wide text-primary">
-              Invespro Demo
+              Helm Demo
             </p>
             <h1 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
               Investment Profiling and Portfolio Allocation
             </h1>
             <p className="mt-4 text-base leading-7 text-muted-foreground">
-              Invespro is a rules-based investment profiling and portfolio
+              Helm is a rules-based investment profiling and portfolio
               allocation engine with a default model, versioned customization,
               and ready-to-use CLI/REST integrations.
             </p>

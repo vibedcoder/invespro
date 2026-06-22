@@ -1,4 +1,4 @@
-import type { BatchEvaluationResult } from "@vibedcoder/invespro-types";
+import type { BatchEvaluationResult } from "@zagvar/helm-types";
 import { ErrorDetails } from "./ErrorDetails";
 
 export function BatchResultPanel({

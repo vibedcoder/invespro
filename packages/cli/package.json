@@ -1,16 +1,16 @@
 {
-  "name": "@vibedcoder/invespro-cli",
-  "version": "0.1.3",
+  "name": "@zagvar/helm-cli",
+  "version": "0.1.0",
   "description": "CLI for investment profiling and portfolio allocation",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vibedcoder/invespro.git",
+    "url": "git+https://github.com/zagvar/helm.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://github.com/vibedcoder/invespro/tree/main/packages/cli#readme",
+  "homepage": "https://github.com/zagvar/helm/tree/main/packages/cli#readme",
   "bugs": {
-    "url": "https://github.com/vibedcoder/invespro/issues"
+    "url": "https://github.com/zagvar/helm/issues"
   },
   "keywords": [
     "investment",
@@ -25,7 +25,7 @@
     "node": ">=24.0.0"
   },
   "bin": {
-    "invespro": "./dist/index.js"
+    "zagvar-helm": "dist/index.js"
   },
   "publishConfig": {
     "access": "public"
@@ -44,14 +44,14 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.5.1",
-    "@vibedcoder/invespro-core": "^0.2.1",
-    "@vibedcoder/invespro-types": "^0.1.1",
+    "@zagvar/helm-core": "^0.1.0",
+    "@zagvar/helm-types": "^0.1.0",
     "citty": "^0.2.2",
     "csv-stringify": "^6.8.0"
   },
   "devDependencies": {
-    "@invespro/eslint-config": "workspace:*",
-    "@invespro/tsconfig": "workspace:*",
+    "@helm/eslint-config": "workspace:*",
+    "@helm/tsconfig": "workspace:*",
     "@types/node": "^25.9.3",
     "tsdown": "^0.22.2",
     "tsx": "^4.22.4",

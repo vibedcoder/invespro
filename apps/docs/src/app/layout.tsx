@@ -15,17 +15,17 @@ const codeFont = JetBrains_Mono({
   variable: "--font-code",
 });
 
-const siteUrl = "https://invespro.vercel.app";
-const siteTitle = "Invespro - Investment Profiling and Portfolio Allocation";
+const siteUrl = "https://helm.vercel.app";
+const siteTitle = "Helm - Investment Profiling and Portfolio Allocation";
 const siteDescription =
-  "Try Invespro, a rules-based investment profiling and portfolio allocation engine with default questionnaires, custom model definitions, JSON and CSV batch evaluation, and REST/CLI integrations.";
+  "Try Helm, a rules-based investment profiling and portfolio allocation engine with default questionnaires, custom model definitions, JSON and CSV batch evaluation, and REST/CLI integrations.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  applicationName: "Invespro",
+  applicationName: "Helm",
   title: {
     default: siteTitle,
-    template: "%s | Invespro",
+    template: "%s | Helm",
   },
   description: siteDescription,
   keywords: [
@@ -39,9 +39,9 @@ export const metadata: Metadata = {
     "Zen Engine",
     "GoRules",
   ],
-  authors: [{ name: "Vibedcoder", url: "https://github.com/vibedcoder" }],
-  creator: "Vibedcoder",
-  publisher: "Vibedcoder",
+  authors: [{ name: "Zagvar", url: "https://github.com/zagvar" }],
+  creator: "Zagvar",
+  publisher: "Zagvar",
   category: "finance",
   alternates: {
     canonical: "/",
@@ -57,15 +57,15 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    siteName: "Invespro",
+    siteName: "Helm",
     title: siteTitle,
     description: siteDescription,
     images: [
       {
-        url: "/vibedcoder-logo.jpg",
+        url: "/zagvar-logo.jpg",
         width: 1003,
         height: 1003,
-        alt: "Vibedcoder logo",
+        alt: "Zagvar logo",
       },
     ],
   },
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
-    images: ["/vibedcoder-logo.jpg"],
+    images: ["/zagvar-logo.jpg"],
   },
   robots: {
     index: true,

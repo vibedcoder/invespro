@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { BatchEvaluationResult } from "@vibedcoder/invespro-types";
+import type { BatchEvaluationResult } from "@zagvar/helm-types";
 import { copyText } from "./copy";
 import { batchSampleCsv, batchSampleJson } from "./demo-data";
 import { ErrorDetails } from "./ErrorDetails";

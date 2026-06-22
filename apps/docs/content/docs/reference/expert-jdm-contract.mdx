@@ -4,15 +4,15 @@ description: Contract required by expert-managed JDM graphs.
 ---
 
 Expert JDM mode lets you run a custom Gorules/ZenEngine decision graph while
-still using Invespro's public input, output, validation, allocation, and audit
+still using Helm's public input, output, validation, allocation, and audit
 contracts.
 
 Use it when the generated graph from a custom definition is not enough and a
 team needs to manage the decision graph directly.
 
-Expert JDM mode replaces the generated decision graph, not the public Invespro
+Expert JDM mode replaces the generated decision graph, not the public Helm
 contract. If your workflow needs different inputs, outputs, or result semantics,
-extend Invespro at the package level instead.
+extend Helm at the package level instead.
 
 ## How It Is Wired
 
@@ -33,7 +33,7 @@ In code, pass both a definition and a loader:
 import {
   createGraphLoader,
   RiskProfilerEngine,
-} from "@vibedcoder/invespro-core";
+} from "@zagvar/helm-core";
 
 const engine = new RiskProfilerEngine({
   definition,
@@ -46,7 +46,7 @@ const engine = new RiskProfilerEngine({
 In the CLI, pass both files:
 
 ```bash
-invespro evaluate applicant.json \
+zagvar-helm evaluate applicant.json \
   --definition definition.json \
   --jdm-path risk-profiler.json \
   --output json
@@ -76,7 +76,7 @@ Public evaluation input uses camel-case definition question IDs:
 }
 ```
 
-Before execution, Invespro validates those answers against the definition and
+Before execution, Helm validates those answers against the definition and
 maps question IDs to snake case for the JDM graph:
 
 | Definition question ID | JDM input field |
@@ -105,7 +105,7 @@ The graph may also return:
 | `override_id` | `string` | Included in the public result when present. |
 
 If `profile_id` does not match a declared profile, evaluation fails. Allocation
-is not supplied by the graph; Invespro looks it up from the definition after the
+is not supplied by the graph; Helm looks it up from the definition after the
 profile is resolved.
 
 ## Score Fields
@@ -117,7 +117,7 @@ Generated graphs emit one score field per scored question:
 | `riskCapacity` | `risk_capacity_score` |
 | `investmentHorizonYears` | `investment_horizon_years_score` |
 
-Expert graphs can emit these same fields. Invespro populates the public
+Expert graphs can emit these same fields. Helm populates the public
 `scores` object only when all expected score fields are present.
 
 ## Checksum Behavior
@@ -140,8 +140,8 @@ checksum.
 
 ## Validation Boundaries
 
-`engine.validate()` and `invespro validate` ask ZenEngine to validate graph
-structure. To verify the Invespro business contract, also run a sample
+`engine.validate()` and `zagvar-helm validate` ask ZenEngine to validate graph
+structure. To verify the Helm business contract, also run a sample
 evaluation with the same definition.
 
 The contract check happens during evaluation:

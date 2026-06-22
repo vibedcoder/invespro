@@ -1,13 +1,13 @@
 ---
 title: Core Engine
-description: Embed Invespro directly in a TypeScript service.
+description: Embed Helm directly in a TypeScript service.
 ---
 
-Use `@vibedcoder/invespro-core` when evaluation should run inside your own
+Use `@zagvar/helm-core` when evaluation should run inside your own
 Node.js service or application.
 
 ```ts
-import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
+import { RiskProfilerEngine } from "@zagvar/helm-core";
 
 const engine = new RiskProfilerEngine();
 
@@ -68,7 +68,7 @@ definition metadata:
     "alternatives": 5
   },
   "definition": {
-    "id": "invesproDefaultRiskProfiler",
+    "id": "helmDefaultRiskProfiler",
     "version": "0.1.0",
     "schemaVersion": "1.0",
     "graphChecksum": "sha256:..."

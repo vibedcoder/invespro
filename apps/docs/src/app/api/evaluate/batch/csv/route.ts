@@ -1,4 +1,4 @@
-import { parseCsvBatch } from "@vibedcoder/invespro-core";
+import { parseCsvBatch } from "@zagvar/helm-core";
 import { NextResponse } from "next/server";
 import { riskProfilerEngine } from "@/lib/risk-profiler";
 

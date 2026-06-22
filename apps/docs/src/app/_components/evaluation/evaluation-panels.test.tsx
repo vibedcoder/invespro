@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { RiskProfileDefinition } from "@vibedcoder/invespro-types";
+import type { RiskProfileDefinition } from "@zagvar/helm-types";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BatchEvaluationPanel } from "./BatchEvaluationPanel";
 import { CustomDefinitionPanel } from "./CustomDefinitionPanel";
@@ -29,7 +29,7 @@ const evaluationResult = {
   },
   evaluatedAt: "2026-06-16T00:00:00.000Z",
   definition: {
-    id: "invesproDefaultRiskProfiler",
+    id: "helmDefaultRiskProfiler",
     version: "0.1.0",
     schemaVersion: "1.0",
     graphChecksum: "sha256:test",
@@ -82,8 +82,8 @@ const customEvaluationResult = {
 
 const definition = {
   schemaVersion: "1.0",
-  id: "invesproDefaultRiskProfiler",
-  name: "Invespro Default Investment Risk Profiler",
+  id: "helmDefaultRiskProfiler",
+  name: "Helm Default Investment Risk Profiler",
   version: "0.1.0",
   currency: "AUD",
   questions: [],
@@ -313,7 +313,7 @@ describe("evaluation demo panels", () => {
     render(<DefinitionPanel definition={definition} />);
 
     expect(
-      screen.getByText("Invespro Default Investment Risk Profiler"),
+      screen.getByText("Helm Default Investment Risk Profiler"),
     ).toBeInTheDocument();
     expect(screen.getByText("Allocation map")).toBeInTheDocument();
   });
@@ -328,7 +328,7 @@ describe("evaluation demo panels", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByDisplayValue(/invesproDefaultRiskProfiler/),
+        screen.getByDisplayValue(/helmDefaultRiskProfiler/),
       ).toBeInTheDocument();
     });
 

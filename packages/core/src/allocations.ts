@@ -1,7 +1,7 @@
-import type { AssetAllocation, RiskBand } from '@vibedcoder/invespro-types';
+import type { AssetAllocation, RiskBand } from '@zagvar/helm-types';
 
 /**
- * Canonical asset allocation per risk band, per the invespro specification.
+ * Canonical asset allocation per risk band, per the helm specification.
  * `satisfies` ensures every RiskBand is covered and values match AssetAllocation.
  */
 export const ALLOCATION_MAP: Record<RiskBand, AssetAllocation> = {

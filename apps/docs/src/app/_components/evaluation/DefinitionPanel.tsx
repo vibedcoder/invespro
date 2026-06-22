@@ -1,4 +1,4 @@
-import type { RiskProfileDefinition } from "@vibedcoder/invespro-types";
+import type { RiskProfileDefinition } from "@zagvar/helm-types";
 import { formatAssetClass } from "./format";
 
 export function DefinitionPanel({

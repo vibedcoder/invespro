@@ -1,8 +1,8 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { DEFAULT_GRAPH_KEY } from '@vibedcoder/invespro-core';
-import type { BatchEvaluationResult } from '@vibedcoder/invespro-types';
+import { DEFAULT_GRAPH_KEY } from '@zagvar/helm-core';
+import type { BatchEvaluationResult } from '@zagvar/helm-types';
 import packageJson from '../package.json' with { type: 'json' };
 import {
   formatBatchCsv,
@@ -18,9 +18,9 @@ afterEach(async () => {
 });
 
 describe('CLI package contract', () => {
-  it('exposes the invespro binary', () => {
+  it('exposes the zagvar-helm binary', () => {
     expect(packageJson.bin).toEqual({
-      invespro: './dist/index.js',
+      'zagvar-helm': 'dist/index.js',
     });
   });
 });
@@ -92,7 +92,7 @@ describe('formatBatchCsv', () => {
             },
             evaluatedAt: '2026-06-20T00:00:00.000Z',
             definition: {
-              id: 'invesproDefaultRiskProfiler',
+              id: 'helmDefaultRiskProfiler',
               version: '0.1.0',
               schemaVersion: '1.0',
               graphChecksum: 'sha256:test',
@@ -137,7 +137,7 @@ describe('createFileSystemLoader', () => {
     const loader = createFileSystemLoader('graph.json');
 
     await expect(loader('unknown')).rejects.toThrow(
-      '[invespro-cli] Unknown graph key: "unknown"',
+      '[helm-cli] Unknown graph key: "unknown"',
     );
   });
 

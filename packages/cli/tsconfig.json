@@ -1,5 +1,5 @@
 {
-  "extends": "@invespro/tsconfig/cli.json",
+  "extends": "@helm/tsconfig/cli.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",

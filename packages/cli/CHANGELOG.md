@@ -1,20 +1,9 @@
-# @vibedcoder/invespro-cli
+# @zagvar/helm-cli
 
-## 0.1.3
+## 0.1.0
 
-### Patch Changes
+### Initial Release
 
-- Replace published workspace dependency ranges with npm-installable semver ranges.
-- Updated dependencies
-  - @vibedcoder/invespro-core@0.2.1
-
-## 0.1.2
-
-### Patch Changes
-
-- c4fcc04: Add shared definition-aware CSV batch parsing in core and expose CSV batch evaluation through the Hono REST adapter.
-
-  The CLI now uses the shared parser, while the Hono adapter accepts raw CSV at `POST /evaluate/batch/csv` and returns the existing JSON batch result shape.
-
-- Updated dependencies [c4fcc04]
-  - @vibedcoder/invespro-core@0.2.0
+- Publish the Helm CLI under the `@zagvar` scope.
+- Include interactive profiling, JSON evaluation, CSV batch evaluation,
+  custom definition loading, JDM compilation, and JDM validation commands.

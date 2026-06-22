@@ -1,6 +1,6 @@
-import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
-import { RiskProfileDefinitionSchema } from "@vibedcoder/invespro-types";
-import type { RiskProfileDefinition } from "@vibedcoder/invespro-types";
+import { RiskProfilerEngine } from "@zagvar/helm-core";
+import { RiskProfileDefinitionSchema } from "@zagvar/helm-types";
+import type { RiskProfileDefinition } from "@zagvar/helm-types";
 import { NextResponse } from "next/server";
 
 type FlattenableValidationError = {

@@ -1,19 +1,19 @@
 ---
 title: REST API
-description: Expose Invespro evaluation through the Hono adapter.
+description: Expose Helm evaluation through the Hono adapter.
 ---
 
 The Hono adapter wraps an engine instance and exposes JSON endpoints.
 
 Use it when another service, frontend, operations script, or batch workflow
-should call Invespro over HTTP instead of importing the core engine directly.
+should call Helm over HTTP instead of importing the core engine directly.
 
 ## Standalone service
 
 ```ts
 import { serve } from "@hono/node-server";
-import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
-import { createRiskProfilerApp } from "@vibedcoder/invespro-hono";
+import { RiskProfilerEngine } from "@zagvar/helm-core";
+import { createRiskProfilerApp } from "@zagvar/helm-hono";
 
 const engine = new RiskProfilerEngine();
 const app = createRiskProfilerApp({ engine });
@@ -29,8 +29,8 @@ storage.
 
 ```ts
 import { Hono } from "hono";
-import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
-import { createRiskProfilerApp } from "@vibedcoder/invespro-hono";
+import { RiskProfilerEngine } from "@zagvar/helm-core";
+import { createRiskProfilerApp } from "@zagvar/helm-hono";
 
 const app = new Hono();
 const engine = new RiskProfilerEngine();

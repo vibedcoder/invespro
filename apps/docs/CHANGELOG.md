@@ -1,15 +1,7 @@
-# @invespro/docs
+# @helm/docs
 
-## 0.1.2
+## 0.1.0
 
-### Patch Changes
+### Initial Release
 
-- Updated dependencies
-  - @vibedcoder/invespro-core@0.2.1
-
-## 0.1.1
-
-### Patch Changes
-
-- Updated dependencies [c4fcc04]
-  - @vibedcoder/invespro-core@0.2.0
+- Publish the private Helm docs app package in the reset workspace state.

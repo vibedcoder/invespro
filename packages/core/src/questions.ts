@@ -1,4 +1,4 @@
-import type { Question } from '@vibedcoder/invespro-types';
+import type { Question } from '@zagvar/helm-types';
 
 /**
  * The fixed set of 7 profiling questions.

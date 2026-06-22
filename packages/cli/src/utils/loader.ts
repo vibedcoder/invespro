@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import type { JdmGraphLoader } from '@vibedcoder/invespro-core';
-import { DEFAULT_GRAPH_KEY } from '@vibedcoder/invespro-core';
+import type { JdmGraphLoader } from '@zagvar/helm-core';
+import { DEFAULT_GRAPH_KEY } from '@zagvar/helm-core';
 
 /**
  * Creates a loader that reads a JDM graph from the file system.
@@ -12,7 +12,7 @@ export function createFileSystemLoader(jdmPath: string): JdmGraphLoader {
 
   return async (key: string): Promise<Buffer> => {
     if (key !== DEFAULT_GRAPH_KEY) {
-      throw new Error(`[invespro-cli] Unknown graph key: "${key}"`);
+      throw new Error(`[helm-cli] Unknown graph key: "${key}"`);
     }
     const content = await readFile(absolutePath, 'utf-8');
     return Buffer.from(content);

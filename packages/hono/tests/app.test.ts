@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { Hono } from 'hono';
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import { RiskProfilerEngine } from '@zagvar/helm-core';
 import {
   createRiskProfilerApp,
   createRiskProfilerService,
@@ -41,7 +41,7 @@ describe('createRiskProfilerApp', () => {
     expect(response.status).toBe(200);
     expect(definition).toMatchObject({
       schemaVersion: '1.0',
-      id: 'invesproDefaultRiskProfiler',
+      id: 'helmDefaultRiskProfiler',
       version: '0.1.0',
     });
     expect(definition.questions).toHaveLength(7);
@@ -63,7 +63,7 @@ describe('createRiskProfilerApp', () => {
     expect(result).toMatchObject({
       valid: true,
       definition: {
-        id: 'invesproDefaultRiskProfiler',
+        id: 'helmDefaultRiskProfiler',
       },
     });
   });

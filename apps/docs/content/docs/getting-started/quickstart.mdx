@@ -1,13 +1,13 @@
 ---
 title: Quickstart
-description: Evaluate one applicant using the default Invespro model.
+description: Evaluate one applicant using the default Helm model.
 ---
 
 The fastest path is to create a `RiskProfilerEngine` with no options. That uses
 the bundled default definition.
 
 ```ts
-import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
+import { RiskProfilerEngine } from "@zagvar/helm-core";
 
 const engine = new RiskProfilerEngine();
 
@@ -65,7 +65,7 @@ allocation, and model metadata:
   },
   "evaluatedAt": "2026-06-20T00:00:00.000Z",
   "definition": {
-    "id": "invesproDefaultRiskProfiler",
+    "id": "helmDefaultRiskProfiler",
     "version": "0.1.0",
     "schemaVersion": "1.0",
     "graphChecksum": "sha256:..."

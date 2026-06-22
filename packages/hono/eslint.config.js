@@ -1,3 +1,3 @@
-import baseConfig from "@invespro/eslint-config";
+import baseConfig from "@helm/eslint-config";
 
 export default baseConfig;

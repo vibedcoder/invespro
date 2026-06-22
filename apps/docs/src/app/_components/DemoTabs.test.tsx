@@ -1,13 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { RiskProfileDefinition } from "@vibedcoder/invespro-types";
+import type { RiskProfileDefinition } from "@zagvar/helm-types";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DemoTabs } from "./DemoTabs";
 
 const definition = {
   schemaVersion: "1.0",
-  id: "invesproDefaultRiskProfiler",
-  name: "Invespro Default Investment Risk Profiler",
+  id: "helmDefaultRiskProfiler",
+  name: "Helm Default Investment Risk Profiler",
   version: "0.1.0",
   currency: "AUD",
   questions: [],
@@ -71,7 +71,7 @@ describe("DemoTabs", () => {
       screen.getByRole("tab", { name: "Active Definition" }),
     );
     expect(
-      screen.getByText("Invespro Default Investment Risk Profiler"),
+      screen.getByText("Helm Default Investment Risk Profiler"),
     ).toBeInTheDocument();
 
     await userEvent.click(
