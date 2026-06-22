@@ -1,6 +1,6 @@
-# @vibedcoder/invespro-core
+# @zagvar/helm-core
 
-Core engine for Invespro, a rules-based investment profiling and portfolio
+Core engine for Helm, a rules-based investment profiling and portfolio
 allocation system.
 
 Use this package when you want to evaluate applicants directly inside a Node.js
@@ -10,17 +10,17 @@ evaluation, CSV batch parsing, and definition-to-JDM compilation helpers.
 ## Installation
 
 ```sh
-pnpm add @vibedcoder/invespro-core
+pnpm add @zagvar/helm-core
 ```
 
 ```sh
-npm install @vibedcoder/invespro-core
+npm install @zagvar/helm-core
 ```
 
 ## Quick Start
 
 ```ts
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import { RiskProfilerEngine } from '@zagvar/helm-core';
 
 const engine = new RiskProfilerEngine();
 
@@ -83,7 +83,7 @@ import {
   DEFAULT_RISK_PROFILE_DEFINITION,
   parseCsvBatch,
   RiskProfilerEngine,
-} from '@vibedcoder/invespro-core';
+} from '@zagvar/helm-core';
 
 const csv = [
   'applicantId,investmentHorizonYears,riskAttitude,investmentObjective,annualIncome,dtiRatio,liquidityMonths,investmentExperience',
@@ -102,14 +102,14 @@ empty cells.
 ## Custom Definitions
 
 ```ts
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import { RiskProfilerEngine } from '@zagvar/helm-core';
 
 const engine = new RiskProfilerEngine({ definition: customDefinition });
 ```
 
 Custom definitions can change question labels, options, scores, weights, bands,
 profile IDs, asset classes, allocations, and overrides while keeping the
-standard Invespro result contract.
+standard Helm result contract.
 
 ## Key Exports
 
@@ -123,8 +123,8 @@ standard Invespro result contract.
 
 ## Related Packages
 
-- `@vibedcoder/invespro-types` provides schemas and types.
-- `@vibedcoder/invespro-hono` exposes this engine through REST.
-- `@vibedcoder/invespro-cli` evaluates inputs from the command line.
+- `@zagvar/helm-types` provides schemas and types.
+- `@zagvar/helm-hono` exposes this engine through REST.
+- `@zagvar/helm-cli` evaluates inputs from the command line.
 
-Full documentation: [invespro.vercel.app](https://invespro.vercel.app/).
+Full documentation: [helm.vercel.app](https://helm.vercel.app/).

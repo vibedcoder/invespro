@@ -1,9 +1,9 @@
 ---
 title: CLI
-description: Run Invespro evaluations from JSON and CSV files.
+description: Run Helm evaluations from JSON and CSV files.
 ---
 
-Use `@vibedcoder/invespro-cli` for local checks, scripted workflows, or
+Use `@zagvar/helm-cli` for local checks, scripted workflows, or
 operations tasks where input already exists as JSON or CSV.
 
 The CLI is useful when you want to evaluate files without building an HTTP
@@ -22,12 +22,12 @@ commands.
 
 ## Running the binary
 
-Global installation exposes the `invespro` binary on your shell `PATH` through
+Global installation exposes the `zagvar-helm` binary on your shell `PATH` through
 the package `bin` entry. After installing globally, you can run commands
 directly:
 
 ```bash
-invespro evaluate applicant.json --output json
+zagvar-helm evaluate applicant.json --output json
 ```
 
 For project-local installation, add the CLI as a development dependency and run
@@ -44,8 +44,8 @@ it through your package manager:
   <CodeBlockTab value="npm">
 
 ```bash
-npm install --save-dev @vibedcoder/invespro-cli
-npx invespro evaluate applicant.json --output json
+npm install --save-dev @zagvar/helm-cli
+npx zagvar-helm evaluate applicant.json --output json
 ```
 
   </CodeBlockTab>
@@ -53,8 +53,8 @@ npx invespro evaluate applicant.json --output json
   <CodeBlockTab value="pnpm">
 
 ```bash
-pnpm add --save-dev @vibedcoder/invespro-cli
-pnpm exec invespro evaluate applicant.json --output json
+pnpm add --save-dev @zagvar/helm-cli
+pnpm exec zagvar-helm evaluate applicant.json --output json
 ```
 
   </CodeBlockTab>
@@ -62,8 +62,8 @@ pnpm exec invespro evaluate applicant.json --output json
   <CodeBlockTab value="yarn">
 
 ```bash
-yarn add --dev @vibedcoder/invespro-cli
-yarn invespro evaluate applicant.json --output json
+yarn add --dev @zagvar/helm-cli
+yarn zagvar-helm evaluate applicant.json --output json
 ```
 
   </CodeBlockTab>
@@ -71,8 +71,8 @@ yarn invespro evaluate applicant.json --output json
   <CodeBlockTab value="bun">
 
 ```bash
-bun add --dev @vibedcoder/invespro-cli
-bunx invespro evaluate applicant.json --output json
+bun add --dev @zagvar/helm-cli
+bunx zagvar-helm evaluate applicant.json --output json
 ```
 
   </CodeBlockTab>
@@ -84,37 +84,37 @@ installation is convenient for ad hoc local checks.
 ## Commands
 
 ```bash
-invespro profile
+zagvar-helm profile
 ```
 
 Runs the active questionnaire interactively and prints a table result. Use
 `--output json` when another script should consume the result.
 
 ```bash
-invespro evaluate applicant.json --output json
+zagvar-helm evaluate applicant.json --output json
 ```
 
 Evaluates one JSON applicant input.
 
 ```bash
-invespro evaluate-batch applicants.csv --input-format csv --output json
+zagvar-helm evaluate-batch applicants.csv --input-format csv --output json
 ```
 
 Evaluates a JSON or CSV batch. The input format is inferred from the file
 extension unless `--input-format` is provided.
 
 ```bash
-invespro compile custom-definition.json --output risk-profiler.json
+zagvar-helm compile custom-definition.json --output risk-profiler.json
 ```
 
 Compiles a custom definition into a JDM graph and prints the graph checksum.
 
 ```bash
-invespro validate risk-profiler.json --definition custom-definition.json --input sample.json
+zagvar-helm validate risk-profiler.json --definition custom-definition.json --input sample.json
 ```
 
 Validates a JDM graph and, when `--input` is provided, checks that the graph
-also satisfies the Invespro result contract.
+also satisfies the Helm result contract.
 
 ## Custom definitions
 

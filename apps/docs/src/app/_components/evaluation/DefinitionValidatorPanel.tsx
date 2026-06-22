@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { RiskProfileDefinition } from "@vibedcoder/invespro-types";
+import type { RiskProfileDefinition } from "@zagvar/helm-types";
 import { ErrorDetails } from "./ErrorDetails";
 import { Button } from "./fields";
 import {
@@ -77,7 +77,7 @@ export function DefinitionValidatorPanel({
             Definition Validator
           </h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Paste a custom definition to validate it against the public Invespro
+            Paste a custom definition to validate it against the public Helm
             definition contract.
           </p>
         </div>

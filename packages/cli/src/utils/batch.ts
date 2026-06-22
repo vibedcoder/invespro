@@ -1,7 +1,7 @@
 import { stringify } from 'csv-stringify/sync';
 import type {
   BatchEvaluationResult,
-} from '@vibedcoder/invespro-types';
+} from '@zagvar/helm-types';
 
 export type BatchInputFormat = 'json' | 'csv';
 

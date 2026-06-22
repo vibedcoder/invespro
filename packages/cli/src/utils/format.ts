@@ -1,4 +1,4 @@
-import type { EvaluationResult } from '@vibedcoder/invespro-types';
+import type { EvaluationResult } from '@zagvar/helm-types';
 
 /** Formats an evaluation result for interactive terminal output. */
 export function formatResult(result: EvaluationResult): string {

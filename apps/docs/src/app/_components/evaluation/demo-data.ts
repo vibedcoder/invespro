@@ -1,4 +1,4 @@
-import type { RiskProfileDefinitionInput } from "@vibedcoder/invespro-types";
+import type { RiskProfileDefinitionInput } from "@zagvar/helm-types";
 
 type SelectOption = {
   readonly label: string;

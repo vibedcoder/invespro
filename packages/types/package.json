@@ -1,16 +1,16 @@
 {
-  "name": "@vibedcoder/invespro-types",
-  "version": "0.1.1",
+  "name": "@zagvar/helm-types",
+  "version": "0.1.0",
   "description": "Types and Zod schemas for investment profiling and allocation",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vibedcoder/invespro.git",
+    "url": "git+https://github.com/zagvar/helm.git",
     "directory": "packages/types"
   },
-  "homepage": "https://github.com/vibedcoder/invespro/tree/main/packages/types#readme",
+  "homepage": "https://github.com/zagvar/helm/tree/main/packages/types#readme",
   "bugs": {
-    "url": "https://github.com/vibedcoder/invespro/issues"
+    "url": "https://github.com/zagvar/helm/issues"
   },
   "keywords": [
     "investment",
@@ -55,8 +55,8 @@
     "clean": "rm -rf dist"
   },
   "devDependencies": {
-    "@invespro/eslint-config": "workspace:*",
-    "@invespro/tsconfig": "workspace:*",
+    "@helm/eslint-config": "workspace:*",
+    "@helm/tsconfig": "workspace:*",
     "tsdown": "^0.22.2",
     "typescript": "^6.0.3"
   },

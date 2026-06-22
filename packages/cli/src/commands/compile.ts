@@ -1,7 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { defineCommand } from 'citty';
-import { compileRiskProfileDefinition } from '@vibedcoder/invespro-core';
+import { compileRiskProfileDefinition } from '@zagvar/helm-core';
 import { loadDefinition } from '../utils/definition.js';
 
 export default defineCommand({

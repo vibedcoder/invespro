@@ -10,8 +10,8 @@ import {
   text,
 } from '@clack/prompts';
 import { defineCommand } from 'citty';
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
-import type { AnswerValue, DefinitionQuestion } from '@vibedcoder/invespro-types';
+import { RiskProfilerEngine } from '@zagvar/helm-core';
+import type { AnswerValue, DefinitionQuestion } from '@zagvar/helm-types';
 import { formatResult } from '../utils/format.js';
 import { loadDefinition } from '../utils/definition.js';
 import { createFileSystemLoader } from '../utils/loader.js';

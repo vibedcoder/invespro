@@ -20,8 +20,8 @@ the model without writing an arbitrary decision graph from scratch.
 ### Example
 
 ```ts
-import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
-import type { RiskProfileDefinitionInput } from "@vibedcoder/invespro-types";
+import { RiskProfilerEngine } from "@zagvar/helm-core";
+import type { RiskProfileDefinitionInput } from "@zagvar/helm-types";
 
 const definition = {
   schemaVersion: "1.0",
@@ -182,7 +182,7 @@ defensive profile because the override matches:
 ```
 
 Use the demo validator or `RiskProfileDefinitionSchema` from
-`@vibedcoder/invespro-types` before deploying a custom model.
+`@zagvar/helm-types` before deploying a custom model.
 
 ### Validation rules to remember
 
@@ -204,10 +204,10 @@ contract.
 
 ## Expert JDM mode
 
-Custom definitions cover the supported Invespro model: questions, scoring,
+Custom definitions cover the supported Helm model: questions, scoring,
 score bands, overrides, profiles, and allocations. Expert JDM mode lets
 advanced users replace the generated decision graph while keeping the same input
 and result contract.
 
 If your workflow needs a different public contract, you may need to extend
-Invespro at the package level.
+Helm at the package level.

@@ -14,15 +14,15 @@ import {
 const softwareApplicationJsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "Invespro",
+  name: "Helm",
   applicationCategory: "FinanceApplication",
   operatingSystem: "Web",
-  url: "https://invespro.vercel.app",
-  codeRepository: "https://github.com/vibedcoder/invespro",
+  url: "https://helm.vercel.app",
+  codeRepository: "https://github.com/zagvar/helm",
   creator: {
     "@type": "Organization",
-    name: "Vibedcoder",
-    url: "https://github.com/vibedcoder",
+    name: "Zagvar",
+    url: "https://github.com/zagvar",
   },
   description:
     "Rules-based investment profiling and portfolio allocation engine with JSON, CSV, REST, and CLI evaluation flows.",
@@ -57,7 +57,7 @@ export default function Home() {
         <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
           <div className="max-w-3xl">
             <p className="text-sm font-bold uppercase tracking-wide text-primary">
-              Invespro
+              Helm
             </p>
             <h1 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
               Rules-based investment profiling and portfolio allocation.
@@ -99,7 +99,7 @@ export default function Home() {
               <CardTitle>Workflow preview</CardTitle>
               <CardDescription>
                 An illustrative UI showing how teams can batch-evaluate
-                applicants and apply custom definitions with Invespro
+                applicants and apply custom definitions with Helm
                 underneath.
               </CardDescription>
             </CardHeader>

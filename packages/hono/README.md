@@ -1,26 +1,26 @@
-# @vibedcoder/invespro-hono
+# @zagvar/helm-hono
 
-Hono REST adapter for Invespro, a rules-based investment profiling and
+Hono REST adapter for Helm, a rules-based investment profiling and
 portfolio allocation engine.
 
-Use this package when another service should call Invespro over HTTP instead of
+Use this package when another service should call Helm over HTTP instead of
 importing the core engine directly.
 
 ## Installation
 
 ```sh
-pnpm add @vibedcoder/invespro-hono hono
+pnpm add @zagvar/helm-hono hono
 ```
 
 ```sh
-npm install @vibedcoder/invespro-hono hono
+npm install @zagvar/helm-hono hono
 ```
 
 ## Quick Start
 
 ```ts
 import { serve } from '@hono/node-server';
-import { createRiskProfilerService } from '@vibedcoder/invespro-hono';
+import { createRiskProfilerService } from '@zagvar/helm-hono';
 
 const service = createRiskProfilerService();
 
@@ -34,8 +34,8 @@ If you already own the engine lifecycle, create routes around an existing
 engine:
 
 ```ts
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
-import { createRiskProfilerApp } from '@vibedcoder/invespro-hono';
+import { RiskProfilerEngine } from '@zagvar/helm-core';
+import { createRiskProfilerApp } from '@zagvar/helm-hono';
 
 const engine = new RiskProfilerEngine();
 const app = createRiskProfilerApp({ engine });
@@ -117,7 +117,7 @@ optional.
 ## Custom Definitions
 
 ```ts
-import { createRiskProfilerService } from '@vibedcoder/invespro-hono';
+import { createRiskProfilerService } from '@zagvar/helm-hono';
 
 const service = createRiskProfilerService({
   definition: customDefinition,
@@ -127,8 +127,8 @@ const service = createRiskProfilerService({
 
 ## Related Packages
 
-- `@vibedcoder/invespro-core` runs the actual evaluations.
-- `@vibedcoder/invespro-types` provides request and result schemas.
-- `@vibedcoder/invespro-cli` offers command-line workflows.
+- `@zagvar/helm-core` runs the actual evaluations.
+- `@zagvar/helm-types` provides request and result schemas.
+- `@zagvar/helm-cli` offers command-line workflows.
 
-Full documentation: [invespro.vercel.app](https://invespro.vercel.app/).
+Full documentation: [helm.vercel.app](https://helm.vercel.app/).

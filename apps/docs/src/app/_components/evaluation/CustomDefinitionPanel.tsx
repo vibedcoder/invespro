@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { EvaluationResult } from "@vibedcoder/invespro-types";
+import type { EvaluationResult } from "@zagvar/helm-types";
 import {
   customDefinitionJson,
   customEvaluationJson,
@@ -100,7 +100,7 @@ export function CustomDefinitionPanel() {
             Custom Model
           </h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Edit a versioned Invespro definition and applicant answers, then
+            Edit a versioned Helm definition and applicant answers, then
             evaluate them without writing a custom JDM graph.
           </p>
         </div>

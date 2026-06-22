@@ -16,7 +16,7 @@ export function createGraphLoader(
     const graph = graphs[key];
     if (graph === undefined) {
       throw new Error(
-        `[invespro-core] Graph not found: "${key}". ` +
+        `[helm-core] Graph not found: "${key}". ` +
           `Available: ${Object.keys(graphs).join(', ')}`,
       );
     }

@@ -7,7 +7,7 @@ import type {
   RiskProfileBatchEvaluationInput,
   RiskProfileDefinitionInput,
   RiskProfileEvaluationInput,
-} from '@vibedcoder/invespro-types';
+} from '@zagvar/helm-types';
 import {
   checksumJdmGraph,
   compileRiskProfileDefinition,
@@ -92,7 +92,7 @@ export class RiskProfilerEngine {
     );
     const checksum = this.checksumState.value;
     if (checksum === undefined) {
-      throw new Error('[invespro-core] Unable to determine the evaluated graph checksum.');
+      throw new Error('[helm-core] Unable to determine the evaluated graph checksum.');
     }
     return fromJdmResult(
       result,
@@ -113,11 +113,11 @@ export class RiskProfilerEngine {
     const items = normalizeBatchInput(input);
     const maxBatchSize = options.maxBatchSize ?? 100;
     if (items.length === 0) {
-      throw new Error('[invespro-core] Batch evaluation requires at least one item.');
+      throw new Error('[helm-core] Batch evaluation requires at least one item.');
     }
     if (items.length > maxBatchSize) {
       throw new Error(
-        `[invespro-core] Batch size ${items.length} exceeds the maximum of ${maxBatchSize}.`,
+        `[helm-core] Batch size ${items.length} exceeds the maximum of ${maxBatchSize}.`,
       );
     }
 
@@ -176,7 +176,7 @@ export class RiskProfilerEngine {
 
   private assertActive(): void {
     if (this.disposed) {
-      throw new Error('[invespro-core] Engine has been disposed. Create a new instance.');
+      throw new Error('[helm-core] Engine has been disposed. Create a new instance.');
     }
   }
 }
@@ -189,7 +189,7 @@ function normalizeBatchInput(
   }
   const envelope = input as RiskProfileBatchEvaluationInput;
   if (!Array.isArray(envelope.items)) {
-    throw new Error('[invespro-core] Batch input must be an array or an object with items.');
+    throw new Error('[helm-core] Batch input must be an array or an object with items.');
   }
   return envelope.items as EvaluationInput[];
 }
@@ -229,12 +229,12 @@ function captureChecksum(
       try {
         graph = JSON.parse(content.toString('utf8'));
       } catch {
-        throw new Error('[invespro-core] Custom JDM loader returned invalid JSON.');
+        throw new Error('[helm-core] Custom JDM loader returned invalid JSON.');
       }
       const checksum = checksumJdmGraph(graph);
       if (state.expected !== undefined && state.expected !== checksum) {
         throw new Error(
-          `[invespro-core] JDM checksum mismatch. Expected ${state.expected}, received ${checksum}.`,
+          `[helm-core] JDM checksum mismatch. Expected ${state.expected}, received ${checksum}.`,
         );
       }
       state.value = checksum;

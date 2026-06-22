@@ -4,10 +4,10 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: {
-      '@vibedcoder/invespro-core': fileURLToPath(
+      '@zagvar/helm-core': fileURLToPath(
         new URL('../core/src/index.ts', import.meta.url),
       ),
-      '@vibedcoder/invespro-types': fileURLToPath(
+      '@zagvar/helm-types': fileURLToPath(
         new URL('../types/src/index.ts', import.meta.url),
       ),
     },

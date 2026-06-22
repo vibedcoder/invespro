@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { EvaluationResult } from "@vibedcoder/invespro-types";
+import type { EvaluationResult } from "@zagvar/helm-types";
 import {
   defaultAnswers,
   experienceOptions,

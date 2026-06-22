@@ -1,5 +1,5 @@
 {
-  "extends": "@invespro/tsconfig/lib.json",
+  "extends": "@helm/tsconfig/lib.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",

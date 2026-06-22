@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { RiskProfileDefinitionSchema } from "@vibedcoder/invespro-types";
+import { RiskProfileDefinitionSchema } from "@zagvar/helm-types";
 
 export async function POST(request: Request) {
   try {

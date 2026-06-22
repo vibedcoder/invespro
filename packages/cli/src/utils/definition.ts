@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { RiskProfileDefinitionSchema } from '@vibedcoder/invespro-types';
-import type { RiskProfileDefinition } from '@vibedcoder/invespro-types';
+import { RiskProfileDefinitionSchema } from '@zagvar/helm-types';
+import type { RiskProfileDefinition } from '@zagvar/helm-types';
 
 /** Loads and validates a risk-profile definition from the filesystem. */
 export async function loadDefinition(

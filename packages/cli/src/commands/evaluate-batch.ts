@@ -5,7 +5,7 @@ import { defineCommand } from 'citty';
 import {
   parseCsvBatch,
   RiskProfilerEngine,
-} from '@vibedcoder/invespro-core';
+} from '@zagvar/helm-core';
 import {
   formatBatchCsv,
   inferBatchInputFormat,

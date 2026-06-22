@@ -1,15 +1,9 @@
-# @vibedcoder/invespro-core
+# @zagvar/helm-core
 
-## 0.2.1
+## 0.1.0
 
-### Patch Changes
+### Initial Release
 
-- Replace published workspace dependency ranges with npm-installable semver ranges.
-
-## 0.2.0
-
-### Minor Changes
-
-- c4fcc04: Add shared definition-aware CSV batch parsing in core and expose CSV batch evaluation through the Hono REST adapter.
-
-  The CLI now uses the shared parser, while the Hono adapter accepts raw CSV at `POST /evaluate/batch/csv` and returns the existing JSON batch result shape.
+- Publish the core Helm evaluation engine under the `@zagvar` scope.
+- Include the default risk profile definition, custom definition support,
+  batch evaluation, CSV parsing, and JDM compilation helpers.

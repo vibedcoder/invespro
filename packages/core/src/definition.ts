@@ -1,17 +1,17 @@
-import { RiskProfileDefinitionSchema } from '@vibedcoder/invespro-types';
+import { RiskProfileDefinitionSchema } from '@zagvar/helm-types';
 import { ALLOCATION_MAP } from './allocations.js';
 import { QUESTIONS } from './questions.js';
 
 /**
- * Opinionated Australian-dollar model matching the original Invespro rules.
+ * Opinionated Australian-dollar model matching the original Helm rules.
  *
  * Original point maxima are used as relative weights so normalized scoring
  * preserves the existing profile decisions.
  */
 export const DEFAULT_RISK_PROFILE_DEFINITION = RiskProfileDefinitionSchema.parse({
   schemaVersion: '1.0',
-  id: 'invesproDefaultRiskProfiler',
-  name: 'Invespro Default Investment Risk Profiler',
+  id: 'helmDefaultRiskProfiler',
+  name: 'Helm Default Investment Risk Profiler',
   version: '0.1.0',
   currency: 'AUD',
   questions: QUESTIONS.map((question) => ({

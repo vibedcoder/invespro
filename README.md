@@ -1,16 +1,16 @@
-# invespro
+# helm
 
 Rules-based investment profiling and portfolio allocation for Node.js services,
 REST APIs, and command-line workflows.
 
-Invespro evaluates applicant answers against a versioned risk model and returns
+Helm evaluates applicant answers against a versioned risk model and returns
 a normalized score, risk profile, portfolio allocation, and definition metadata
 for auditability. It ships with a default profiling model and supports custom
 definitions when your questions, scoring, bands, overrides, or allocations need
 to match a specific policy.
 
-Learn more in the [documentation](https://invespro.vercel.app/docs), or
-[try the interactive demo](https://invespro.vercel.app/demo).
+Learn more in the [documentation](https://helm.vercel.app/docs), or
+[try the interactive demo](https://helm.vercel.app/demo).
 
 > This project provides software primitives for investment profiling and
 > allocation. It is not financial advice. Production users remain responsible
@@ -21,10 +21,10 @@ Learn more in the [documentation](https://invespro.vercel.app/docs), or
 
 | Package                      | Purpose                                                                  |
 | ---------------------------- | ------------------------------------------------------------------------ |
-| `@vibedcoder/invespro-core`  | Main engine, default definition, compiler, CSV parser, batch evaluation. |
-| `@vibedcoder/invespro-hono`  | REST API adapter for Hono services.                                      |
-| `@vibedcoder/invespro-cli`   | Command-line evaluation, validation, and compilation.                    |
-| `@vibedcoder/invespro-types` | Shared Zod schemas and TypeScript types.                                 |
+| `@zagvar/helm-core`  | Main engine, default definition, compiler, CSV parser, batch evaluation. |
+| `@zagvar/helm-hono`  | REST API adapter for Hono services.                                      |
+| `@zagvar/helm-cli`   | Command-line evaluation, validation, and compilation.                    |
+| `@zagvar/helm-types` | Shared Zod schemas and TypeScript types.                                 |
 
 Use `core` when embedding profiling directly in a service, `hono` when another
 system should call the engine over HTTP, `cli` for local or operational
@@ -35,10 +35,10 @@ workflows, and `types` when you only need validation contracts.
 Install only the package or packages your integration needs:
 
 ```bash
-pnpm add @vibedcoder/invespro-core
-pnpm add @vibedcoder/invespro-hono hono
-pnpm add -D @vibedcoder/invespro-cli
-pnpm add @vibedcoder/invespro-types
+pnpm add @zagvar/helm-core
+pnpm add @zagvar/helm-hono hono
+pnpm add -D @zagvar/helm-cli
+pnpm add @zagvar/helm-types
 ```
 
 The workspace targets Node.js `>=24.0.0` and pnpm `>=11.0.0`.
@@ -46,7 +46,7 @@ The workspace targets Node.js `>=24.0.0` and pnpm `>=11.0.0`.
 ## Quick Start
 
 ```ts
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import { RiskProfilerEngine } from '@zagvar/helm-core';
 
 const engine = new RiskProfilerEngine();
 
@@ -78,7 +78,7 @@ ZenEngine resources are released.
 The default model includes seven scored factors, five risk profiles, four asset
 classes, and an override that assigns a conservative profile when debt-to-income
 ratio is high. See
-[Model Concepts](https://invespro.vercel.app/docs/model-concepts) for the full
+[Model Concepts](https://helm.vercel.app/docs/model-concepts) for the full
 model details.
 
 ## Common Workflows
@@ -89,15 +89,15 @@ Use `RiskProfilerEngine` for direct evaluation from a Node.js service. It
 supports single-applicant evaluation, ordered batch evaluation, CSV batch
 parsing, default definitions, and custom definitions.
 
-See the [core guide](https://invespro.vercel.app/docs/guides/core-engine).
+See the [core guide](https://helm.vercel.app/docs/guides/core-engine).
 
 ### REST API
 
-Mount the Hono adapter when another service should call Invespro over HTTP:
+Mount the Hono adapter when another service should call Helm over HTTP:
 
 ```ts
 import { serve } from '@hono/node-server';
-import { createRiskProfilerService } from '@vibedcoder/invespro-hono';
+import { createRiskProfilerService } from '@zagvar/helm-hono';
 
 const service = createRiskProfilerService();
 
@@ -110,8 +110,8 @@ serve({
 The adapter exposes health, definition, questions, validation, single
 evaluation, JSON batch, and CSV batch endpoints.
 
-See the [REST API guide](https://invespro.vercel.app/docs/guides/rest-api) and
-[endpoint reference](https://invespro.vercel.app/docs/reference/rest-endpoints).
+See the [REST API guide](https://helm.vercel.app/docs/guides/rest-api) and
+[endpoint reference](https://helm.vercel.app/docs/reference/rest-endpoints).
 
 ### CLI
 
@@ -119,29 +119,29 @@ Use the CLI for local evaluation, CSV workflows, definition compilation, and
 JDM graph validation:
 
 ```bash
-pnpm add --save-dev @vibedcoder/invespro-cli
-pnpm exec invespro --help
-pnpm exec invespro evaluate input.json --output json
-pnpm exec invespro evaluate-batch applicants.csv --input-format csv --output csv
-pnpm exec invespro compile definition.json --output graph.jdm.json
-pnpm exec invespro validate graph.jdm.json --definition definition.json
+pnpm add --save-dev @zagvar/helm-cli
+pnpm exec zagvar-helm --help
+pnpm exec zagvar-helm evaluate input.json --output json
+pnpm exec zagvar-helm evaluate-batch applicants.csv --input-format csv --output csv
+pnpm exec zagvar-helm compile definition.json --output graph.jdm.json
+pnpm exec zagvar-helm validate graph.jdm.json --definition definition.json
 ```
 
-See the [CLI guide](https://invespro.vercel.app/docs/guides/cli) and
-[CLI reference](https://invespro.vercel.app/docs/reference/cli-reference).
+See the [CLI guide](https://helm.vercel.app/docs/guides/cli) and
+[CLI reference](https://helm.vercel.app/docs/reference/cli-reference).
 
 ### Custom Definitions
 
-Invespro is definition-driven. A definition controls questions, scoring,
+Helm is definition-driven. A definition controls questions, scoring,
 profiles, score bands, overrides, asset classes, and allocations. Expert users
-can also supply custom JDM graphs when they follow the Invespro input and
+can also supply custom JDM graphs when they follow the Helm input and
 result contract.
 
 See the
-[custom definitions guide](https://invespro.vercel.app/docs/guides/custom-definitions),
-[definition schema reference](https://invespro.vercel.app/docs/reference/definition-schema),
+[custom definitions guide](https://helm.vercel.app/docs/guides/custom-definitions),
+[definition schema reference](https://helm.vercel.app/docs/reference/definition-schema),
 and
-[expert JDM contract](https://invespro.vercel.app/docs/reference/expert-jdm-contract).
+[expert JDM contract](https://helm.vercel.app/docs/reference/expert-jdm-contract).
 
 ## Development
 

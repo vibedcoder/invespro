@@ -5,7 +5,7 @@ import {
   parseCsvBatch,
   RiskProfilerEngine,
 } from '../src/index.js';
-import type { RiskProfileDefinitionInput } from '@vibedcoder/invespro-types';
+import type { RiskProfileDefinitionInput } from '@zagvar/helm-types';
 
 const customDefinition = {
   schemaVersion: '1.0',

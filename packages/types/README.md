@@ -1,6 +1,6 @@
-# @vibedcoder/invespro-types
+# @zagvar/helm-types
 
-Shared TypeScript types and Zod schemas for Invespro, a rules-based investment
+Shared TypeScript types and Zod schemas for Helm, a rules-based investment
 profiling and portfolio allocation engine.
 
 Use this package when you want to validate request payloads, custom definition
@@ -10,11 +10,11 @@ core ZenEngine runtime.
 ## Installation
 
 ```sh
-pnpm add @vibedcoder/invespro-types
+pnpm add @zagvar/helm-types
 ```
 
 ```sh
-npm install @vibedcoder/invespro-types
+npm install @zagvar/helm-types
 ```
 
 ## Usage
@@ -23,7 +23,7 @@ npm install @vibedcoder/invespro-types
 import {
   RiskProfileEvaluationInputSchema,
   RiskProfileDefinitionSchema,
-} from '@vibedcoder/invespro-types';
+} from '@zagvar/helm-types';
 
 const input = RiskProfileEvaluationInputSchema.parse({
   applicantId: 'APP-001',
@@ -51,8 +51,8 @@ const definition = RiskProfileDefinitionSchema.parse(customDefinition);
 
 ## Related Packages
 
-- `@vibedcoder/invespro-core` runs evaluations.
-- `@vibedcoder/invespro-hono` exposes the engine through a Hono REST adapter.
-- `@vibedcoder/invespro-cli` provides command-line evaluation and validation.
+- `@zagvar/helm-core` runs evaluations.
+- `@zagvar/helm-hono` exposes the engine through a Hono REST adapter.
+- `@zagvar/helm-cli` provides command-line evaluation and validation.
 
-Full documentation: [invespro.vercel.app](https://invespro.vercel.app/).
+Full documentation: [helm.vercel.app](https://helm.vercel.app/).

@@ -1,14 +1,14 @@
 import * as z from 'zod';
 import {
   RiskProfileEvaluationInputSchema,
-} from '@vibedcoder/invespro-types';
+} from '@zagvar/helm-types';
 import type {
   AnswerValue,
   EvaluationResult,
   RiskProfileAnswers,
   RiskProfileDefinition,
   RiskProfileEvaluationInput,
-} from '@vibedcoder/invespro-types';
+} from '@zagvar/helm-types';
 import { scoreField, toSnakeCase } from './compiler.js';
 
 const ModernJdmResultSchema = z.object({
@@ -68,14 +68,14 @@ export function fromJdmResult(
   );
   if (profile === undefined) {
     throw new Error(
-      `[invespro-core] JDM returned undeclared profile id "${parsed.profile_id}".`,
+      `[helm-core] JDM returned undeclared profile id "${parsed.profile_id}".`,
     );
   }
 
   const allocation = definition.allocations[profile.id];
   if (allocation === undefined) {
     throw new Error(
-      `[invespro-core] No allocation is declared for profile "${profile.id}".`,
+      `[helm-core] No allocation is declared for profile "${profile.id}".`,
     );
   }
 

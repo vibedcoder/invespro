@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { intro, log, outro, spinner } from '@clack/prompts';
 import { defineCommand } from 'citty';
-import { RiskProfilerEngine } from '@vibedcoder/invespro-core';
+import { RiskProfilerEngine } from '@zagvar/helm-core';
 import { loadDefinition } from '../utils/definition.js';
 import { createFileSystemLoader } from '../utils/loader.js';
 

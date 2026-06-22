@@ -1,3 +1,3 @@
-import { RiskProfilerEngine } from "@vibedcoder/invespro-core";
+import { RiskProfilerEngine } from "@zagvar/helm-core";
 
 export const riskProfilerEngine = new RiskProfilerEngine();

@@ -9,7 +9,7 @@ import validateCommand from './commands/validate.js';
 
 const main = defineCommand({
   meta: {
-    name: 'invespro',
+    name: 'zagvar-helm',
     version: '0.1.0',
     description: 'Investment risk profiling engine',
   },
